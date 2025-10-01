@@ -8,8 +8,9 @@ IdRecibo INT NOT NULL PRIMARY KEY IDENTITY (1,1),
 Fecha DATE NOT NULL,
 ValorTotal DECIMAL (18,2), 
 IdTipoPago INT NOT NULL,
-IdVivienda INT NOT NULL,
-FOREIGN KEY (IdVivienda) REFERENCES Vivienda(IdVivienda),
+NumeroVivienda INT NOT NULL,
+IdCluster INT NOT NULL,
+FOREIGN KEY (NumeroVivienda, IdCluster) REFERENCES Vivienda(NumeroVivienda, IdCluster),
 FOREIGN KEY (IdTipoPago) REFERENCES TipoPago(IdTipoPago)
 );
 CREATE TABLE Planilla(
@@ -23,9 +24,10 @@ FOREIGN KEY (IdRecibo)  REFERENCES  Recibo (IdRecibo)
 CREATE TABLE DetallePlanilla(
 IdDetallePlanilla INT NOT NULL PRIMARY KEY IDENTITY (1,1),
 IdPlanilla INT NOT NULL,
-IdVivienda INT NOT NULL,
+NumeroVivienda INT NOT NULL,
+IdCluster INT NOT NULL,
 FOREIGN KEY (IdPlanilla) REFERENCES Planilla(IdPlanilla),
-FOREIGN KEY (IdVivienda) REFERENCES Vivienda(IdVivienda)
+FOREIGN KEY (NumeroVivienda, IdCluster) REFERENCES Vivienda(NumeroVivienda, IdCluster),
 );
 
 CREATE TABLE Servicio (
@@ -37,9 +39,10 @@ CREATE TABLE RequerimientoCobro(
 IdRequerimientoC INT NOT NULL PRIMARY KEY IDENTITY (1,1),
 Fecha DATE,
 IdServicio INT NOT NULL,
-IdVivienda INT NOT NULL,
+NumeroVivienda INT NOT NULL,
+IdCluster INT NOT NULL,
 FOREIGN KEY (IdServicio) REFERENCES Servicio(IdServicio),
-FOREIGN KEY (IdVivienda) REFERENCES Vivienda(IdVivienda)
+FOREIGN KEY (NumeroVivienda, IdCluster) REFERENCES Vivienda(NumeroVivienda, IdCluster),
 );
 CREATE TABLE DetalleServicio(
 IdDetalleServicio INT NOT NULL PRIMARY KEY IDENTITY (1,1),
