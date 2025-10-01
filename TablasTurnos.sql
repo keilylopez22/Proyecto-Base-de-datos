@@ -81,3 +81,6 @@ ADD CONSTRAINT FK_DetalleDelRondin_Rondin FOREIGN KEY (IdRondin) REFERENCES Rond
 
 ALTER TABLE RegistroPersonasVisitantes
 ADD CONSTRAINT FK_RegistroPersonasVisitantes_Visitante FOREIGN KEY (IdVisitante) REFERENCES Visitante (IdVisitante)
+
+ALTER TABLE Garita
+ADD CONSTRAINT FK_Garita_RegistroPersonaVisitantes FOREIGN KEY (IdRegistroPersonaVisitante) REFERENCES RegistroPersonasVisitantes(IdRegistroPersonaVisitante)
