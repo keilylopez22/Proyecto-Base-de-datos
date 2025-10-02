@@ -7,3 +7,5 @@ Alter Column NumeroVivienda Int null
 
 Alter Table Residente
 Alter Column IdCluster Int null
+
+--arreglar foreign key
