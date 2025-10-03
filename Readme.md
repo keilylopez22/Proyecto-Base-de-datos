@@ -9,4 +9,6 @@ Ejecutar en el siguiente orden
 7. SPCrearVivienda.sql
 8. SpActualizarVivienda.sql
 9. SpEliminarVivienda.sql
-10. BuscarViviendaporllaves.sql
+10. BuscarViviendaporLLaves.sql
+11. BuscarViviendaPorPropietario.sql
+12. BuscarViviendaporTipoVivienda.sql
