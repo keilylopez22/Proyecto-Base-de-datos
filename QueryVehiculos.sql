@@ -1,11 +1,11 @@
 CREATE TABLE Garita (
-IdGarita INT PRIMARY KEY,
+IdGarita INT IDENTITY PRIMARY KEY,
 NombreGarita VARCHAR (50),
 IdCluster INT NOT NULL
 );
 
 CREATE TABLE Vehiculo (
-IdVehiculo INT PRIMARY KEY,
+IdVehiculo INT IDENTITY PRIMARY KEY,
 Placa VARCHAR(10),
 Modelo VARCHAR(30),
 IdLinea INT Not NULL,
@@ -15,25 +15,25 @@ IdVisitante INT Not NULL
 );
 
 CREATE TABLE Linea(
-IdLinea INT PRIMARY KEY,
+IdLinea INT IDENTITY PRIMARY KEY,
 Descripcion VARCHAR (50),
 IdMarca INT Not NULL
 );
 
 CREATE TABLE Marca (
-IdMarca INT PRIMARY KEY,
+IdMarca INT IDENTITY PRIMARY KEY,
 Descripcion VARCHAR(50)
 )
 
 CREATE TABLE Visitante (
-IdVisitante INT PRIMARY KEY,
+IdVisitante INT IDENTITY PRIMARY KEY,
 IdPersona INT NOT NULL,
 IdCluster INT NOT NULL,
 NumeroVivienda INT NOT NULL
 );
 
 CREATE TABLE RegistroVehiculos (
-IdRegistroVehiculo INT PRIMARY KEY,
+IdRegistroVehiculo INT IDENTITY PRIMARY KEY,
 FechaHoraEntrada DATE,
 FechaHoraSalida DATE,
 Observaciones VARCHAR(50),
@@ -44,11 +44,20 @@ IdResidente INT NOT NULL
 );
 
 CREATE TABLE ListaNegra (
-IdListaNegra INT PRIMARY KEY,
+IdListaNegra INT IDENTITY PRIMARY KEY,
 Causa VARCHAR (100),
 FechaDeclaradoNoGrato DATE,
 IdVehiculo INT NOT NULL,
 IdVisitante INT NOT NULL
+);
+
+CREATE TABLE RegistroPersonasVisitantes (
+IdRegistroPersonaVisitante INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+TipoRegistro VARCHAR(50) NOT NULL CHECK(TipoRegistro IN ('Entrada', 'Salida')),
+FechaRegistro TIME NOT NULL,
+TipoDocumento  VARCHAR(50) NOT NULL CHECK(TipoDocumento IN ('DPI', 'Licencia')), 
+NumeroDocumento VARCHAR(50) UNIQUE,
+IdVisitante INT
 );
 
 --ALTER TABLE
@@ -100,3 +109,12 @@ ADD CONSTRAINT FK_ListaNegra_Vehiculo FOREIGN KEY (IdVehiculo) REFERENCES Vehicu
 
 ALTER TABLE ListaNegra
 ADD CONSTRAINT FK_ListaNegra_Visitante FOREIGN KEY (IdVisitante) REFERENCES Visitante(IdVisitante);
+
+--Drop table RegistroVehiculos
+--Drop table ListaNegra
+--Drop table Garita
+--Drop table Vehiculo
+--Drop Table Linea
+--Drop table Marca
+--Drop table RegistroPersonasVisitantes
+--Drop table Visitante

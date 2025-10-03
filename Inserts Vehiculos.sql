@@ -1,54 +1,54 @@
 -- Marca
-INSERT INTO Marca (IdMarca, Descripcion) VALUES 
-(1, 'Toyota'),
-(2, 'Honda'),
-(3, 'Nissan'),
-(4, 'Mazda'),
-(5, 'Chevrolet'),
-(6, 'Ford'),
-(7, 'BMW'),
-(8, 'Audi'),
-(9, 'Mercedes-Benz'),
-(10, 'Hyundai');
+INSERT INTO Marca (Descripcion) VALUES 
+('Toyota'),
+('Honda'),
+('Nissan'),
+('Mazda'),
+('Chevrolet'),
+('Ford'),
+('BMW'),
+('Audi'),
+('Mercedes-Benz'),
+('Hyundai');
 
 -- Linea
-INSERT INTO Linea(IdLinea, Descripcin, IdMarca) VALUES 
-(1, 'Corolla', 1),
-(2, 'Civic', 2),
-(3, 'Sentra', 3),
-(4, 'CX-5', 4),
-(5, 'Spark', 5),
-(6, 'F-150', 6),
-(7, 'Serie 3', 7),
-(8, 'A4', 8),
-(9, 'Clase C', 9),
-(10, 'Elantra', 10);
+INSERT INTO Linea(Descripcion, IdMarca) VALUES 
+('Corolla', 1),
+('Civic', 2),
+('Sentra', 3),
+('CX-5', 4),
+('Spark', 5),
+('F-150', 6),
+('Serie 3', 7),
+('A4', 8),
+('Clase C', 9),
+('Elantra', 10);
 
 -- Visitante
-INSERT INTO Visitante (IdVisitante, IdPersona, IdCluster, NumeroVivienda) VALUES 
-(1, 1, 1, 11),    
-(2, 2, 1, 13),    
-(3, 3, 2, 26),     
-(4, 4, 2, 27),     
-(5, 5, 3, 312),   
-(6, 6, 3, 313),   
-(7, 7, 4, 416),   
-(8, 8, 4, 417),   
-(9, 9, 5, 521),   
-(10, 10, 5, 522);  
+INSERT INTO Visitante (IdPersona, IdCluster, NumeroVivienda) VALUES 
+(1, 1, 11),    
+(2, 1, 13),    
+(3, 2, 26),     
+(4, 2, 27),     
+(5, 3, 312),   
+(6, 3, 313),   
+(7, 4, 416),   
+(8, 4, 417),   
+(9, 5, 521),   
+(10, 5, 522);  
 
 -- Garita
-INSERT INTO Garita (IdGarita, NombreGarita, IdCluster, IdRegistroPersonaVisitante) VALUES 
-(1, 'Principal Norte', 1, 3),
-(2, 'Secundaria Sur', 1, 4),
-(3, 'Principal Oeste', 2, 5),
-(4, 'Secundaria Este', 2, 6),
-(5, 'Entrada de Servicio', 1, 7),
-(6, 'Acceso 6', 3, 8),
-(7, 'Acceso 7', 3, 9),
-(8, 'Acceso 8', 4, 10),
-(9, 'Acceso 9', 4, 11),
-(10, 'Garita 10', 5, 12);
+INSERT INTO Garita (NombreGarita, IdCluster, IdRegistroPersonaVisitante) VALUES 
+('Principal Norte', 1, 3),
+('Secundaria Sur', 1, 4),
+('Principal Oeste', 2, 5),
+('Secundaria Este', 2, 6),
+('Entrada de Servicio', 1, 7),
+('Acceso 6', 3, 8),
+('Acceso 7', 3, 9),
+('Acceso 8', 4, 10),
+('Acceso 9', 4, 11),
+('Garita 10', 5, 12);
 
 -- ********** Tablas Con Dependencias Cruzadas **********
 
@@ -82,3 +82,4 @@ INSERT INTO RegistroVehiculos (IdRegistroVehiculo, FechaHoraEntrada, FechaHoraSa
 INSERT INTO ListaNegra (IdListaNegra, Causa, FechaDeclaradoNoGrato, IdVehiculo, IdVisitante) VALUES 
 (1, 'Incumplimiento de normas de vivienda', '2025-09-15', 2, 2),
 (2, 'Problemas de comportamiento con la seguridad', '2025-09-20', 8, 8);
+
