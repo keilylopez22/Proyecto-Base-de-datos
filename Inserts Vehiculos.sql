@@ -26,29 +26,29 @@ INSERT INTO Linea(IdLinea, Descripcin, IdMarca) VALUES
 
 -- Visitante
 INSERT INTO Visitante (IdVisitante, IdPersona, IdCluster, NumeroVivienda) VALUES 
-(1, 1, 1, 25),
-(2, 2, 1, 58),
-(3, 3, 2, 120),
-(4, 4, 2, 205),
-(5, 5, 3, 310),
-(6, 6, 3, 15),
-(7, 7, 4, 77),
-(8, 8, 4, 190),
-(9, 9, 5, 300),
-(10, 10, 5, 45);
+(1, 1, 1, 11),    
+(2, 2, 1, 13),    
+(3, 3, 2, 26),     
+(4, 4, 2, 27),     
+(5, 5, 3, 312),   
+(6, 6, 3, 313),   
+(7, 7, 4, 416),   
+(8, 8, 4, 417),   
+(9, 9, 5, 521),   
+(10, 10, 5, 522);  
 
 -- Garita
 INSERT INTO Garita (IdGarita, NombreGarita, IdCluster, IdRegistroPersonaVisitante) VALUES 
-(1, 'Principal Norte', 1, 1),
-(2, 'Secundaria Sur', 1, 2),
-(3, 'Principal Oeste', 2, 3),
-(4, 'Secundaria Este', 2, 4),
-(5, 'Entrada de Servicio', 1, 5),
-(6, 'Acceso 6', 3, 6),
-(7, 'Acceso 7', 3, 7),
-(8, 'Acceso 8', 4, 8),
-(9, 'Acceso 9', 4, 9),
-(10, 'Garita 10', 5, 10);
+(1, 'Principal Norte', 1, 3),
+(2, 'Secundaria Sur', 1, 4),
+(3, 'Principal Oeste', 2, 5),
+(4, 'Secundaria Este', 2, 6),
+(5, 'Entrada de Servicio', 1, 7),
+(6, 'Acceso 6', 3, 8),
+(7, 'Acceso 7', 3, 9),
+(8, 'Acceso 8', 4, 10),
+(9, 'Acceso 9', 4, 11),
+(10, 'Garita 10', 5, 12);
 
 -- ********** Tablas Con Dependencias Cruzadas **********
 
