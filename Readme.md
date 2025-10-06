@@ -15,3 +15,4 @@ Ejecutar en el siguiente orden
 13. Ejecutar el archivo DropsVehiculos.sql
 14. Ejecutar QueryVehiculos.sql
 15. Ejecutar Inserts Vehiculos.sql
+16. Ejecutar los SP de las capetas de SPEmpleados, SPContratoTrabajo, SPPuestoTrabajo, SPAsigancionTurno, SPTurno, SPRondin y SPDetalleRondin
