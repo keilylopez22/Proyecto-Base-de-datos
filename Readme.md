@@ -15,3 +15,10 @@ Ejecutar en el siguiente orden
 13. Ejecutar el archivo DropsVehiculos.sql
 14. Ejecutar QueryVehiculos.sql
 15. Ejecutar Inserts Vehiculos.sql
+16. Jerarquia de eliminacion para un vehiculo asociado a otras tablas:
+    # Eliminar el registro de ListaNegra
+    # Eliminar el registro de RegistroVehiculos
+    # Finalmente Eliminar el Vehiculo
+    ## Si tratan de eliminar primero al vehículo, les lanzará un error,
+    ## Ya que los SP de elminar de cada tabla protegen la integridad referencial(FK),
+    ## Excepto ListaNegra y RegistroVehiculo.
