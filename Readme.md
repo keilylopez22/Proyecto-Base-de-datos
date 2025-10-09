@@ -13,6 +13,7 @@ Ejecutar en el siguiente orden
 7. MODIFICACIONES SCRIPTS\DropsVehiculos.sql
 8. QUERYS ARSAN-F\QueryVehiculos.sql
 9. INSERTS QUERYS\Inserts Vehiculos.sql
+10. QUERYS ARSAN-F\TablasParaJuntaDirectiva.sql
 
 ## STORE PROCEDURE
 1. STORE PROCEDURE CREATE
