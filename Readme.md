@@ -1,17 +1,19 @@
 # Instrucciones
+## TABLAS
 Ejecutar en el siguiente orden
-1. Viviendas.sql
-2. PAGOS.sql
-3. TablasTurnos.sql
-4. QueryVehiculos.sql
-5. CorregirFK.sql
-6. InsertTablasVivienda.sql
-7. SPCrearVivienda.sql
-8. SpActualizarVivienda.sql
-9. SpEliminarVivienda.sql
-10. BuscarViviendaporLLaves.sql
-11. BuscarViviendaPorPropietario.sql
-12. BuscarViviendaporTipoVivienda.sql
-13. Ejecutar el archivo DropsVehiculos.sql
-14. Ejecutar QueryVehiculos.sql
-15. Ejecutar Inserts Vehiculos.sql
+1. QUERYS ARSAN-F\Viviendas.SQL
+2. QUERYS ARSAN-F\PAGOS.sql
+3. QUERYS ARSAN-F\TablasTurnos.sql
+4. QUERYS ARSAN-F\QueryVehiculos.sql
+5. MODIFICACIONES SCRIPTS\Corregirfk.sql
+6. INSERTS QUERYS\insertTablasViviendas.sql
+7. MODIFICACIONES SCRIPTS\DropsVehiculos.sql
+8. QUERYS ARSAN-F\QueryVehiculos.sql
+9. INSERTS QUERYS\Inserts Vehiculos.sql
+
+## STORE PROCEDURE
+1. STORE PROCEDURE CREATE
+2. STORE PROCEDURE DELETE
+3. STORE PROCEDURE UPDATE
+4. STORE PROCEDURE SELECT BY PRIMARY KEY
+5. STORE PROCEDURE SELECT BY OBJECT
