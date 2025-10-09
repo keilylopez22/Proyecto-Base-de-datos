@@ -1,4 +1,7 @@
 # Instrucciones
+## MODELO E/R
+https://app.diagrams.net/?src=about#G1v-ug-vOfC3eFWw9XZIxrCmpRx1evHsmT#%7B%22pageId%22%3A%22p-8cyS3zkKujZXAbkel6%22%7D
+
 ## TABLAS
 Ejecutar en el siguiente orden
 1. QUERYS ARSAN-F\Viviendas.SQL
