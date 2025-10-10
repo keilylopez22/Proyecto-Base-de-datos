@@ -4,13 +4,13 @@
   "settings": {
     "width": 3000,
     "height": 3000,
-    "scrollTop": -1007.893,
-    "scrollLeft": -604.1414,
-    "zoomLevel": 0.79,
+    "scrollTop": -1060,
+    "scrollLeft": 0,
+    "zoomLevel": 1,
     "show": 501,
     "database": 2,
     "databaseName": "ARSAN-F",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 4,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -718,7 +718,7 @@
           "color": "#4CAF50"
         },
         "meta": {
-          "updateAt": 1760051502398,
+          "updateAt": 1760069131473,
           "createAt": 1760037578406
         }
       },
@@ -1300,7 +1300,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760069985263,
+          "updateAt": 1760049466061,
           "createAt": 1760032611610
         }
       },
@@ -1740,7 +1740,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070003759,
+          "updateAt": 1760033612567,
           "createAt": 1760033602052
         }
       },
@@ -1840,7 +1840,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070024661,
+          "updateAt": 1760034002370,
           "createAt": 1760033976589
         }
       },
@@ -1929,7 +1929,7 @@
         "tableId": "y0K6_Kqz5mXB88C9K1On4",
         "name": "EstadoPago",
         "comment": "",
-        "dataType": "varchar(10)",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 0,
         "ui": {
@@ -1940,7 +1940,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070095616,
+          "updateAt": 1760052093393,
           "createAt": 1760034094407
         }
       },
@@ -2260,7 +2260,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070031637,
+          "updateAt": 1760035737821,
           "createAt": 1760035728930
         }
       },
@@ -2280,7 +2280,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070050075,
+          "updateAt": 1760072779785,
           "createAt": 1760035740343
         }
       },
@@ -2549,18 +2549,18 @@
         "tableId": "qrWblrvNNBQVdQLjAczqv",
         "name": "NombreCompleto",
         "comment": "",
-        "dataType": "varchar(100)",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 98,
           "widthComment": 60,
-          "widthDataType": 67,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070135580,
+          "updateAt": 1760061577663,
           "createAt": 1760036900223
         }
       },
@@ -2569,7 +2569,7 @@
         "tableId": "qrWblrvNNBQVdQLjAczqv",
         "name": "NumeroDocumento",
         "comment": "",
-        "dataType": "varchar(20)",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 8,
         "ui": {
@@ -2580,7 +2580,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070145732,
+          "updateAt": 1760049864680,
           "createAt": 1760036924181
         }
       },
@@ -2609,7 +2609,7 @@
         "tableId": "W2Bom_XL7knbsGon7Z2Up",
         "name": "Placa",
         "comment": "",
-        "dataType": "varchar(20)",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 4,
         "ui": {
@@ -2620,7 +2620,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070243834,
+          "updateAt": 1760046920584,
           "createAt": 1760037164663
         }
       },
@@ -2760,7 +2760,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070172768,
+          "updateAt": 1760037693988,
           "createAt": 1760037683615
         }
       },
@@ -2969,7 +2969,7 @@
         "tableId": "mv2G0_pbLlF2Z_qMFhtGr",
         "name": "Referencia",
         "comment": "",
-        "dataType": "varchar(20)",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 0,
         "ui": {
@@ -2980,7 +2980,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070065966,
+          "updateAt": 1760040256555,
           "createAt": 1760040230228
         }
       },
@@ -3080,7 +3080,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070197195,
+          "updateAt": 1760046850370,
           "createAt": 1760046842393
         }
       },
@@ -3120,7 +3120,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070221777,
+          "updateAt": 1760046890711,
           "createAt": 1760046865344
         }
       },
@@ -3180,7 +3180,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070077435,
+          "updateAt": 1760047389615,
           "createAt": 1760047377788
         }
       },
@@ -3260,7 +3260,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070111789,
+          "updateAt": 1760047549791,
           "createAt": 1760047540386
         }
       },
@@ -3309,7 +3309,7 @@
         "tableId": "fjPP8WVo1beZdZX77BuvC",
         "name": "EstadoPago",
         "comment": "",
-        "dataType": "varchar(10)",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 0,
         "ui": {
@@ -3320,7 +3320,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070121354,
+          "updateAt": 1760052084633,
           "createAt": 1760047583518
         }
       },
@@ -3460,7 +3460,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070159757,
+          "updateAt": 1760048202435,
           "createAt": 1760048192895
         }
       },
@@ -3569,18 +3569,18 @@
         "tableId": "v_HAVknU37V7hs5TDRvS7",
         "name": "Estado",
         "comment": "",
-        "dataType": "VARCHAR(10)",
+        "dataType": "varchar(30)",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 75,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070189617,
+          "updateAt": 1760072179884,
           "createAt": 1760048563938
         }
       },
@@ -3629,7 +3629,7 @@
         "tableId": "HfX3ILoiqdGJyYlFSUBS3",
         "name": "Nombre",
         "comment": "",
-        "dataType": "varchar(50)",
+        "dataType": "varchar(30)",
         "default": "",
         "options": 0,
         "ui": {
@@ -3640,7 +3640,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070204525,
+          "updateAt": 1760072202585,
           "createAt": 1760048667245
         }
       },
@@ -3649,7 +3649,7 @@
         "tableId": "HfX3ILoiqdGJyYlFSUBS3",
         "name": "Descripcion",
         "comment": "",
-        "dataType": "varchar(50)",
+        "dataType": "varchar(30)",
         "default": "",
         "options": 0,
         "ui": {
@@ -3660,7 +3660,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070210942,
+          "updateAt": 1760072207431,
           "createAt": 1760048673633
         }
       },
@@ -3840,7 +3840,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070152303,
+          "updateAt": 1760050012067,
           "createAt": 1760050001966
         }
       },
@@ -3849,7 +3849,7 @@
         "tableId": "W2Bom_XL7knbsGon7Z2Up",
         "name": "Linea",
         "comment": "",
-        "dataType": "varchar",
+        "dataType": "varchar(50)",
         "default": "",
         "options": 0,
         "ui": {
@@ -3889,7 +3889,7 @@
         "tableId": "VHErmkXx-jnRgmh6cKVa0",
         "name": "Descripcion",
         "comment": "",
-        "dataType": "varchar(20)",
+        "dataType": "varchar(30)",
         "default": "",
         "options": 0,
         "ui": {
@@ -3900,7 +3900,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070228403,
+          "updateAt": 1760072489046,
           "createAt": 1760050167481
         }
       },
@@ -3929,18 +3929,18 @@
         "tableId": "KpeQTptwjnuVz2dF8zehl",
         "name": "Descripcion",
         "comment": "",
-        "dataType": "VARCHAR(20)",
+        "dataType": "varchar(30)",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 64,
           "widthComment": 60,
-          "widthDataType": 75,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070236876,
+          "updateAt": 1760072483106,
           "createAt": 1760050261873
         }
       },
@@ -4040,7 +4040,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760070261205,
+          "updateAt": 1760050782793,
           "createAt": 1760050755734
         }
       },
@@ -5174,7 +5174,7 @@
           "columnIds": [
             "_GFFi4w_VV91qXTGIsq_3"
           ],
-          "x": 1831,
+          "x": 1825,
           "y": 1368,
           "direction": 2
         },
@@ -5437,7 +5437,7 @@
           "columnIds": [
             "kbBo0yCXSSHRjh2Kr8Ftv"
           ],
-          "x": 1662.5,
+          "x": 1659.5,
           "y": 1268,
           "direction": 4
         },
@@ -5493,7 +5493,7 @@
           "columnIds": [
             "xrNEOUycjlvnV1xkqPJrp"
           ],
-          "x": 2405.7072,
+          "x": 2398.7072,
           "y": 813.5615,
           "direction": 8
         },
@@ -5577,7 +5577,7 @@
           "columnIds": [
             "YV5AuwqpS1CpseRy2Htwj"
           ],
-          "x": 2515,
+          "x": 2501,
           "y": 98,
           "direction": 2
         },
@@ -5682,7 +5682,7 @@
           "columnIds": [
             "a0zSFw4nNZxA1PYX3Cd-F"
           ],
-          "x": 2574.7072,
+          "x": 2560.7072,
           "y": 713.5615,
           "direction": 2
         },
