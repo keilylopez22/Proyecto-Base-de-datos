@@ -1,11 +1,13 @@
-CREATE OR ALTER PROCEDURE SPsertarCluster
-@Descripcion VARCHAR(30)
+CREATE OR ALTER PROCEDURE SPInsertarCluster
+@Descripcion VARCHAR(30),
+@IdResidencial INT
 AS
 BEGIN
-	INSERT INTO Cluster(Descripcion)
-	VALUES(@Descripcion)
+	INSERT INTO Cluster(Descripcion, IdResidencial)
+	VALUES(@Descripcion, @IdResidencial)
 	SELECT SCOPE_IDENTITY() AS IdCluster
 END;
 
-EXEC SPsertarCluster
-@Descripcion = 'ClusterPrueba'
+EXEC SPInsertarCluster
+@Descripcion = 'ClusterPrueba',
+@IdResidencial = 1
