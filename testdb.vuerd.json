@@ -4,9 +4,9 @@
   "settings": {
     "width": 3000,
     "height": 3000,
-    "scrollTop": -1060,
-    "scrollLeft": 0,
-    "zoomLevel": 1,
+    "scrollTop": -987.6033,
+    "scrollLeft": -230.0227,
+    "zoomLevel": 0.73,
     "show": 501,
     "database": 2,
     "databaseName": "ARSAN-F",
@@ -2749,18 +2749,18 @@
         "tableId": "u-SG71r-WsIPMR6q775aB",
         "name": "Observaciones",
         "comment": "",
-        "dataType": "varchar(50)",
+        "dataType": "varchar(100)",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 79,
           "widthComment": 60,
-          "widthDataType": 61,
+          "widthDataType": 67,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760037693988,
+          "updateAt": 1760156631035,
           "createAt": 1760037683615
         }
       },
@@ -3069,18 +3069,18 @@
         "tableId": "mZlJqAkfn5v_xYQI8mDhX",
         "name": "Motivo",
         "comment": "",
-        "dataType": "varchar(50)",
+        "dataType": "varchar(100)",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 61,
+          "widthDataType": 67,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760046850370,
+          "updateAt": 1760156606369,
           "createAt": 1760046842393
         }
       },
@@ -3249,18 +3249,18 @@
         "tableId": "fjPP8WVo1beZdZX77BuvC",
         "name": "Observaciones",
         "comment": "",
-        "dataType": "varchar(50)",
+        "dataType": "varchar(100)",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 79,
           "widthComment": 60,
-          "widthDataType": 61,
+          "widthDataType": 67,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760047549791,
+          "updateAt": 1760156671668,
           "createAt": 1760047540386
         }
       },
@@ -3649,18 +3649,18 @@
         "tableId": "HfX3ILoiqdGJyYlFSUBS3",
         "name": "Descripcion",
         "comment": "",
-        "dataType": "varchar(30)",
+        "dataType": "varchar(100)",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 64,
           "widthComment": 60,
-          "widthDataType": 61,
+          "widthDataType": 67,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1760072207431,
+          "updateAt": 1760154353030,
           "createAt": 1760048673633
         }
       },
@@ -5127,7 +5127,7 @@
           "columnIds": [
             "ByMJ3a3ifc64l76PPBAlC"
           ],
-          "x": 2094,
+          "x": 2097,
           "y": 908,
           "direction": 4
         },
@@ -5183,7 +5183,7 @@
           "columnIds": [
             "YeF9qVleA0-FgM4x3bmQo"
           ],
-          "x": 2094,
+          "x": 2097,
           "y": 1180,
           "direction": 8
         },
@@ -5239,7 +5239,7 @@
           "columnIds": [
             "UCrfNh8Ed8ZkvkaMWAEla"
           ],
-          "x": 1993.3333333333335,
+          "x": 1994.3333333333335,
           "y": 908,
           "direction": 4
         },
@@ -5353,7 +5353,7 @@
             "stDcHEmX5zlWDzVzg73md",
             "eamakONU9Zp52lfQHEmce"
           ],
-          "x": 1268.6548,
+          "x": 1270.1548,
           "y": 1629,
           "direction": 4
         },
@@ -5521,7 +5521,7 @@
           "columnIds": [
             "2wFMyGMU6PlbFEZjBtS2-"
           ],
-          "x": 2194.6666666666665,
+          "x": 2199.6666666666665,
           "y": 908,
           "direction": 4
         },
@@ -5794,7 +5794,7 @@
           "columnIds": [
             "-80zQm970EhXT2nrPNXBl"
           ],
-          "x": 1425.6548,
+          "x": 1430.1548,
           "y": 1629,
           "direction": 4
         },
