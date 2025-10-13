@@ -1,28 +1,31 @@
 CREATE OR ALTER PROCEDURE SPInsertarPersona
+@Cui VARCHAR(30) ,
 @PrimerNombre VARCHAR(30) ,
 @SegundoNombre VARCHAR(30) ,
 @PrimerApellido VARCHAR(30) ,
-@SegundoApellido VARCHAR(30) ,
-@FechaDeNacimiento DATE ,
-@Cui VARCHAR(30) ,
+@SegundoApellido VARCHAR(10) ,
 @Telefono VARCHAR(30),
-@Genero CHAR(1)
+@Genero CHAR(1),
+@FechaNacimiento DATE 
+
 AS
 BEGIN
-	INSERT INTO Persona(PrimerNombre,SegundoNombre,PrimerApellido,SegundoApellido,FechaDeNacimiento,Cui,Telefono,Genero)
-	VALUES(@PrimerNombre,@SegundoNombre ,@PrimerApellido,@SegundoApellido ,@FechaDeNacimiento ,@Cui,@Telefono,@Genero)
+	INSERT INTO Persona(Cui,PrimerNombre,SegundoNombre,PrimerApellido,SegundoApellido,Telefono,Genero,FechaNacimiento)
+	VALUES(@Cui,@PrimerNombre,@SegundoNombre ,@PrimerApellido,@SegundoApellido ,@Telefono,@Genero,@FechaNacimiento )
 	SELECT SCOPE_IDENTITY() AS IdPersona
 
 END;
 
 EXEC SPInsertarPersona
+@Cui ='0907237845',
 @PrimerNombre ='Floresita',
 @SegundoNombre  = null,
 @PrimerApellido ='Asturias',
-@SegundoApellido = 'De Gudiel',
-@FechaDeNacimiento = '2000-04-19',
-@Cui ='0907237845',
+@SegundoApellido = 'De Gomez',
 @Telefono ='50408936',
-@Genero = 'F'
+@Genero = 'F',
+@FechaNacimiento = '2000-04-19'
 
-select * from Persona
+
+
+SELECT * FROM Persona

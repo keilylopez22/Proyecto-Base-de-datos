@@ -1,12 +1,15 @@
 CREATE OR ALTER  PROCEDURE SPInsertarJuntaDirectiva
-    @IdCluster INT,
-    @FechaInicio DATE,
-    @FechaFin DATE,
-    @Estado VARCHAR(100)
+@IdCluster INT,
+    
 AS
 BEGIN
-    INSERT INTO JuntaDirectiva (IdCluster, FechaInicio, FechaFin, Estado)
-    VALUES (@IdCluster, @FechaInicio, @FechaFin, @Estado);
+    INSERT INTO JuntaDirectiva (IdCluster)
+    VALUES (@IdCluster);
     
     SELECT SCOPE_IDENTITY() AS IdJuntaDirectiva;
-END
+END;
+
+EXEC SPInsertarJuntaDirectiva
+@IdCluster = 1;
+
+SELECT * FROM JuntaDirectiva;

@@ -1,19 +1,17 @@
---
-Create  OR ALTER Procedure CrearVivienda
---Parametros de entrada
+Create  OR ALTER Procedure SPCrearVivienda
 @NumeroVivienda INT, 
-@IdCluster INT, 
-@IdPropietario INT, 
-@IdTipoVivienda INT
+@IdCluster INT,  
+@IdTipoVivienda INT,
+@IdPropietario INT
 As
 Begin 
-	Insert Into Vivienda(NumeroVivienda, IdCluster, IdPropietario, IdTipoVivienda)
-	Values (@NumeroVivienda, @IdCluster, @IdPropietario, @IdTipoVivienda);
+	Insert Into Vivienda(NumeroVivienda, IdCluster, IdTipoVivienda, IdPropietario) 
+	Values (@NumeroVivienda, @IdCluster,  @IdTipoVivienda, @IdPropietario);
 	Select @NumeroVivienda ;
 End;
---ejemplo para ejecutar sp
-Exec CrearVivienda
+
+Exec SPCrearVivienda
 @NumeroVivienda = 1,
-@IdCluster =1, 
-@IdPropietario =8, 
-@IdTipoVivienda =1
+@IdCluster =1,  
+@IdTipoVivienda =1,
+@IdPropietario =8

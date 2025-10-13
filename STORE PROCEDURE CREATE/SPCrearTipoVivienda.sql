@@ -3,14 +3,13 @@ Create Or Alter Procedure InsertarTipoVivienda
 @NumeroHabitaciones INT,
 @SuperficieTotal Decimal,
 @NumeroPisos INT,
-@ServiciosIncluidos Varchar,
 @Estacionamiento Bit,
-@Precio Decimal
+
 As
 
 Begin 
-	Insert into TipoVivienda(Descripcion ,NumeroHabitaciones,SuperficieTotal ,NumeroPisos ,ServiciosIncluidos ,Estacionamiento ,Precio )
-	Values (@Descripcion ,@NumeroHabitaciones,@SuperficieTotal ,@NumeroPisos ,@ServiciosIncluidos ,@Estacionamiento ,@Precio);
+	Insert into TipoVivienda(Descripcion ,NumeroHabitaciones,SuperficieTotal ,NumeroPisos ,Estacionamiento  )
+	Values (@Descripcion ,@NumeroHabitaciones,@SuperficieTotal ,@NumeroPisos ,@Estacionamiento );
 	
 End;
 
@@ -19,10 +18,9 @@ Exec InsertarTipoVivienda
 @NumeroHabitaciones = 10,
 @SuperficieTotal = 500.00,
 @NumeroPisos = 3,
-@ServiciosIncluidos = '' ,
 @Estacionamiento = 1,
-@Precio = 20000
 
-select * from TipoVivienda
+
+SELECT * FROM TipoVivienda
 
 
