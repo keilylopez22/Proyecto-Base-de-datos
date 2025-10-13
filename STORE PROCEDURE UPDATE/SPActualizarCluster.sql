@@ -6,10 +6,11 @@ BEGIN
 	UPDATE Cluster
 	SET Descripcion=@Descripcion 
 	WHERE IdCluster=@IdCluster
-	SELECT @IdCluster
+	SELECT SCOPE_IDENTITY() AS IdCluster
 	
 END;
 EXEC PSActualizarCluster
-@IdCluster = 6,
-@Descripcion = 'Sector F'
+@IdCluster = 5,
+@Descripcion = 'Cluster E'
 
+SELECT * FROM Cluster 

@@ -10,6 +10,14 @@ BEGIN
         Nombre = @Nombre,
         Descripcion = @Descripcion
     WHERE
-        IdPuestoJuntaDirectiva = @IdPuestoJuntaDirectiva;
+        IdPuesto = @IdPuestoJuntaDirectiva;
+    SELECT @IdPuestoJuntaDirectiva
            
 END;
+
+EXEC SPActualizarPuestoJD
+@IdPuestoJuntaDirectiva = 3,  
+@Nombre = 'Tesorero',
+@Descripcion = 'Encargado de las finanzas de la junta directiva'
+
+SELECT * FROM PuestoJuntaDirectiva

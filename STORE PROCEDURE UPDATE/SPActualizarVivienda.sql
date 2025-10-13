@@ -1,5 +1,4 @@
-
-Create Or Alter Procedure ActualizarVivivenda
+Create Or Alter Procedure SPActualizarVivivenda
 @NumeroVivienda INT, 
 @IdCluster INT, 
 @IdPropietario INT, 
@@ -14,9 +13,10 @@ Begin
 End;
 
 
-EXEC ActualizarVivivenda
-@NumeroVivienda =11, 
+EXEC SPActualizarVivivenda
+@NumeroVivienda =1, 
 @IdCluster =1, 
-@IdPropietario =8, 
+@IdPropietario =7, 
 @IdTipoVivienda =1
 
+SELECT * FROM Vivienda

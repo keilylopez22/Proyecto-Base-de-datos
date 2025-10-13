@@ -4,9 +4,7 @@ CREATE OR ALTER  PROCEDURE ActualizarTipoVivienda
 @NumeroHabitaciones INT,
 @SuperficieTotal DECIMAL,
 @NumeroPisos INT,
-@ServiciosIncluidos VARCHAR(200),
-@Estacionamiento BIT,
-@Precio DECIMAL
+@Estacionamiento BIT
 AS
 BEGIN
 	UPDATE TipoVivienda
@@ -14,24 +12,20 @@ BEGIN
 		NumeroHabitaciones = @NumeroHabitaciones,
 		SuperficieTotal = @SuperficieTotal,
 		NumeroPisos = @NumeroPisos,
-		ServiciosIncluidos = @ServiciosIncluidos,
-		Estacionamiento = @Estacionamiento,
-		Precio = @Precio
+		Estacionamiento = @Estacionamiento
 	WHERE IdTipoVivienda = @IdTipoVivienda;
 	Select @IdTipoVivienda
 
 END;
 
 EXEC ActualizarTipoVivienda
-@IdTipoVivienda = 25,
+@IdTipoVivienda = 4,
 @Descripcion ='Casa grande vintage moderna Minimalista',
 @NumeroHabitaciones =8,
 @SuperficieTotal =400.00,
 @NumeroPisos =3,
-@ServiciosIncluidos ='',
-@Estacionamiento =2,
-@Precio =20000
+@Estacionamiento =2
 
-Select * from TipoVivienda
+SELECT * FROM TipoVivienda
 
 

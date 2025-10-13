@@ -1,38 +1,42 @@
 CREATE OR ALTER PROCEDURE SPActualizarPersona
 @IdPersona INT ,
+@Cui VARCHAR(30) ,
 @PrimerNombre VARCHAR(30) ,
 @SegundoNombre VARCHAR(30),
 @PrimerApellido VARCHAR(30) ,
 @SegundoApellido VARCHAR(30),
-@FechaDeNacimiento DATE ,
-@Cui VARCHAR(30) ,
 @Telefono VARCHAR(30) ,
-@Genero CHAR(1)
+@Genero CHAR(1) ,
+@FechaNacimiento DATE ,
+
 AS
 BEGIN
 	UPDATE Persona
 	SET
+	Cui = @Cui ,
 	PrimerNombre = @PrimerNombre ,
 	SegundoNombre = @SegundoNombre,
 	PrimerApellido = @PrimerApellido ,
 	SegundoApellido = @SegundoApellido ,
-	FechaDeNacimiento = @FechaDeNacimiento,
-	Cui = @Cui ,
 	Telefono  = @Telefono  ,
-	Genero  = @Genero	
+	Genero  = @Genero	,
+	FechaNacimiento = @FechaNacimiento
+	
 	WHERE IdPersona =@IdPersona
 	SELECT @IdPersona
 
 END;
 
 EXEC SPActualizarPersona
-@IdPersona =38,
+@Cui ='0907237845',
+@IdPersona =21,
 @PrimerNombre ='Floresita',
 @SegundoNombre  = 'Elizabeth',
 @PrimerApellido ='Asturias',
-@SegundoApellido = 'De Gudiel',
-@FechaDeNacimiento = '2000-04-19',
-@Cui ='0907237845',
+@SegundoApellido = 'De León',
 @Telefono ='50408936',
-@Genero = 'F'
+@Genero = 'F',
+@FechaNacimiento = '2000-04-19'
 
+
+SELECT * FROM Persona 
