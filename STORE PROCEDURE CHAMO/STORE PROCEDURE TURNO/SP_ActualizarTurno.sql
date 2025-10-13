@@ -5,6 +5,14 @@ CREATE OR ALTER PROCEDURE SP_ActualizarTurno
 @HoraFin TIME
 AS
 BEGIN
+
+SET NOCOUNT ON
+IF NOT EXISTS(SELECT 1 FROM Turno WHERE IdTurno = @IdTurno)
+BEGIN 
+RAISERROR('No existe este turno',16,1)
+RETURN
+END
+
 UPDATE Turno
 SET Descripcion = @Descripcion,
 HoraInicio = @HoraInicio,
