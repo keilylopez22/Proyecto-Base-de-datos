@@ -9,3 +9,4 @@ END
 
 EXEC SP_ObtenerAsignacionTurnoPorId
 @IdAsignacionTurno = 1
+
