@@ -7,5 +7,9 @@ BEGIN
 	SELECT @IdPersona 
 
 END;
+
+
 EXEC SPEliminarPersona
-@IdPersona = 38
+@IdPersona = 21
+
+SELECT * FROM Persona

@@ -6,5 +6,9 @@ BEGIN
 	WHERE IdPropietario = @IdPropietario
 	SELECT @IdPropietario
 END;
+
 EXEC PSEliminarPropietario
-@IdPropietario = 31
+@IdPropietario = 11
+
+
+SELECT * FROM Propietario

@@ -16,4 +16,10 @@ BEGIN
     
     
     
-END
+END;
+
+EXEC SPEliminarJuntaDirectiva
+@IdJuntaDirectiva = 5
+
+
+SELECT * FROM JuntaDirectiva

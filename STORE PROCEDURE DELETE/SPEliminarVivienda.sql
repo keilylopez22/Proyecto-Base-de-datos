@@ -1,5 +1,5 @@
 
-Create OR Alter Procedure EliminarVivienda
+Create OR Alter Procedure PSEliminarVivienda
 @NumeroVivienda INT, 
 @IdCluster INT 
 
@@ -10,6 +10,8 @@ Begin
 End;
 
 
-Exec EliminarVivienda
-@NumeroVivienda =12,
-@IdCluster =1
+Exec PSEliminarVivienda
+@NumeroVivienda =405,
+@IdCluster =4
+
+SELECT * FROM Vivienda

@@ -6,5 +6,6 @@ BEGIN
 	WHERE IdTipoVivienda = @IdTipoVivienda
 	SELECT @IdTipoVivienda
 END;
+
 EXEC PSEliminarTipoVivienda
-@IdTipoVivienda = 26
+@IdTipoVivienda = 4

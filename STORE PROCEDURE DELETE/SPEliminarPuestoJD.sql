@@ -5,15 +5,20 @@ BEGIN
     
     IF EXISTS (SELECT * 
     FROM MiembroJuntaDirectiva 
-    WHERE IdPuestoJuntaDirectiva = @IdPuestoJuntaDirectiva)
+    WHERE IdPuesto = @IdPuestoJuntaDirectiva)
     BEGIN
      
-        RAISERROR('No se puede eliminar el Puesto porque está siendo usado en MiembroJuntaDirectiva.',16,1);
+        RAISERROR('No se puede eliminar el Puesto porque estï¿½ siendo usado en MiembroJuntaDirectiva.',16,1);
         RETURN 0;
     END
     
     
     DELETE FROM PuestoJuntaDirectiva
-    WHERE IdPuestoJuntaDirectiva = @IdPuestoJuntaDirectiva;
+    WHERE IdPuesto = @IdPuestoJuntaDirectiva;
        
 END;
+
+EXEC SPEliminarPuestoJD
+@IdPuestoJuntaDirectiva = 5
+
+SELECT * FROM PuestoJuntaDirectiva

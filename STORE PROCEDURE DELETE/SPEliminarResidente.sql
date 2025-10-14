@@ -8,5 +8,6 @@ BEGIN
 END;
 
 EXEC PSEliminarResidente
-@IdResidente = 37
+@IdResidente = 20
 
+SELECT * FROM Residente

@@ -9,3 +9,5 @@ END;
 
 EXEC SPEliminarCluster
 @IdCluster = 6
+
+SELECT * FROM Cluster
