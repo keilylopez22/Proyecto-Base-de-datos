@@ -16,3 +16,4 @@ END
 EXEC SP_EliminarAsignacionTurno
 @IdAsignacionTurno = 12
 
+SELECT * FROM AsignacionTurno
