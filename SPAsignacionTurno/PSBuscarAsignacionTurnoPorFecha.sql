@@ -8,4 +8,6 @@ WHERE FechaAsignacion = @FechaAsignacion
 END
 
 EXEC PSBuscarAsignacionTurnoPorFecha
-@FechaAsignacion = '2025-10-01'
+@FechaAsignacion = '2024-10-01'
+
+SELECT * FROM AsignacionTurno
