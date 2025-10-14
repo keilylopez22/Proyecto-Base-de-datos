@@ -4,9 +4,12 @@ AS
 BEGIN
    
     SELECT
-        PJD.IdPuestoJuntaDirectiva,
+        PJD.IdPuesto,
         PJD.Nombre,
         PJD.Descripcion
     FROM PuestoJuntaDirectiva  AS PJD
-    WHERE PJD.IdPuestoJuntaDirectiva = @IdPuestoJuntaDirectiva;
+    WHERE PJD.IdPuesto = @IdPuestoJuntaDirectiva;
 END;
+
+EXEC SPBuscarPuestoJDPK
+@IdPuestoJuntaDirectiva = 2

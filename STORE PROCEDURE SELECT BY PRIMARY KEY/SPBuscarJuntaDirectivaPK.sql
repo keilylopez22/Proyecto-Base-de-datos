@@ -5,10 +5,12 @@ BEGIN
     
     SELECT
         JD.IdJuntaDirectiva,
-        JD.IdCluster,
-        JD.FechaInicio,
-        JD.FechaFin,
-        JD.Estado
+        JD.IdCluster
+       
     FROM JuntaDirectiva AS JD
     WHERE JD.IdJuntaDirectiva = @IdJuntaDirectiva;
-END
+
+END;
+
+EXEC SPBuscarJuntaDirectivaPK
+@IdJuntaDirectiva = 1

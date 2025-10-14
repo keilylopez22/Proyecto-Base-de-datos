@@ -8,4 +8,4 @@ BEGIN
 END;
 
 EXEC SPBuscarCluster
-@IdCluster = 1
+@IdCluster = 2
