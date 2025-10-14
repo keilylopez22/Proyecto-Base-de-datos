@@ -18,7 +18,7 @@ SET FechaInicio = @FechaInicio,
 FechaFin = @FechaFin,
 Motivo = @Motivo
 WHERE idPersonaNoGrata = @IdPeronaNoGrata
-PRINT 'Se actulizo a la persona no grata'
+PRINT 'Se actualizo a la persona no grata'
 END
 
 EXEC SP_ActualizarPersonaNoGrata
