@@ -1,4 +1,3 @@
---buscarViviendasPorResidenteActivo
 CREATE OR ALTER PROCEDURE SPbuscarPropietarioPorCluster
 @IdCluster INT
 AS

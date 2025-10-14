@@ -7,5 +7,6 @@ BEGIN
 	 INNER JOIN Persona AS P ON R.IdPersona = P.IdPersona 
 	 WHERE NumeroVivienda = @NumeroVivienda
 END;
+
 EXEC PSBuscarResidentePorNumVivienda
-@NumeroVivienda = 525
+@NumeroVivienda = 101

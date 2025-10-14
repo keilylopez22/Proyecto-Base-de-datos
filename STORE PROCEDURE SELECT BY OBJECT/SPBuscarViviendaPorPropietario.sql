@@ -1,6 +1,3 @@
-
-
-
 Create Or Alter  Procedure buscarViviendaPorPropietario
 @IdPropietario Int
 As

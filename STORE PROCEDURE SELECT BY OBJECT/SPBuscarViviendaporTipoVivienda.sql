@@ -1,4 +1,3 @@
-
 Create or alter Procedure BuscarViviendaPorTipoVivienda
 @IdTipoVivienda INT
 As

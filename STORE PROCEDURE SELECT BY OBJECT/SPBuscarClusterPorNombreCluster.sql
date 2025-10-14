@@ -6,6 +6,8 @@ BEGIN
 	FROM Cluster
 	WHERE Descripcion =  @NombreCluster
 END;
+
 EXEC SPBuscarClusterPorDescripcion
-@NombreCluster = 'Sector E -Fases Nuevas'
+@NombreCluster = 'Cluster A (Deluxe)'
+SELECT * FROM Cluster
 
