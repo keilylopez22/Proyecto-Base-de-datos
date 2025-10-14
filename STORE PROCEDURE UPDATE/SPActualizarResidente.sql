@@ -1,6 +1,5 @@
-CREATE PROCEDURE SPActualizarResidente
+CREATE OR ALTER PROCEDURE SPActualizarResidente
     @IdResidente INT,
-    @IdPersona INT,
     @NumeroVivienda INT,
     @IdCluster INT,
     @EsInquilino BIT ,
@@ -11,7 +10,6 @@ BEGIN
     
         UPDATE Residente
         SET 
-            IdPersona = @IdPersona,
             NumeroVivienda = @NumeroVivienda,
             IdCluster = @IdCluster,
             EsInquilino = @EsInquilino,
@@ -20,12 +18,15 @@ BEGIN
         WHERE IdResidente = @IdResidente;
         SELECT @IdResidente
 END;
+
 EXEC SPActualizarResidente
-@IdResidente =7,
-@IdPersona = 7,
+@IdResidente =11,
 @NumeroVivienda =405,
-@IdCluster =5,
+@IdCluster =4,
 @EsInquilino= 0,
 @Estado= 'Activo'
 
+
 SELECT * FROM Residente
+
+SELECT * FROM VIVIENDA

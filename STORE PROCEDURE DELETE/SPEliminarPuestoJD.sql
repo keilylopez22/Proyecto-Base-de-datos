@@ -8,7 +8,7 @@ BEGIN
     WHERE IdPuesto = @IdPuestoJuntaDirectiva)
     BEGIN
      
-        RAISERROR('No se puede eliminar el Puesto porque est� siendo usado en MiembroJuntaDirectiva.',16,1);
+        RAISERROR('No se puede eliminar el Puesto porque esta siendo usado en MiembroJuntaDirectiva.',16,1);
         RETURN 0;
     END
     
@@ -19,6 +19,6 @@ BEGIN
 END;
 
 EXEC SPEliminarPuestoJD
-@IdPuestoJuntaDirectiva = 5
+@IdPuestoJuntaDirectiva = 1
 
 SELECT * FROM PuestoJuntaDirectiva

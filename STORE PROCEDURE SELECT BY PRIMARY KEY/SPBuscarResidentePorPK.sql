@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE SPBuscarResidente
+CREATE OR ALTER PROCEDURE SPBuscarResidentePK
 @IdResidente INT
 AS
 BEGIN
@@ -7,5 +7,5 @@ BEGIN
 	WHERE IdResidente =@IdResidente
 END;
 
-EXEC SPBuscarResidente
+EXEC SPBuscarResidentePK
 @IdResidente = 1
