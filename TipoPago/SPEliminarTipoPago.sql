@@ -1,19 +1,25 @@
 --elimina un tipo de pago
-Create OR Alter Procedure EliminarTipoPago
-@IdTipoPago INT
+CREATE OR ALTER PROCEDURE EliminarTipoPago
+    @idTipoPago INT
 AS
-Begin
-	IF EXISTS (SELECT 1 FROM Recibo WHERE IdTipoPago = @IdTipoPago)
+BEGIN
+ IF NOT EXISTS (SELECT 1 FROM TipoPago WHERE idTipoPago = @idTipoPago)
     BEGIN
-        PRINT 'No se puede eliminar este tipo de pago ya que está en uso.';
+        RAISERROR('El tipo pago solicitado no existe.', 16,1, 16, 1);
+        RETURN;
     END
-    ELSE
-	BEGIN
-		Delete TipoPago
-		Where IdTipoPago = @IdTipoPago;
-		PRINT 'El tipo de pago se ha eliminado correctamente'
-	END
-End;
+    IF EXISTS (SELECT 1 FROM Pago WHERE idTipoPago = @idTipoPago)
+    BEGIN
+        RAISERROR('No se puede eliminar este tipo de pago, debido a que esta asociado a otra tabla.', 16, 1);
+        RETURN;
+    END
+
+    DELETE FROM TipoPago
+    WHERE idTipoPago = @idTipoPago;
+
+    PRINT 'El tipo de pago se ha eliminado correctamente.';
+END;
 GO
 Exec EliminarTipoPago
-@IdTipopago = 7
+@idTipoPago = 2
+select * from TipoPago

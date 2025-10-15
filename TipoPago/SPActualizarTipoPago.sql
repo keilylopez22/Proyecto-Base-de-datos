@@ -1,13 +1,15 @@
 --Actualización de tipo de pago
 CREATE OR  ALTER PROCEDURE ActualizarTipoPago
-@IdTipoPago int, 
-@NuevaDescripcion VARCHAR (75)
+@idTipoPago int, 
+@NuevoNombre VARCHAR (50),
+@NuevaDescripcion VARCHAR(100)
 AS
 
 BEGIN 
 	UPDATE TipoPago
-	SET Descripcion = @NuevaDescripcion
-	WHERE IdTipoPago = @IdTipoPago
+	SET Nombre = @NuevoNombre,
+		Descripcion = @NuevaDescripcion
+	WHERE idTipoPago = @idTipoPago
 	
 	IF @@ROWCOUNT > 0 
 	BEGIN  
@@ -20,5 +22,6 @@ BEGIN
 END;
 GO
 EXEC ActualizarTipoPago
-@IdTipoPago = 1,
-@NuevaDescripcion = Efectivo
+@idTipoPago = 4,
+@NuevoNombre = 'Tarjeta de Credito',
+@NuevaDescripcion = 'Pago mediante tarjeta bancaria con crédito disponible'

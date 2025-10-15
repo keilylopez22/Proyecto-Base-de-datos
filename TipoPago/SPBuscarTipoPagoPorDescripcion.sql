@@ -1,14 +1,15 @@
 
 --Buscar tipo de pago
-Create OR Alter Procedure BuscarTipoPagoPorDescripcion 
-@Descripcion VARCHAR (75)
+Create OR Alter Procedure BuscarTipoPagoPorNombre 
+@Nombre VARCHAR (50)
 AS
 
 Begin 
-	Select Descripcion--,IdTipoPago
+	Select Nombre, Descripcion
 	from TipoPago
-	Where  Descripcion = @Descripcion 
+	Where  Nombre = @Nombre 
 
 END;
-Exec BuscarTipoPagoPorDescripcion
-@Descripcion = Efectivo
+Exec BuscarTipoPagoPorNombre
+@Nombre = 'Efectivo'
+select * from TipoPago

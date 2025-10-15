@@ -1,16 +1,14 @@
-
-
 -- =Buscar tipo de pago por ID
 Create OR Alter Procedure BuscarTipoPagoPorID
-@IdTipoPago int 
+@idTipoPago int 
 AS
 
 Begin 
-	Select IdTipoPago, Descripcion
+	Select idTipoPago, Nombre, Descripcion
 	from TipoPago
-	Where  IdTipoPago = @IdTipoPago 
+	Where  idTipoPago = @idTipoPago 
 
 END;
 Exec BuscarTipoPagoPorId
-@IdTipoPago = 2
+@idTipoPago = 1
 

@@ -1,12 +1,16 @@
 --inserta un tipo de pago 
 Create  OR ALTER Procedure InsertarTipoPago 
-@Descripcion VARCHAR (75)
+@Nombre VARCHAR (50),
+@Descripcion VARCHAR (100)
 As
 Begin 
-	Insert Into TipoPago(Descripcion)
-	Values (@Descripcion );
-	SELECT SCOPE_IDENTITY() AS IdTipoPago;
+	Insert Into TipoPago(Nombre,Descripcion)
+	Values (@Nombre, @Descripcion );
+	SELECT SCOPE_IDENTITY() AS idTipoPago;
 End;
-
+GO
 Exec InsertarTipoPago
-@Descripcion = 'Fichas'; 
+@Nombre = 'Tarjeta Debito',
+@Descripcion = 'pago mediante '; 
+
+Select * FROM  TipoPago
