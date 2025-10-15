@@ -5,7 +5,7 @@ Create OR Alter Procedure BuscarServicioId
 AS
 
 Begin 
-	Select @IdServicio AS NumeroServicio, Descripcion, Valor
+	Select IdServicio,Nombre, Tarifa
 	from Servicio
 	Where  IdServicio = @IdServicio 
 

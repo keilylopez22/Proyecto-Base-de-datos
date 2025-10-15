@@ -3,9 +3,14 @@ CREATE OR ALTER PROCEDURE EliminarServicio
     @IdServicio INT
 AS
 BEGIN
-    IF EXISTS (SELECT 1 FROM RequerimientoCobro WHERE IdServicio = @IdServicio)
+	IF NOT EXISTS (SELECT 1 FROM Servicio WHERE IdServicio = @IdServicio)
     BEGIN
-        RAISERROR('Este servicio no se puede eliminar ya que esta asociado a requerimientos de cobro.', 16, 1);
+        RAISERROR('Este servicio no existe', 16, 1);
+        RETURN;
+    END
+    IF EXISTS (SELECT 1 FROM CobroServicioVivienda WHERE IdServicio = @IdServicio)
+    BEGIN
+        RAISERROR('Este servicio no se puede eliminar ya que esta asociado a otra entidad.', 16, 1);
         RETURN;
     END
     DELETE FROM Servicio
@@ -14,5 +19,5 @@ BEGIN
 END;
 GO
 exec EliminarServicio
-@IdServicio = 5
+@IdServicio = 4
 select * from  Servicio

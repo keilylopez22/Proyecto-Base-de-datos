@@ -2,20 +2,20 @@
 --actualiza Servicio 
 CREATE OR ALTER PROCEDURE ActualizarServicio
     @IdServicio INT,
-    @Descripcion VARCHAR(100),
-    @Valor DECIMAL (18,2)
+    @Nombre VARCHAR(50),
+    @Tarifa DECIMAL
 AS
 BEGIN
     
     UPDATE Servicio
-    SET Descripcion = @Descripcion,
-        Valor = @Valor
+    SET Nombre = @Nombre,
+        Tarifa = @Tarifa
     WHERE IdServicio = @IdServicio;
 END;
 GO
 EXEC ActualizarServicio
-    @IdServicio = 4,
-    @Descripcion = 'Administración',
-	@Valor = 75
+    @IdServicio = 3,
+    @Nombre = 'Servicio de seguridad',
+	@Tarifa = 115
  
 select * from Servicio

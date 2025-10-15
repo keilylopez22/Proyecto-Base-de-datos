@@ -1,14 +1,14 @@
 -- Buscar servicio  por descripcion  
 Create OR Alter Procedure BuscarServicioDescripcion 
-@Descripcion Varchar(100)
+@Nombre Varchar(50)
 AS
 Begin 
-	Select  @Descripcion as DescripcionServicio
+	Select  Nombre, Tarifa 
 	from Servicio
-	Where  Descripcion = @Descripcion 
+	Where  Nombre = @Nombre 
 
 END;
 GO
 Exec BuscarServicioDescripcion
-@Descripcion = 'Servicio de Seguridad'
+@Nombre = 'Servicio de Seguridad'
 select * from Servicio

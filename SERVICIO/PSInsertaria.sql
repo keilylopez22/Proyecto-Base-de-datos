@@ -1,15 +1,15 @@
 --inserta Servicio
 Create  OR ALTER Procedure InsertarServicio
-@Descripcion VARCHAR (100),
-@Valor decimal (18,2)
+@Nombre  VARCHAR (50),
+@Tarifa decimal 
 As
 Begin 
-	Insert Into Servicio( Descripcion, Valor)
-	Values (@Descripcion, @Valor);
+	Insert Into Servicio( Nombre, Tarifa)
+	Values (@Nombre, @Tarifa);
 	
 End;
 GO
 Exec InsertarServicio
-@Descripcion = 'Clabe ',
-@Valor = 55
+@Nombre = 'Administracion ',
+@Tarifa = 75.00
 select * from Servicio

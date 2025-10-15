@@ -1,14 +1,15 @@
 
 -- Buscar servicIo  por valor 
 Create OR Alter Procedure BuscarServicioValor
-@Valor int 
+@Tarifa int 
 AS
 Begin 
-	Select @Valor AS Costo, Descripcion 
+	Select IdServicio,Tarifa, Nombre 
 	from Servicio
-	Where  Valor = @Valor 
+	Where  Tarifa = @Tarifa 
 
 END;
 GO
 Exec BuscarServicioValor
-@Valor = 75
+@Tarifa = 75
+SELECT * FROM Servicio 
