@@ -6,7 +6,7 @@ Create OR Alter Procedure BuscarReciboPorId
 AS
 
 Begin 
-	Select @IdRecibo as NumeroRecibo,fecha, ValorTotal,IdTipoPago, NumeroVivienda,IdCluster
+	Select IdRecibo, FechaEmision, IdPago
 	from Recibo
 	Where  IdRecibo = @IdRecibo 
 

@@ -1,25 +1,17 @@
---inserta un recibo
+ --inserta un recibo
 Create  OR ALTER Procedure InsertarRecibo
-@Fecha Date,
-@ValorTotal DECIMAL (18,2),
-@IdTipoPago int ,
-@NumeroVivienda int,
-@IdCluster int
+@FechaEmision Date,
+@Idpago int 
 As
 Begin 
-	Insert Into Recibo(Fecha, ValorTotal, IdTipoPago, NumeroVivienda, IdCluster)
-	Values (@Fecha, @ValorTotal,@IdTipoPago,  @NumeroVivienda, @IdCluster);
+	Insert Into Recibo(FechaEmision, IdPago)
+	Values (@FechaEmision, @Idpago);
 	SELECT SCOPE_IDENTITY() AS IdRecibo
 End;
-
+GO
 Exec InsertarRecibo
-@Fecha = '2025-10-05',
-@ValorTotal= 115,
-@IdTipoPago = 1,
-@NumeroVivienda = 311,
-@IdCluster = 3
+@Fechaemision = '2025-10-05',
+@IdPago = 7
 
 select * from Recibo
-select * from Cluster
-select * from Vivienda
-select * from Servicio
+select * from Pago 
