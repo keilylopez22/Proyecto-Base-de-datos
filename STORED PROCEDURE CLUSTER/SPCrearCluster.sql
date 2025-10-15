@@ -11,3 +11,5 @@ END;
 EXEC SPInsertarCluster
 @Descripcion = 'ClusterPrueba',
 @IdResidencial = 1
+
+SELECT * FROM Cluster

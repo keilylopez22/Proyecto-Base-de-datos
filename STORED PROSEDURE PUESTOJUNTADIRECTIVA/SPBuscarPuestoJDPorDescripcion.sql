@@ -4,7 +4,7 @@ AS
 BEGIN
     
     SELECT
-        PJD.IdPuestoJuntaDirectiva,
+        PJD.IdPuesto,
         PJD.Nombre,
         PJD.Descripcion
     FROM PuestoJuntaDirectiva PJD

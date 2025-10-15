@@ -10,7 +10,7 @@ BEGIN
     FROM MiembroJuntaDirectiva AS MJD
     INNER JOIN Propietario P ON MJD.IdPropietario = P.IdPropietario
     INNER JOIN Persona AS PS ON P.IdPersona = PS.IdPersona
-    INNER JOIN PuestoJuntaDirectiva PJD ON MJD.IdPuestoJuntaDirectiva = PJD.IdPuestoJuntaDirectiva
+    INNER JOIN PuestoJuntaDirectiva PJD ON MJD.IdPuesto= PJD.IdPuesto
     WHERE MJD.IdJuntaDirectiva = @IdJuntaDirectiva
-    ORDER BY PJD.IdPuestoJuntaDirectiva;
+   
 END;
