@@ -1,16 +1,16 @@
---buscar requerimiento de cobro por id 
-Create OR Alter Procedure BuscarRCPorId
-@IdRequerimientoC int
+--buscar cobro servicio vivienda por id 
+Create OR Alter Procedure BuscarCobroServicioPorViviendaPorId
+@idCobroServicio int
 AS
 
 Begin 
-	Select @IdRequerimientoC AS IdRequerimientoC ,Fecha, IdServicio,NumeroVivienda, IdCluster
-	from RequerimientoCobro
-	Where  IdRequerimientoC = @IdRequerimientoC 
+	Select  idCobroServicio, FechaCobro, Monto, MontoAplicado, EstadoPago, IdServicio, NumeroVivienda, IdCluster
+	from CobroServicioVivienda
+	Where  idCobroServicio = @idCobroServicio 
 
 END;
 GO
-Exec BuscarRCPorId
-@IdRequerimientoC = 5
+Exec BuscarCobroServicioPorViviendaPorId
+@idCobroServicio = 5
 
-select * from  RequerimientoCobro 
+select * from  CobroServicioVivienda 
