@@ -7,6 +7,7 @@ BEGIN
 SELECT p.Genero,pe.Nombre AS Puesto , COUNT(e.IdEmpleado) AS CantidadGenero FROM Persona AS p
 INNER JOIN Empleado e ON p.IdPersona = e.IdPersona
 INNER JOIN PuestoEmpleado pe on e.IdPuestoEmpleado = pe.IdPuestoEmpleado
+WHERE pe.Nombre = 'Guardia'
 GROUP BY p.Genero, pe.Nombre
 END
 
