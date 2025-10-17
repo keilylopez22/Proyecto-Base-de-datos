@@ -103,7 +103,7 @@ public class TipoViviendaService
         NumeroHabitaciones = reader["NumeroHabitaciones"] as int?,
         SuperficieTotal = reader["SuperficieTotal"] as int?,
         NumeroPisos = reader["NumeroPisos"] as int?,
-        Estacionamiento = reader["Estacionamiento"] as bool?
+        Estacionamiento = reader["Estacionamiento"] as bool? ?? false
     };
 }
 }
