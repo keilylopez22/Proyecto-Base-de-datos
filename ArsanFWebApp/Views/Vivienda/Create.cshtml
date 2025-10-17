@@ -1,0 +1,34 @@
+@model ArsanWebApp.Models.Vivienda
+
+<h2>Crear Vivienda</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="NumeroVivienda">Número de Vivienda</label>
+        <input asp-for="NumeroVivienda" class="form-control" type="number" />
+        <span asp-validation-for="NumeroVivienda" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdCluster">Cluster</label>
+        <select asp-for="IdCluster" class="form-control" asp-items="@(new SelectList(ViewBag.Clusters, "IdCluster", "Descripcion"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+        <span asp-validation-for="IdCluster" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdTipoVivienda">Tipo de Vivienda</label>
+        <select asp-for="IdTipoVivienda" class="form-control" asp-items="@(new SelectList(ViewBag.TiposVivienda, "IdTipoVivienda", "Descripcion"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+        <span asp-validation-for="IdTipoVivienda" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdPropietario">Propietario</label>
+        <select asp-for="IdPropietario" class="form-control" asp-items="@(new SelectList(ViewBag.Propietarios, "IdPropietario", "NombreCompleto"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+        <span asp-validation-for="IdPropietario" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

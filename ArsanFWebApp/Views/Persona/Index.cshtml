@@ -1,0 +1,31 @@
+@model List<ArsanWebApp.Models.Persona>
+
+<h2>Personas</h2>
+<p><a asp-action="Create" class="btn btn-primary">Crear Nueva</a></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre Completo</th>
+            <th>CUI</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.PrimerNombre @p.SegundoNombre @p.PrimerApellido @p.SegundoApellido</td>
+                <td>@p.Cui</td>
+                <td>@p.Telefono</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.IdPersona" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@p.IdPersona" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

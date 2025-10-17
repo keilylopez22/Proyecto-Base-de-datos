@@ -1,0 +1,37 @@
+@model List<ArsanWebApp.Models.TipoVivienda>
+
+<h2>Tipos de Vivienda</h2>
+<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Habitaciones</th>
+            <th>Superficie (m²)</th>
+            <th>Pisos</th>
+            <th>Estacionamiento</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.IdTipoVivienda</td>
+                <td>@t.Descripcion</td>
+                <td>@t.NumeroHabitaciones</td>
+                <td>@t.SuperficieTotal</td>
+                <td>@t.NumeroPisos</td>
+                <td>@(t.Estacionamiento == true ? "Sí" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@t.IdTipoVivienda" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@t.IdTipoVivienda" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

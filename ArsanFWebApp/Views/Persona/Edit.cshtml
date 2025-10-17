@@ -1,0 +1,64 @@
+@model ArsanWebApp.Models.Persona
+
+<h2>Editar Persona</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="IdPersona" />
+
+    <div class="form-group">
+        <label asp-for="Cui"></label>
+        <input asp-for="Cui" class="form-control" />
+        <span asp-validation-for="Cui" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PrimerNombre"></label>
+        <input asp-for="PrimerNombre" class="form-control" />
+        <span asp-validation-for="PrimerNombre" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SegundoNombre"></label>
+        <input asp-for="SegundoNombre" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PrimerApellido"></label>
+        <input asp-for="PrimerApellido" class="form-control" />
+        <span asp-validation-for="PrimerApellido" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SegundoApellido"></label>
+        <input asp-for="SegundoApellido" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Telefono"></label>
+        <input asp-for="Telefono" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Genero"></label>
+        <select asp-for="Genero" class="form-control">
+            <option value="">-- Seleccione --</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+        </select>
+    </div>
+
+    <!-- ❌ Elimina estos campos si no están en la tabla real -->
+   
+    <div class="form-group">
+        <label asp-for="FechaNacimiento"></label>
+        <input asp-for="FechaNacimiento" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="EstadoCivil"></label>
+        <input asp-for="EstadoCivil" class="form-control" />
+    </div>
+   
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

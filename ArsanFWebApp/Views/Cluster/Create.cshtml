@@ -1,0 +1,20 @@
+@model ArsanWebApp.Models.Cluster
+
+<h2>Crear Cluster</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Descripcion">Nombre del Cluster</label>
+        <input asp-for="Descripcion" class="form-control" />
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdResidencial">Residencial</label>
+        <select asp-for="IdResidencial" class="form-control" asp-items="@(new SelectList(ViewBag.Residenciales, "IdResidencial", "Nombre"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+        <span asp-validation-for="IdResidencial" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
