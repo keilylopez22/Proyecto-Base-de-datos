@@ -1,0 +1,13 @@
+ALTER TABLE Propietario
+ADD Estado VARCHAR(10)
+GO
+
+ALTER TABLE Cluster
+ADD IdResidencial INT NOT NULL DEFAULT 0
+
+ALTER TABLE TipoVivienda
+DROP COLUMN ServiciosIncluidos
+
+ALTER TABLE Residente
+ADD EsInquilino BIT NOT NULL DEFAULT 1
+
