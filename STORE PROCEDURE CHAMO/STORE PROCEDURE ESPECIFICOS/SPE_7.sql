@@ -1,5 +1,5 @@
 -- 7) Construya un procedimiento almacenado que determine quién es la persona que más ha sido presidente en una junta directiva.
-CREATE OR ALTER PROCEDURE SPE_7
+CREATE OR ALTER PROCEDURE SPE_7_MasVecesPresidenteJD
 AS
 BEGIN
 WITH CantidadVeces AS (
@@ -15,7 +15,7 @@ SELECT * FROM CantidadVeces
 WHERE Cantidad = (SELECT MAX(Cantidad) FROM CantidadVeces)
 END
 
-EXEC SPE_7
+EXEC SPE_7_MasVecesPresidenteJD
 
 
 SELECT * FROM PuestoJuntaDirectiva

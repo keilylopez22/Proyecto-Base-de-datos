@@ -1,6 +1,6 @@
 -- 8) Construya un procedimiento almacenado que determine quién es la persona que nunca ha sido miembro de una junta directiva. 
 
-CREATE OR ALTER PROCEDURE SPE_8
+CREATE OR ALTER PROCEDURE SPE_8_PersonasNoMiembrosJD
 AS
 BEGIN
 SELECT CONCAT(p.PrimerNombre, ' ', p.PrimerApellido, ' ') AS Miembro, mjd.Estado FROM Persona AS p
@@ -9,6 +9,6 @@ LEFT JOIN MiembroJuntaDirectiva mjd ON pr.IdPropietario = mjd.IdPropietario
 WHERE mjd.IdJuntaDirectiva IS NULL
 END
 
-EXEC SPE_8
+EXEC SPE_8_PersonasNoMiembrosJD
 
 SELECT * FROM MiembroJuntaDirectiva
