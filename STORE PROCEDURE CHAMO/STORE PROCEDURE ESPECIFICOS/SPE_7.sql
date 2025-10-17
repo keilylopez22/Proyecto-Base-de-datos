@@ -1,4 +1,4 @@
--- 7) Construya un procedimiento almacenado que determine quién es la persona que más ha sido presidente en una junta directiva.
+-- 7) Construya un procedimiento almacenado que determine quiï¿½n es la persona que mï¿½s ha sido presidente en una junta directiva.
 CREATE OR ALTER PROCEDURE SPE_7_MasVecesPresidenteJD
 AS
 BEGIN
@@ -17,5 +17,3 @@ END
 
 EXEC SPE_7_MasVecesPresidenteJD
 
-
-SELECT * FROM PuestoJuntaDirectiva
