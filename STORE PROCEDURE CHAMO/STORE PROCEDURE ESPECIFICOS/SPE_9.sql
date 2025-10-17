@@ -48,6 +48,3 @@ EXEC SPE_9_GuardiasConMasDe24Horas
 @FechaInicio = '2025-10-10',
 @FechaFin = '2025-10-15',
 @IdTurno = 1
-
-SELECT * FROM AsignacionTurno
-

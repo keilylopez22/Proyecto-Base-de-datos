@@ -15,17 +15,3 @@ ORDER BY CantidadSalidasEntradas
 END
 
 EXEC SPE_11_VecinoConMasSalidasDomingo
-
-
---Este exec es por si quieren insertar un registro y probar el procedimiento almacenado
-EXEC InsertarRegistroAccesos
-    @FechaIngreso = '2024-10-13 14:00:00',
-    @FechaSalida = '2024-10-13 15:00:00',
-    @IdVehiculo = 1,
-    @IdGarita = 1,
-    @IdVisitante = NULL,
-    @IdResidente = 3,
-    @IdEmpleado = 1;
-
-SELECT * FROM RegistroAccesos
-
