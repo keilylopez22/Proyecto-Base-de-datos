@@ -9,7 +9,7 @@ namespace ArsanWebApp.Services
 
         public ResidenteService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")
+            _connectionString = configuration.GetConnectionString("SqlServerConnection")
                 ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
         }
         

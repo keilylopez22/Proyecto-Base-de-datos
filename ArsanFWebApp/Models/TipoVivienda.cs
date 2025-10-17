@@ -7,5 +7,5 @@ public class TipoVivienda
     public int? NumeroHabitaciones { get; set; }
     public int? SuperficieTotal { get; set; }
     public int? NumeroPisos { get; set; }
-    public bool? Estacionamiento { get; set; }
+    public bool Estacionamiento { get; set; }
 }
