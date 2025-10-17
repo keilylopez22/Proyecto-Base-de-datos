@@ -10,4 +10,5 @@ public class Persona
     public string? SegundoApellido { get; set; }
     public string? Telefono { get; set; }
     public char? Genero { get; set; }
+    public string EstadoCivil { get; set; } = string.Empty; // SINGLE CHAR
 }
