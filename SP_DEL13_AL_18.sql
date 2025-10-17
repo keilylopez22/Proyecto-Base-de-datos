@@ -110,8 +110,22 @@ BEGIN
 
 
 END;
+GO
+--SP 25 Quien es el propietario con más multas. 
+CREATE OR ALTER PROCEDURE SP25_PropietarioConMasMultas
+AS
+BEGIN
+SELECT TOP(1) COUNT(*) AS 'Cantidad De Multas',  CONCAT(PS.PrimerNombre,' ' ,PS.PrimerApellido) AS Propietario
+FROM Propietario AS P
+INNER JOIN Persona AS PS ON P.IdPersona = PS.IdPersona
+INNER JOIN Vivienda AS V ON P.IdPropietario = V.IdPropietario
+INNER JOIN MultaVivienda AS MV ON V.NumeroVivienda = MV.NumeroVivienda AND V.IdCluster = MV.IdCluster
+GROUP BY P.IdPropietario, CONCAT(PS.PrimerNombre,' ', PS.PrimerApellido)
+ORDER BY COUNT(*) DESC
+END;
 
 GO
+
 --SP INVENTADO
 --Cual es el mes que mas dinero se recibio.
 CREATE OR ALTER PROCEDURE SP_IN
