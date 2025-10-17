@@ -16,7 +16,7 @@ public class ViviendaService
         TipoViviendaService tipoViviendaService,
         PropietarioService propietarioService)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
+        _connectionString = configuration.GetConnectionString("SqlServerConnection")
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
         _clusterService = clusterService;
         _tipoViviendaService = tipoViviendaService;
