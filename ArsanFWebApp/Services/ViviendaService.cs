@@ -29,7 +29,7 @@ public class ViviendaService
         var lista = new List<Vivienda>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SPSelectAllViviendas", conn);
+        using var cmd = new SqlCommand("SP_SelectAllViviendas", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
         using var reader = await cmd.ExecuteReaderAsync();
@@ -52,7 +52,7 @@ public class ViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("BuscarVivienda", conn);
+        using var cmd = new SqlCommand("SP_BuscarVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@NumeroVivienda", numeroVivienda);
         cmd.Parameters.AddWithValue("@IdCluster", idCluster);
@@ -76,7 +76,7 @@ public class ViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SPCrearVivienda", conn);
+        using var cmd = new SqlCommand("SP_CrearVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@NumeroVivienda", vivienda.NumeroVivienda);
         cmd.Parameters.AddWithValue("@IdCluster", vivienda.IdCluster);
@@ -92,7 +92,7 @@ public class ViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SPActualizarVivivenda", conn);
+        using var cmd = new SqlCommand("SP_ActualizarVivivenda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@NumeroVivienda", vivienda.NumeroVivienda);
         cmd.Parameters.AddWithValue("@IdCluster", vivienda.IdCluster);
@@ -108,7 +108,7 @@ public class ViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("PSEliminarVivienda", conn);
+        using var cmd = new SqlCommand("SP_EliminarVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@NumeroVivienda", numeroVivienda);
         cmd.Parameters.AddWithValue("@IdCluster", idCluster);

@@ -42,7 +42,7 @@ public class ClusterService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SP__BuscarCluster", conn);
+        using var cmd = new SqlCommand("SP_BuscarCluster", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdCluster", id);
 
@@ -78,7 +78,7 @@ public class ClusterService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("PS_ActualizarCluster", conn); // ⚠️ Nota: nombre del SP_
+        using var cmd = new SqlCommand("SP_ActualizarCluster", conn); // ⚠️ Nota: nombre del SP_
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdCluster", cluster.IdCluster);
         cmd.Parameters.AddWithValue("@Descripcion", cluster.Descripcion);

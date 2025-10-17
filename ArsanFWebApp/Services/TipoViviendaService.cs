@@ -50,7 +50,7 @@ public class TipoViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("InsertarTipoVivienda", conn);
+        using var cmd = new SqlCommand("SP_InsertarTipoVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@Descripcion", (object?)tipo.Descripcion ?? DBNull.Value);
         cmd.Parameters.AddWithValue("@NumeroHabitaciones", (object?)tipo.NumeroHabitaciones ?? DBNull.Value);
@@ -67,7 +67,7 @@ public class TipoViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("ActualizarTipoVivienda", conn);
+        using var cmd = new SqlCommand("SP_ActualizarTipoVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdTipoVivienda", tipo.IdTipoVivienda);
         cmd.Parameters.AddWithValue("@Descripcion", (object?)tipo.Descripcion ?? DBNull.Value);
@@ -85,7 +85,7 @@ public class TipoViviendaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("PSEliminarTipoVivienda", conn);
+        using var cmd = new SqlCommand("SP_EliminarTipoVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdTipoVivienda", id);
 

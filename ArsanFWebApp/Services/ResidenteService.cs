@@ -21,7 +21,7 @@ namespace ArsanWebApp.Services
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new SqlCommand("sp_ObtenerResidentes", connection);
+            using var command = new SqlCommand("SP_ObtenerResidentes", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             using var reader = await command.ExecuteReaderAsync();

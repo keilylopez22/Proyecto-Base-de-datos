@@ -65,7 +65,7 @@ public class PropietarioService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("InsertarPropietario", conn);
+        using var cmd = new SqlCommand("SP_InsertarPropietario", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@Estado", propietario.Estado);
         cmd.Parameters.AddWithValue("@IdPersona", propietario.IdPersona);
@@ -94,7 +94,7 @@ public class PropietarioService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("PSEliminarPropietario", conn);
+        using var cmd = new SqlCommand("SP_EliminarPropietario", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdPropietario", id);
 

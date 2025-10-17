@@ -91,7 +91,7 @@ public class PersonaService
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SPEliminarPersona", conn);
+        using var cmd = new SqlCommand("SP_EliminarPersona", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdPersona", id);
 
