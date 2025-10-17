@@ -1,22 +1,23 @@
--- 11) Determine quién es el vecino que más veces ingresa y sale del condominio los días domingo.
-CREATE OR ALTER PROCEDURE SPE_11
+-- 11) Determine quiï¿½n es el vecino que mï¿½s veces ingresa y sale del condominio los dï¿½as domingo.
+CREATE OR ALTER PROCEDURE SPE_11_VecinoConMasSalidasDomingo
 AS
 BEGIN
 
-SELECT TOP 1 CONCAT(p.PrimerNombre, ' ', p.PrimerApellido, ' ') AS Vecino, COUNT(*) AS CantidadSalidasDomingo FROM Garita AS g
+SELECT TOP 1 CONCAT(p.PrimerNombre, ' ', p.PrimerApellido, ' ') AS Vecino, COUNT(*) AS CantidadSalidasEntradas FROM Garita AS g
 INNER JOIN RegistroAccesos ra ON g.IdGarita = ra.IdGarita
 INNER JOIN Residente r ON ra.IdResidente = r.IdResidente
 INNER JOIN Persona p ON r.IdPersona = p.IdPersona
 INNER JOIN Cluster c ON g.IdCluster = c.IdCluster
-WHERE DATEPART(WEEKDAY, ra.FechaSalida) = '1'
+WHERE DATEPART(WEEKDAY, ra.FechaIngreso) = '1' OR DATEPART(WEEKDAY, ra.FechaSalida) = '1'
 GROUP BY p.PrimerNombre, p.PrimerApellido
+ORDER BY CantidadSalidasEntradas
 
 END
 
-EXEC SPE_11
+EXEC SPE_11_VecinoConMasSalidasDomingo
 
-SELECT * FROM RegistroAccesos
 
+--Este exec es por si quieren insertar un registro y probar el procedimiento almacenado
 EXEC InsertarRegistroAccesos
     @FechaIngreso = '2024-10-13 14:00:00',
     @FechaSalida = '2024-10-13 15:00:00',
@@ -26,4 +27,5 @@ EXEC InsertarRegistroAccesos
     @IdResidente = 3,
     @IdEmpleado = 1;
 
+SELECT * FROM RegistroAccesos
 

@@ -1,6 +1,6 @@
 -- 10) Construya una consulta que muestre cuántos guardias son hombres y cuántos son mujeres.
 
-CREATE OR ALTER PROCEDURE SPE_10
+CREATE OR ALTER PROCEDURE SPE_10_CantidadGuardiasHombreMujeres
 AS
 BEGIN
 
@@ -11,6 +11,6 @@ WHERE pe.Nombre = 'Guardia'
 GROUP BY p.Genero, pe.Nombre
 END
 
-EXEC SPE_10
+EXEC SPE_10_CantidadGuardiasHombreMujeres
 
 SELECT * FROM Empleado

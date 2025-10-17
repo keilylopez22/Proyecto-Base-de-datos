@@ -1,6 +1,7 @@
--- 9) Construya un procedimiento almacenado que dado un periodo tiempo determine si un guardia ha trabajado más de 24 horas en un turno.
+-- 9) Construya un procedimiento almacenado que dado un periodo tiempo determine si un guardia ha trabajado mï¿½s de 24 horas en un turno.
 
---Cambie el tipo de dato de HoraInicio y HoraFin de VARCHAR a DATETIME
+--Cambie el tipo de dato de HoraInicio y HoraFin de VARCHAR a DATETIME, ejecuten los alter table primero
+--para que cambien el tipo de dato y luego ejecuten el procedimiento almacenado
 
 GO
 ALTER TABLE Turno
@@ -15,7 +16,7 @@ ALTER COLUMN HoraFin DATETIME;
 
 GO
 
-CREATE OR ALTER PROCEDURE SPE_9
+CREATE OR ALTER PROCEDURE SPE_9_GuardiasConMasDe24Horas
 @FechaInicio DATE,
 @FechaFin DATE,
 @IdTurno INT
@@ -43,7 +44,7 @@ END
 ) > 24
 END
 
-EXEC SPE_9
+EXEC SPE_9_GuardiasConMasDe24Horas
 @FechaInicio = '2025-10-10',
 @FechaFin = '2025-10-15',
 @IdTurno = 1
