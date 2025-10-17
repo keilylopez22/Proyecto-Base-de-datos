@@ -36,7 +36,7 @@ INNER JOIN PuestoEmpleado pe ON e.IdPuestoEmpleado = pe.IdPuestoEmpleado
 INNER JOIN Persona p ON e.IdPersona = p.IdPersona
 WHERE pe.Nombre = 'Guardia' AND ta.FechaAsignacion BETWEEN @FechaInicio AND @FechaFin AND t.IdTurno = @IdTurno
 GROUP by e.IdEmpleado, pe.Nombre, p.PrimerNombre, p.PrimerApellido, t.Descripcion
-HAVING COUNT(ta.IdTurno) > 3 OR SUM(CASE 
+HAVING SUM(CASE 
 WHEN t.HoraFin < t.HoraInicio 
 THEN DATEDIFF(HOUR, t.HoraInicio, DATEADD(DAY, 1, t.HoraFin))
 ELSE DATEDIFF(HOUR,t.HoraInicio, t.HoraFin )
