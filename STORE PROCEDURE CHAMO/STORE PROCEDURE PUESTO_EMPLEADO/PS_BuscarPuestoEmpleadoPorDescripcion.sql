@@ -8,4 +8,4 @@ BEGIN
 END
 
 EXEC PS_BuscarPuestoEmpleadoPorDescripcion
-@Descripcion = 'Gerente'
+@Descripcion = 'Personal encargado del jardín y áreas comunes'

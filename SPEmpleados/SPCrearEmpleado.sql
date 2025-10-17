@@ -1,6 +1,9 @@
---Crear empleados
 CREATE OR ALTER PROCEDURE CrearEmpleado
-@IdPersona INT
+@FechaAlta DATE,
+@FechaBaja DATE,
+@Estado VARCHAR(30),
+@IdPersona INT,
+@IdPuestoEmpleado INT
 AS
 BEGIN
 	INSERT INTO Empleado (IdPersona)

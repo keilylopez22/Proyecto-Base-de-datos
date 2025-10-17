@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE ObtenerAsignacionTurnoPoID
+CREATE OR ALTER PROCEDURE ObtenerAsignacionTurno
 @IdAsignacioTurno INT
 AS
 BEGIN
@@ -7,5 +7,7 @@ FROM AsignacionTurno
 WHERE IdAsignacionTurno = @IdAsignacioTurno
 END
 
-EXEC ObtenerAsignacionTurnoPoID
+EXEC ObtenerAsignacionTurno
 @IdAsignacioTurno = 2
+
+SELECT * FROM AsignacionTurno
