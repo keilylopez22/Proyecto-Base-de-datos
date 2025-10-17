@@ -1,0 +1,29 @@
+@model List<ArsanWebApp.Models.ResidenteCompleto>
+
+<h2>Lista de Residentes</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Vivienda</th>
+            <th>Cluster</th>
+            <th>Inquilino</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.IdResidente</td>
+                <td>@r.NombreCompleto</td>
+                <td>@r.NumeroVivienda</td>
+                <td>@r.ClusterDescripcion</td>
+                <td>@(r.EsInquilino ? "Sí" : "No")</td>
+                <td>@(r.Estado ?? "Activo")</td>
+            </tr>
+        }
+    </tbody>
+</table>
