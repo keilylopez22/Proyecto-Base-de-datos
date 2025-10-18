@@ -219,7 +219,7 @@ END;
 GO
 
 -- ACTUALIZAR
-CREATE OR ALTER PROCEDURE SP__ActualizarPersona
+CREATE OR ALTER PROCEDURE SP_ActualizarPersona
 @IdPersona INT ,
 @Cui VARCHAR(30) ,
 @PrimerNombre VARCHAR(30) ,
