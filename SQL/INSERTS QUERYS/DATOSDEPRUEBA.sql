@@ -362,8 +362,8 @@
     DECLARE @Recibos TABLE (IdRecibo INT, ReferenciaPago VARCHAR(50));
 
   
-    INSERT INTO Recibo (FechaEmision, IdPago)
-    SELECT GETDATE(), IdPago
+    INSERT INTO Recibo (FechaEmision, IdPago, IdCluster, NumeroVivienda)
+    SELECT GETDATE(), IdPago, 1,101
     FROM @Pagos;
 
 
@@ -482,3 +482,5 @@ BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
     THROW;
 END CATCH;
+
+UPDATE  Persona SET EstadoCivil = 'Soltero'
