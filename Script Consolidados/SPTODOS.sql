@@ -337,7 +337,7 @@ END;
 GO
 
 -- ELIMINAR
-ALTER   PROCEDURE [dbo].[PSEliminarPropietario]
+CREATE OR ALTER   PROCEDURE SP_EliminarPropietario
 @IdPropietario INT
 AS 
 BEGIN
@@ -346,7 +346,6 @@ BEGIN
     SELECT @IdPropietario
 END;
 GO
-
 
 -- #############################################
 -- 5. TABLA: TipoVivienda
