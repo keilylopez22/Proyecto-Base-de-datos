@@ -17,6 +17,8 @@ builder.Services.AddScoped<PuestoJuntaDirectivaService>();
 builder.Services.AddScoped<JuntaDirectivaService>();
 builder.Services.AddScoped<MiembroJuntaDirectivaService>();
 
+
+
 var app = builder.Build();
 
 
