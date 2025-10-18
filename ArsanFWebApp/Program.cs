@@ -17,6 +17,10 @@ builder.Services.AddScoped<PuestoJuntaDirectivaService>();
 builder.Services.AddScoped<JuntaDirectivaService>();
 builder.Services.AddScoped<MiembroJuntaDirectivaService>();
 builder.Services.AddScoped<TurnoService>();
+builder.Services.AddScoped<GaritaService>();
+
+
+
 var app = builder.Build();
 
 
