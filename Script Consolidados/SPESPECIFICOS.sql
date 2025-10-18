@@ -11,6 +11,7 @@ BEGIN
 	WHERE v.IdCluster = @IdCluster AND v.NumeroVivienda = @NumeroVivienda
 	GROUP BY v.NumeroVivienda, v.IdCluster
 END;
+
 GO
 --2.  Construya una consulta que muestre cuántos vehículos ingresan de visitante por hora. El
 --procedimiento almacenado debe recibir como parámetro un rango de fechas (del, al) para
@@ -26,6 +27,7 @@ BEGIN
 	GROUP BY DATEPART(HOUR, ra.FechaIngreso)
 
 END;
+
 GO
 --3. Construir un reporte de viviendas. Debe mostrar, por clúster, las viviendas con sus propietarios y
 --si tiene inquilinos mostrar el nombre de los inquilinos
@@ -39,8 +41,6 @@ BEGIN
 	LEFT JOIN Residente r ON v.IdCluster = r.IdCluster AND v.NumeroVivienda = r.NumeroVivienda AND r.EsInquilino = 1
 	INNER JOIN Persona per ON r.IdPersona = per.IdPersona
 	ORDER BY v.IdCluster, v.NumeroVivienda 
-
-
 END;
 
 --4 Construir un procedimiento almacenado que muestre los vehículos que pertenecen a una persona
@@ -69,8 +69,8 @@ BEGIN
 			  OR  DATEPART(HOUR, ra.FechaIngreso) = 0 
 			  OR  DATEPART(HOUR, ra.FechaIngreso)= 1)
 		ORDER BY ra.FechaIngreso;
-
 END;
+
 GO
 --5 Construya un procedimiento almacenado que reciba un periodo de tiempo y determine quién es
 --el vecino que más ha pagado en ese período de tiempo
@@ -96,10 +96,9 @@ BEGIN
 	ON pro.IdPersona = per.IdPersona
 	WHERE p.FechaPago BETWEEN @FechaInicio AND @FechaFin
 	GROUP BY  per.PrimerNombre, per.SegundoNombre, per.PrimerApellido, per.SegundoApellido
-	ORDER BY TotalPagado DESC
-	 
+	ORDER BY TotalPagado DESC	 
 END;
-GO
+
 GO
 ---- 6 Construya un procedimiento almacenado que muestre todos los propietarios de condominio
 --Diana II que son casados y menores de 30 años.
@@ -116,11 +115,9 @@ BEGIN
 		AND (per.EstadoCivil = 'Casado' or per.EstadoCivil = 'Casada');
 END;
 
-
-
 GO
-
--- 7) Construya un procedimiento almacenado que determine qui n es la persona que m s ha sido presidente en una junta directiva.
+-- 7) Construya un procedimiento almacenado que determine quien es la persona 
+--que mas ha sido presidente en una junta directiva.
 CREATE OR ALTER PROCEDURE SP7_MasVecesPresidenteJD
 AS
 BEGIN
@@ -135,15 +132,11 @@ GROUP BY CONCAT(p.PrimerNombre, ' ', p.PrimerApellido, ' '), pjd.Nombre
 )
 SELECT * FROM CantidadVeces
 WHERE Cantidad = (SELECT MAX(Cantidad) FROM CantidadVeces)
-END
-
-
-GO
+END;
 
 GO
-
--- 8) Construya un procedimiento almacenado que determine qui n es la persona que nunca ha sido miembro de una junta directiva. 
-
+-- 8) Construya un procedimiento almacenado que determine quien es 
+--la persona que nunca ha sido miembro de una junta directiva. 
 CREATE OR ALTER PROCEDURE SP8_PersonasNoMiembrosJD
 AS
 BEGIN
@@ -151,10 +144,11 @@ SELECT CONCAT(p.PrimerNombre, ' ', p.PrimerApellido, ' ') AS Miembro, mjd.Estado
 LEFT JOIN Propietario pr ON p.IdPersona = pr.IdPersona
 LEFT JOIN MiembroJuntaDirectiva mjd ON pr.IdPropietario = mjd.IdPropietario
 WHERE mjd.IdJuntaDirectiva IS NULL
-END
+END;
 
 GO
-
+-- 9)Construya un procedimiento almacenado que dado un periodo tiempo 
+--determine si un guardia ha trabajado más de 24 horas en un turno.
 CREATE OR ALTER PROCEDURE SP9_GuardiasConMasDe24Horas
 @FechaInicio DATE,
 @FechaFin DATE,
@@ -181,16 +175,10 @@ THEN DATEDIFF(HOUR, t.HoraInicio, DATEADD(DAY, 1, t.HoraFin))
 ELSE DATEDIFF(HOUR,t.HoraInicio, t.HoraFin )
 END
 ) > 24
-END
-
-
+END;
 
 GO
-
-GO
-
--- 10) Construya una consulta que muestre cu ntos guardias son hombres y cu ntos son mujeres.
-
+-- 10) Construya una consulta que muestre cuantos guardias son hombres y cuantos son mujeres.
 CREATE OR ALTER PROCEDURE SP10_CantidadGuardiasHombreMujeres
 AS
 BEGIN
@@ -200,14 +188,10 @@ INNER JOIN Empleado e ON p.IdPersona = e.IdPersona
 INNER JOIN PuestoEmpleado pe on e.IdPuestoEmpleado = pe.IdPuestoEmpleado
 WHERE pe.Nombre = 'Guardia'
 GROUP BY p.Genero, pe.Nombre
-END
-
-
-GO
+END;
 
 GO
-
--- 11) Determine qui n es el vecino que m s veces ingresa y sale del condominio los d as domingo.
+-- 11) Determine quien es el vecino que mas veces ingresa y sale del condominio los dias domingo.
 CREATE OR ALTER PROCEDURE SP11_VecinoConMasSalidasDomingo
 AS
 BEGIN
@@ -220,17 +204,10 @@ INNER JOIN Cluster c ON g.IdCluster = c.IdCluster
 WHERE DATEPART(WEEKDAY, ra.FechaIngreso) = '1' OR DATEPART(WEEKDAY, ra.FechaSalida) = '1'
 GROUP BY p.PrimerNombre, p.PrimerApellido
 ORDER BY CantidadSalidasEntradas
-
-END
-
-
-
-
+END;
 
 GO
-
--- 12) Determine cu l es la vivienda m s atrasada en los pagos de mantenimiento.
-
+-- 12) Determine cual es la vivienda mas atrasada en los pagos de mantenimiento.
 CREATE OR ALTER PROCEDURE SP12_ViviendaAtrasadaEnPagos
 AS
 BEGIN
@@ -239,17 +216,10 @@ INNER JOIN CobroServicioVivienda csv ON v.NumeroVivienda = csv.NumeroVivienda
 WHERE csv.EstadoPago = 'PENDIENTE'
 GROUP BY  v.NumeroVivienda
 ORDER BY CantidadDiasAtrasado DESC
-END
-
-
+END;
 
 GO
-
-
-
-
-
--- SP 13 Determine cuál es del día del mes que más dinero se recibe. 
+-- SP 13 Determine cual es del dia del mes que mas dinero se recibe. 
 CREATE OR ALTER PROCEDURE SP13_DiaDelMesConMayorIngreso
 @Mes INT
 AS
@@ -266,10 +236,8 @@ BEGIN
 	ORDER BY SUM(MontoTotal) DESC
 END;
 
-
-
 GO
---Determine cuál es la residencia que más recibos ha recibido.
+--Determine cual es la residencia que mas recibos ha recibido.
 CREATE OR ALTER PROCEDURE SP14_ResidenciaConMasRecibos
 AS
 BEGIN
@@ -279,9 +247,8 @@ BEGIN
 	ORDER BY COUNT(*) DESC
 END;
 
-
 GO
---Construya un reporte que muestre por mes cuántos carros ingresaron por día.
+--Construya un reporte que muestre por mes cuantos carros ingresaron por dia.
 CREATE OR ALTER PROCEDURE SP15_ReporteVehiculosPorMesPorDia
 @Mes INT
 AS
@@ -297,10 +264,8 @@ BEGIN
 	GROUP BY CAST(FechaIngreso AS DATE)
 END;
 
-
-
 GO
---Identifique quién es la persona que más visita el condominio.
+--Identifique quien es la persona que mas visita el condominio.
 CREATE OR ALTER PROCEDURE SP16_VisitanteMasFrecuente
 AS
 BEGIN 
@@ -310,8 +275,8 @@ BEGIN
 	INNER JOIN Visitante AS V ON R.IdVisitante = V.IdVisitante
 	GROUP BY V.IdVisitante, V.NombreCompleto
 	ORDER BY COUNT(* ) DESC
-	
 END;
+
 GO
 --Determine si existen inquilinos que son propietarios. 
 CREATE OR ALTER PROCEDURE SP17_inquilinosPropietarios
@@ -327,8 +292,7 @@ BEGIN
 END;
 
 GO
-
--- SP 18 Determine cuántos propietarios tienen licencia tipo A. 
+-- SP 18 Determine cuantos propietarios tienen licencia tipo A. 
 CREATE OR ALTER  PROCEDURE SP18_PropietariosConLicenciaTipoA
 AS
 BEGIN
@@ -339,11 +303,9 @@ BEGIN
 		INNER JOIN TipoDocumento AS TD ON DP.IdTipoDocumento = TD.IdTipoDocumento
 		WHERE TD.Nombre ='Licencia Tipo A' 
 		Group by TD.Nombre
-
-
 END;
-GO
 
+GO
 --19. Prepare una consulta que muestre si una persona debe pagar 150 
 --por sobrepasar la cantidad de carros permitida por vivienda. 
 CREATE OR ALTER PROCEDURE SP19_ConsultarCantidadVehiculos
@@ -373,8 +335,8 @@ BEGIN
 	HAVING COUNT(ve.IdVehiculo) > 4 OR @NumeroVivienda IS NOT NULL
 	ORDER BY CantidadVehiculos DESC
 END;
-GO
 
+GO
 --20. Cree un procedimiento almacenado que muestre cual es 
 --la residencia que más visitas recibe en un periodo de tiempo dado. 
 CREATE OR ALTER PROCEDURE SP20_ResidenciaMasVisitada
@@ -420,8 +382,8 @@ BEGIN
 	GROUP BY tm.IdTipoMulta, tm.Nombre, tm.Monto
 	ORDER BY CantidadMultas DESC
 END;
-GO
 
+GO
 --22. Cuales son las casas pendientes de pagar multas.
 CREATE OR ALTER PROCEDURE SP22_CasasPendientesPagoMultas
 AS
@@ -447,6 +409,7 @@ BEGIN
 	ORDER BY DiasPendiente DESC, mv.Monto DESC
 END;
 
+GO
 -- 23. Cual es el mes del año donde han ocurrido mas multas por concepto de desorden. 
 CREATE OR ALTER PROCEDURE SP23_MesMultasDesorden
 	@Año INT = NULL
@@ -470,6 +433,8 @@ BEGIN
 		DATENAME(MONTH, mv.FechaInfraccion)
 	ORDER BY CantidadMulta DESC
 END;
+
+GO
 --24. Cuanto se ha recaudado por concepto de multas. 
 CREATE OR ALTER PROCEDURE SP_24TotalRecaudadoMultas
     @FechaInicio DATE = NULL,
@@ -488,12 +453,10 @@ BEGIN
     WHERE 
         (@FechaInicio IS NULL OR mv.FechaInfraccion >= @FechaInicio)
         AND (@FechaFin IS NULL OR mv.FechaInfraccion <= @FechaFin)
-END
+END;
 
 GO
-
-GO
---SP 25 Quien es el propietario con más multas. 
+--SP 25 Quien es el propietario con mas multas. 
 CREATE OR ALTER PROCEDURE SP25_PropietarioConMasMultas
 AS
 BEGIN
@@ -506,8 +469,7 @@ GROUP BY P.IdPropietario, CONCAT(PS.PrimerNombre,' ', PS.PrimerApellido)
 ORDER BY COUNT(*) DESC
 END;
 
-
-
+GO
 --SP INVENTADO
 --Cual es el mes que mas dinero se recibio.
 CREATE OR ALTER PROCEDURE SP_IN

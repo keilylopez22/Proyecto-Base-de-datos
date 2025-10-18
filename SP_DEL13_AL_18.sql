@@ -1,5 +1,5 @@
 
---SP 18Determine cuántos propietarios tienen licencia tipo A. 
+--SP 18Determine cuantos propietarios tienen licencia tipo A. 
 CREATE OR ALTER PROCEDURE SP18_PropietariosConLicenciaTipoA
 AS
 BEGIN
@@ -17,7 +17,7 @@ END;
 GO
 
 
--- SP 13 Determine cuál es del día del mes que más dinero se recibe. 
+-- SP 13 Determine cual es del dia del mes que mas dinero se recibe. 
 CREATE OR ALTER PROCEDURE SP13_DiaDelMesConMayorIngreso
 @Mes INT
 AS
@@ -37,7 +37,7 @@ END;
 
 
 GO
---Determine cuál es la residencia que más recibos ha recibido.
+--Determine cual es la residencia que mas recibos ha recibido.
 CREATE OR ALTER PROCEDURE SP14_ResidenciaConMasRecibos
 AS
 BEGIN
@@ -49,7 +49,7 @@ END;
 
 
 GO
---Construya un reporte que muestre por mes cuántos carros ingresaron por día.
+--Construya un reporte que muestre por mes cuantos carros ingresaron por dia.
 CREATE OR ALTER PROCEDURE SP15_ReporteVehiculosPorMesPorDia
 @Mes INT
 AS
@@ -68,7 +68,7 @@ END;
 
 
 GO
---Identifique quién es la persona que más visita el condominio.
+--Identifique quien es la persona que mas visita el condominio.
 CREATE OR ALTER PROCEDURE SP16_VisitanteMasFrecuente
 AS
 BEGIN 
@@ -96,7 +96,7 @@ END;
 
 GO
 
--- SP 18 Determine cuántos propietarios tienen licencia tipo A. 
+-- SP 18 Determine cuantos propietarios tienen licencia tipo A. 
 CREATE OR ALTER  PROCEDURE SP18_PropietariosConLicenciaTipoA
 AS
 BEGIN
@@ -111,7 +111,7 @@ BEGIN
 
 END;
 GO
---SP 25 Quien es el propietario con más multas. 
+--SP 25 Quien es el propietario con mas multas. 
 CREATE OR ALTER PROCEDURE SP25_PropietarioConMasMultas
 AS
 BEGIN
@@ -131,10 +131,10 @@ GO
 CREATE OR ALTER PROCEDURE SP_IN
 AS
 BEGIN
-	SELECT TOP(1)SUM(MontoTotal), DATEPART(MONTH, FechaPago)--FechaPago
+	SELECT TOP(1)SUM(MontoTotal), DATEPART(MONTH, FechaPago)
 	FROM Pago
 	--WHERE DATEPART(MONTH, FechaPago)= 08
-	GROUP BY DATEPART(MONTH, FechaPago)  --FechaPago
+	GROUP BY DATEPART(MONTH, FechaPago)
 	ORDER BY SUM(MontoTotal) DESC
 END;
 
