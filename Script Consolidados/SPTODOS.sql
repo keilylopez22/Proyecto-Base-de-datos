@@ -1051,8 +1051,8 @@ GO
 
 -- Buscar turno por hora inicio y descripcion
 CREATE OR ALTER PROCEDURE SP_BuscarTurnoPorHoraInicioYHoraFin
-@HoraInicio TIME,
-@HoraFin TIME
+@HoraInicio DATETIME,
+@HoraFin DATETIME
 AS
 BEGIN 
 SELECT t.IdTurno, t.Descripcion, t.HoraInicio, t.HoraFin FROM Turno AS t
@@ -1155,7 +1155,7 @@ GO
 
 -- Buscar asiganacion turno por fecha
 GO
-CREATE PROCEDURE SP_BuscaAsignacionTurnoPorFech
+CREATE OR ALTER PROCEDURE SP_BuscaAsignacionTurnoPorFech
 @FechaAsignacion DATE
 AS
 BEGIN
@@ -1169,7 +1169,7 @@ GO
 GO
 
 -- Buscar asigancion turno por empleado
-CREATE PROCEDURE SP_BuscarAsignacionTurnoPorEmplead
+CREATE OR ALTER PROCEDURE SP_BuscarAsignacionTurnoPorEmplead
 @IdEmpleado INT 
 AS
 BEGIN 
@@ -1972,7 +1972,7 @@ GO
 -- #############################################
 
 -- Actualizar Tipo documento
-CREATE PROCEDURE SP_ActualizarTipoDoc
+CREATE OR ALTER PROCEDURE SP_ActualizarTipoDoc
     @IdTipoDocumento INT,
     @Nombre VARCHAR(50)
 AS
@@ -1996,7 +1996,7 @@ END;
 GO
 
 -- Buscar tipo docuemnto por nombre
-CREATE PROCEDURE SP_ConsultarPorNombreTipoDoc
+CREATE OR ALTER PROCEDURE SP_ConsultarPorNombreTipoDoc
     @Nombre VARCHAR(50)
 AS
 BEGIN
@@ -2569,7 +2569,7 @@ BEGIN
 END;
 GO
 --actualiza tipo multa por fila
-CREATE OR ALTER PROCEDURE ´SP_ActualizarTipoMulta
+CREATE OR ALTER PROCEDURE SP_ActualizarTipoMulta
 @IdTipoMulta int, 
 @Nombre VARCHAR (50),
 @Monto MONEY
