@@ -408,6 +408,8 @@ BEGIN
 		mv.EstadoPago = 'PENDIENTE'
 	ORDER BY DiasPendiente DESC, mv.Monto DESC
 END;
+
+GO
  GO
 -- 23. Cual es el mes del año donde han ocurrido mas multas por concepto de desorden. 
 CREATE OR ALTER PROCEDURE SP23_MesMultasDesorden
