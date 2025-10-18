@@ -1,13 +1,41 @@
-@model ArsanWebApp.Models.Residencial
+@model ArsanWebApp.Models.MiembroJuntaDirectiva
 
-<h2>Crear Residencial</h2>
+<h2>Registrar Miembro de Junta Directiva</h2>
 
 <form asp-action="Create">
     <div class="form-group">
-        <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
-        <span asp-validation-for="Nombre" class="text-danger"></span>
+        <label asp-for="Estado"></label>
+        <input asp-for="Estado" class="form-control" maxlength="10" placeholder="Ej: ACTIVO, INACTIVO" />
     </div>
-    <button type="submit" class="btn btn-primary">Guardar</button>
+    <div class="form-group">
+        <label asp-for="FechaInicio">Fecha de Inicio</label>
+        <input asp-for="FechaInicio" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="FechaFin">Fecha de Fin</label>
+        <input asp-for="FechaFin" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="IdJuntaDirectiva">Junta Directiva</label>
+        <select asp-for="IdJuntaDirectiva" class="form-control" 
+                asp-items="@(new SelectList(ViewBag.Juntas, "IdJuntaDirectiva", "Cluster"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdPropietario">Propietario</label>
+        <select asp-for="IdPropietario" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Propietarios, "IdPropietario", "NombreCompleto"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdPuesto">Puesto</label>
+        <select asp-for="IdPuesto" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Puestos, "IdPuesto", "Nombre"))">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
