@@ -1,0 +1,39 @@
+@model List<ArsanWebApp.Models.Garita>
+
+<h2>Garitas</h2>
+<p><a asp-action="Create" class="btn btn-primary">Crear Nueva</a></p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID Garita</th>
+            <th>ID Cluster</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var g in Model)
+        {
+            <tr>
+                <td>@g.IdGarita</td>
+                <td>@g.IdCluster</td>
+                <td>@g.Residencial</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@g.IdGarita" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@g.IdGarita" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar esta garita?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

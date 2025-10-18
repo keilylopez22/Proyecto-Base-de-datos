@@ -1,0 +1,16 @@
+@model ArsanWebApp.Models.Garita
+
+<h2>Crear Garita</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="IdCluster">Cluster</label>
+        <select asp-for="IdCluster" class="form-control" 
+                asp-items="@(new SelectList(ViewBag.Clusters, "IdCluster", "Descripcion"))">
+            <option value="">-- Seleccione un cluster --</option>
+        </select>
+        <span asp-validation-for="IdCluster" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
