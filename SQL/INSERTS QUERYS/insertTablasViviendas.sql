@@ -1,8 +1,5 @@
 --Insert para viviendas
 
---INSERT INTO nombre_tabla (columna1, columna2, columna3)
---VALUES (valor1, valor2, valor3);
-
 Alter table TipoVivienda 
 ADD Precio DECIMAL(10, 2) NULL;
 
@@ -75,7 +72,7 @@ Select top 20 IdPersona from Persona
 
 
 GO
---NumeroVivienda, IdCluster, IdPropietario, IdTipoVivienda
+
 Insert into Vivienda(NumeroVivienda, IdCluster,  IdTipoVivienda)
 Select  CAST(C.IdCluster AS varchar(10))  +''+ CAST(ROW_NUMBER() OVER(ORDER BY C.IdCluster)AS VARCHAR(10))AS NumeroVivienda, IdCluster , TV.IdTipoVivienda
 From Cluster AS C,
