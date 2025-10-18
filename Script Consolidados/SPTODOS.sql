@@ -2310,6 +2310,16 @@ CREATE OR ALTER PROCEDURE SP_InsertarVisitante
     @IdTipoDocumento INT
 AS
 BEGIN
+	IF EXISTS (SELECT * 
+	FROM Persona AS P
+	INNER JOIN PersonaNoGrata AS PNG
+	ON P.IdPersona = PNG.IdPersona
+	WHERE Cui =  @NumeroDocumento
+	)
+	BEGIN
+	RAISERROR('Visitante no permitido, es persona no grata', 16, 1);
+	RETURN;
+	END;
     INSERT INTO Visitante (NombreCompleto, NumeroDocumento, Telefono, MotivoVisita, IdTipoDocumento)
     VALUES (@NombreCompleto, @NumeroDocumento, @Telefono, @MotivoVisita, @IdTipoDocumento)
     
