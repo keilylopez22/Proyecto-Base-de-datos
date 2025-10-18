@@ -1,0 +1,18 @@
+@model ArsanWebApp.Models.PuestoJuntaDirectiva
+
+<h2>Editar Puesto de Junta Directiva</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="IdPuesto" />
+    <div class="form-group">
+        <label asp-for="Nombre"></label>
+        <input asp-for="Nombre" class="form-control" maxlength="50" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Descripcion">Descripción</label>
+        <textarea asp-for="Descripcion" class="form-control" maxlength="100"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

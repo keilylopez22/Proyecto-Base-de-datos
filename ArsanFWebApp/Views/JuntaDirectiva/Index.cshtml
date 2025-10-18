@@ -1,25 +1,30 @@
-@model List<ArsanWebApp.Models.Residencial>
+@model List<ArsanWebApp.Models.JuntaDirectiva>
 
-<h2>Residenciales</h2>
-<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+<h2>Juntas Directivas</h2>
+<p><a asp-action="Create" class="btn btn-primary">Crear Nueva</a></p>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
+            <th>Cluster</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var r in Model)
+        @foreach (var j in Model)
         {
             <tr>
-                <td>@r.IdResidencial</td>
-                <td>@r.Nombre</td>
+                <td>@j.IdJuntaDirectiva</td>
+                <td>@j.Cluster</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@r.IdResidencial" class="btn btn-sm btn-warning">Editar</a>
-                    <form asp-action="Delete" asp-route-id="@r.IdResidencial" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este residencial?')">
+                    <a asp-action="Edit" asp-route-id="@j.IdJuntaDirectiva" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@j.IdJuntaDirectiva" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar?')">
                         <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                     </form>
                 </td>

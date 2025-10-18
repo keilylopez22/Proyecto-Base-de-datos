@@ -13,7 +13,9 @@ builder.Services.AddScoped<PersonaService>();
 builder.Services.AddScoped<TipoViviendaService>();
 builder.Services.AddScoped<PropietarioService>();
 builder.Services.AddScoped<ViviendaService>();
-
+builder.Services.AddScoped<PuestoJuntaDirectivaService>();
+builder.Services.AddScoped<JuntaDirectivaService>();
+builder.Services.AddScoped<MiembroJuntaDirectivaService>();
 
 var app = builder.Build();
 
