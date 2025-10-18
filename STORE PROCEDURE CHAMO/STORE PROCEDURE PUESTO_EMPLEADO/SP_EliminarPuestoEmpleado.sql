@@ -6,7 +6,7 @@ BEGIN
 SET NOCOUNT ON
 IF NOT EXISTS(SELECT 1 FROM PuestoEmpleado WHERE IdPuestoEmpleado = @IdPuestoEmpleado)
 BEGIN 
-RAISERROR('No existe este puestp',16,1)
+RAISERROR('No existe este puesto',16,1)
 RETURN
 END
 
