@@ -1,4 +1,3 @@
-// Services/MiembroJuntaDirectivaService.cs
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
 
@@ -24,7 +23,7 @@ public class MiembroJuntaDirectivaService
         _puestoService = puestoService;
     }
 
-    // LISTAR TODOS
+
     public async Task<List<MiembroJuntaDirectiva>> ObtenerTodosAsync()
     {
         var lista = new List<MiembroJuntaDirectiva>();
@@ -51,7 +50,7 @@ public class MiembroJuntaDirectivaService
         return lista;
     }
 
-    // BUSCAR POR ID
+   
     public async Task<MiembroJuntaDirectiva?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -77,7 +76,7 @@ public class MiembroJuntaDirectivaService
         return null;
     }
 
-    // INSERTAR
+  
     public async Task<int> InsertarAsync(MiembroJuntaDirectiva miembro)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -95,7 +94,6 @@ public class MiembroJuntaDirectivaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
     public async Task<bool> ActualizarAsync(MiembroJuntaDirectiva miembro)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -114,7 +112,7 @@ public class MiembroJuntaDirectivaService
         return result != null;
     }
 
-    // ELIMINAR
+   
     public async Task<(bool exito, string mensaje)> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -134,7 +132,7 @@ public class MiembroJuntaDirectivaService
         }
     }
 
-    // Listas para dropdowns
+
     public async Task<List<JuntaDirectiva>> ObtenerJuntasDirectivasAsync() =>
         await _juntaDirectivaService.ObtenerTodasAsync();
 

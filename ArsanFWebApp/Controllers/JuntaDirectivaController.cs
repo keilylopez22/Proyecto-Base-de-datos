@@ -12,22 +12,19 @@ public class JuntaDirectivaController : Controller
     {
         _service = service;
     }
-
-    // GET: JuntaDirectiva
     public async Task<IActionResult> Index()
     {
         var juntas = await _service.ObtenerTodasAsync();
         return View(juntas);
     }
 
-    // GET: JuntaDirectiva/Create
     public async Task<IActionResult> Create()
     {
         ViewBag.Clusters = await _service.ObtenerClustersAsync();
         return View();
     }
 
-    // POST: JuntaDirectiva/Create
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(JuntaDirectiva junta)
@@ -41,7 +38,6 @@ public class JuntaDirectivaController : Controller
         return View(junta);
     }
 
-    // GET: JuntaDirectiva/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var junta = await _service.BuscarPorIdAsync(id);
@@ -51,7 +47,6 @@ public class JuntaDirectivaController : Controller
         return View(junta);
     }
 
-    // POST: JuntaDirectiva/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, JuntaDirectiva junta)
@@ -66,7 +61,7 @@ public class JuntaDirectivaController : Controller
         return View(junta);
     }
 
-    // POST: JuntaDirectiva/Delete/5
+   
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)

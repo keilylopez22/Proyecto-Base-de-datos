@@ -13,20 +13,20 @@ public class PersonaController : Controller
         _service = service;
     }
 
-    // GET: Persona
+
     public async Task<IActionResult> Index()
     {
         var personas = await _service.ObtenerTodasAsync();
         return View(personas);
     }
 
-    // GET: Persona/Create
+ 
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: Persona/Create
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Persona persona)
@@ -39,7 +39,7 @@ public class PersonaController : Controller
         return View(persona);
     }
 
-    // GET: Persona/Edit/5
+
     public async Task<IActionResult> Edit(int id)
     {
         var persona = await _service.BuscarPorIdAsync(id);
@@ -47,7 +47,7 @@ public class PersonaController : Controller
         return View(persona);
     }
 
-    // POST: Persona/Edit/5
+   
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Persona persona)
@@ -61,7 +61,6 @@ public class PersonaController : Controller
         return View(persona);
     }
 
-    // POST: Persona/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)

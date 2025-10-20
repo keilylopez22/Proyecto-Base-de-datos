@@ -15,7 +15,7 @@ public class PropietarioService
         _personaService = personaService;
     }
 
-    // LISTAR TODOS (con JOIN a Persona)
+  
     public async Task<List<Propietario>> ObtenerTodosAsync()
     {
         var lista = new List<Propietario>();
@@ -38,14 +38,14 @@ public class PropietarioService
         return lista;
     }
 
-    // BUSCAR POR ID
+
     public async Task<Propietario?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_BuscarPropietario", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@IdPropiestario", id); // ⚠️ Nota: nombre del parámetro
+        cmd.Parameters.AddWithValue("@IdPropiestario", id); 
 
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
@@ -60,7 +60,7 @@ public class PropietarioService
         return null;
     }
 
-    // INSERTAR
+  
     public async Task<int> InsertarAsync(Propietario propietario)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -74,7 +74,7 @@ public class PropietarioService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+
     public async Task<bool> ActualizarAsync(Propietario propietario)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -89,7 +89,6 @@ public class PropietarioService
         return result != null;
     }
 
-    // ELIMINAR
     public async Task<bool> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -102,7 +101,7 @@ public class PropietarioService
         return result != null;
     }
 
-    // Obtener lista de Personas para el dropdown
+ 
     public async Task<List<Persona>> ObtenerPersonasAsync()
     {
         return await _personaService.ObtenerTodasAsync();

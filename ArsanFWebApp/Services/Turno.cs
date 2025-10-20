@@ -13,7 +13,7 @@ public class TurnoService
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
     }
 
-    // LISTAR TODOS
+   
     public async Task<List<Turno>> ObtenerTodosAsync()
     {
         var lista = new List<Turno>();
@@ -37,7 +37,7 @@ public class TurnoService
         return lista;
     }
 
-    // BUSCAR POR ID
+ 
     public async Task<Turno?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -60,8 +60,6 @@ public class TurnoService
         }
         return null;
     }
-
-    // CREAR
     public async Task InsertarAsync(Turno turno)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -76,7 +74,7 @@ public class TurnoService
         await cmd.ExecuteNonQueryAsync();
     }
 
-    // ACTUALIZAR
+
     public async Task ActualizarAsync(Turno turno)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -92,7 +90,7 @@ public class TurnoService
         await cmd.ExecuteNonQueryAsync();
     }
 
-    // ELIMINAR
+
     public async Task<(bool exito, string mensaje)> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);

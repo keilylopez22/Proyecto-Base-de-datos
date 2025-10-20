@@ -13,17 +13,17 @@ public class TurnoController : Controller
         _service = service;
     }
 
-    // GET: Turno
+  
     public async Task<IActionResult> Index()
     {
         var turnos = await _service.ObtenerTodosAsync();
         return View(turnos);
     }
 
-    // GET: Turno/Create
+  
     public IActionResult Create() => View();
 
-    // POST: Turno/Create
+   
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Turno turno)
@@ -36,7 +36,7 @@ public class TurnoController : Controller
         return View(turno);
     }
 
-    // GET: Turno/Edit/5
+    
     public async Task<IActionResult> Edit(int id)
     {
         var turno = await _service.BuscarPorIdAsync(id);
@@ -44,7 +44,7 @@ public class TurnoController : Controller
         return View(turno);
     }
 
-    // POST: Turno/Edit/5
+   
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Turno turno)
@@ -58,7 +58,7 @@ public class TurnoController : Controller
         return View(turno);
     }
 
-    // POST: Turno/Delete/5
+   
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
