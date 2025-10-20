@@ -446,10 +446,10 @@ BEGIN
 		mv.EstadoPago = 'PENDIENTE'
 	ORDER BY DiasPendiente DESC, mv.Monto DESC
 END;
-
+ GO
 -- 23. Cual es el mes del año donde han ocurrido mas multas por concepto de desorden. 
 CREATE OR ALTER PROCEDURE SP23_MesMultasDesorden
-	@Año INT = NULL
+	@Anio INT = NULL
 AS
 BEGIN
 	SELECT TOP 1
@@ -463,13 +463,15 @@ BEGIN
 	INNER JOIN TipoMulta AS tm 
 	ON mv.IdTipoMulta = tm.IdTipoMulta
 	WHERE
-		(@Año IS NULL OR YEAR(mv.FechaInfraccion) = @Año)
+		(@Anio IS NULL OR YEAR(mv.FechaInfraccion) = @Anio)
 		AND tm.Nombre = 'Ruido excesivo'
 	GROUP BY
 		MONTH(mv.FechaInfraccion),
 		DATENAME(MONTH, mv.FechaInfraccion)
 	ORDER BY CantidadMulta DESC
 END;
+
+GO
 --24. Cuanto se ha recaudado por concepto de multas. 
 CREATE OR ALTER PROCEDURE SP_24TotalRecaudadoMultas
     @FechaInicio DATE = NULL,
@@ -506,7 +508,7 @@ GROUP BY P.IdPropietario, CONCAT(PS.PrimerNombre,' ', PS.PrimerApellido)
 ORDER BY COUNT(*) DESC
 END;
 
-
+GO
 
 --SP INVENTADO
 --Cual es el mes que mas dinero se recibio.
