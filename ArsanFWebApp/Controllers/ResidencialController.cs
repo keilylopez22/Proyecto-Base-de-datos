@@ -13,17 +13,16 @@ public class ResidencialController : Controller
         _service = service;
     }
 
-    // GET: Residencial
+    
     public async Task<IActionResult> Index()
     {
         var residenciales = await _service.ObtenerTodosAsync();
         return View(residenciales);
     }
 
-    // GET: Residencial/Create
     public IActionResult Create() => View();
 
-    // POST: Residencial/Create
+  
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Residencial residencial)
@@ -36,7 +35,6 @@ public class ResidencialController : Controller
         return View(residencial);
     }
 
-    // GET: Residencial/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var residencial = await _service.BuscarPorIdAsync(id);
@@ -44,7 +42,7 @@ public class ResidencialController : Controller
         return View(residencial);
     }
 
-    // POST: Residencial/Edit/5
+  
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Residencial residencial)
@@ -58,7 +56,6 @@ public class ResidencialController : Controller
         return View(residencial);
     }
 
-    // POST: Residencial/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)

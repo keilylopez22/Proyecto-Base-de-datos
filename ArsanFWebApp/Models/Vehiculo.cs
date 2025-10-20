@@ -4,7 +4,7 @@ public class Vehiculo
 {
     public int IdVehiculo { get; set; }
     public int? Año { get; set; }
-    public string? Placa { get; set; } // UNIQUE
+    public string? Placa { get; set; } 
     public int NumeroVivienda { get; set; }
     public int IdCluster { get; set; }
     public int IdLinea { get; set; }
