@@ -8,4 +8,6 @@ public class Empleado
     public string? Estado { get; set; }
     public int IdPersona { get; set; }
     public int IdPuestoEmpleado { get; set; }
+    public string? NombreCompleto { get; set; }
+
 }

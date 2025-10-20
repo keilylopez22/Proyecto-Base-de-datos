@@ -1,0 +1,48 @@
+@model List<ArsanWebApp.Models.Empleado>
+
+@{
+    ViewData["Title"] = "Resultado de Búsqueda";
+}
+
+<h2>Resultado de Búsqueda por Nombre</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">No se encontraron empleados con ese nombre.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>IdEmpleado</th>
+                <th>IdPersona</th>
+                <th>Estado</th>
+                <th>Fecha Alta</th>
+                <th>Fecha Baja</th>
+                <th>Id Puesto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in Model)
+            {
+                <tr>
+                    <td>@emp.IdEmpleado</td>
+                    <td>@emp.IdPersona</td>
+                    <td>@emp.Estado</td>
+                    <td>@emp.FechaAlta?.ToString("yyyy-MM-dd")</td>
+                    <td>@emp.FechaBaja?.ToString("yyyy-MM-dd")</td>
+                    <td>@emp.IdPuestoEmpleado</td>
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@emp.IdEmpleado" class="btn btn-sm btn-primary">Editar</a>
+                        <a asp-action="Eliminar" asp-route-id="@emp.IdEmpleado" class="btn btn-sm btn-danger">Eliminar</a>
+                        <a asp-action="BuscarPorId" asp-route-id="@emp.IdEmpleado" class="btn btn-sm btn-info">Ver</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Volver a la lista</a>
