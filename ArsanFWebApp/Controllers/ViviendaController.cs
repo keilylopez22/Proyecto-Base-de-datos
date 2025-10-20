@@ -13,14 +13,13 @@ public class ViviendaController : Controller
         _service = service;
     }
 
-    // GET: Vivienda
+  
     public async Task<IActionResult> Index()
     {
         var viviendas = await _service.ObtenerTodasAsync();
         return View(viviendas);
     }
 
-    // GET: Vivienda/Create
     public async Task<IActionResult> Create()
     {
         ViewBag.Clusters = await _service.ObtenerClustersAsync();
@@ -29,7 +28,6 @@ public class ViviendaController : Controller
         return View();
     }
 
-    // POST: Vivienda/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Vivienda vivienda)
@@ -52,7 +50,6 @@ public class ViviendaController : Controller
         return View(vivienda);
     }
 
-    // GET: Vivienda/Edit/numero/idCluster
     public async Task<IActionResult> Edit(int numeroVivienda, int idCluster)
     {
         var vivienda = await _service.BuscarPorClaveAsync(numeroVivienda, idCluster);
@@ -64,7 +61,7 @@ public class ViviendaController : Controller
         return View(vivienda);
     }
 
-    // POST: Vivienda/Edit
+ 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Vivienda vivienda)
@@ -80,7 +77,7 @@ public class ViviendaController : Controller
         return View(vivienda);
     }
 
-    // POST: Vivienda/Delete
+ 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int numeroVivienda, int idCluster)

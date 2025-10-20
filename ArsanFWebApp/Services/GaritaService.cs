@@ -1,4 +1,3 @@
-// Services/GaritaService.cs
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
 
@@ -16,7 +15,7 @@ public class GaritaService
         _clusterService = clusterService;
     }
 
-    // LISTAR TODAS
+
     public async Task<List<Garita>> ObtenerTodasAsync()
     {
         var lista = new List<Garita>();
@@ -38,7 +37,7 @@ public class GaritaService
         return lista;
     }
 
-    // BUSCAR POR ID
+
     public async Task<Garita?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -59,7 +58,7 @@ public class GaritaService
         return null;
     }
 
-    // INSERTAR
+  
     public async Task<int> InsertarAsync(Garita garita)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -72,7 +71,7 @@ public class GaritaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+    
     public async Task<bool> ActualizarAsync(Garita garita)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -86,7 +85,7 @@ public class GaritaService
         return Convert.ToInt32(rowsAffected) > 0;
     }
 
-    // ELIMINAR
+  
     public async Task<(bool exito, string mensaje)> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -106,7 +105,7 @@ public class GaritaService
         };
     }
 
-    // Obtener lista de Clusters para el dropdown
+
     public async Task<List<Cluster>> ObtenerClustersAsync() => 
         await _clusterService.ObtenerTodosAsync();
 }

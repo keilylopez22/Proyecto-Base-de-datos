@@ -15,7 +15,7 @@ public class ClusterService
         _residencialService = residencialService;
     }
 
-    // LISTAR TODOS (con JOIN a Residencial)
+
     public async Task<List<Cluster>> ObtenerTodosAsync()
     {
         var lista = new List<Cluster>();
@@ -37,7 +37,6 @@ public class ClusterService
         return lista;
     }
 
-    // BUSCAR POR ID
     public async Task<Cluster?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -59,7 +58,7 @@ public class ClusterService
         return null;
     }
 
-    // INSERTAR
+ 
     public async Task<int> InsertarAsync(Cluster cluster)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -73,12 +72,12 @@ public class ClusterService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+ 
     public async Task<bool> ActualizarAsync(Cluster cluster)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SP_ActualizarCluster", conn); // ⚠️ Nota: nombre del SP_
+        using var cmd = new SqlCommand("SP_ActualizarCluster", conn); 
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdCluster", cluster.IdCluster);
         cmd.Parameters.AddWithValue("@Descripcion", cluster.Descripcion);
@@ -87,7 +86,7 @@ public class ClusterService
         return result != null;
     }
 
-    // ELIMINAR
+    
     public async Task<bool> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -100,7 +99,7 @@ public class ClusterService
         return result != null;
     }
 
-    // Obtener lista de Residenciales para el dropdown en Create/Edit
+   
     public async Task<List<Residencial>> ObtenerResidencialesAsync()
     {
         return await _residencialService.ObtenerTodosAsync();

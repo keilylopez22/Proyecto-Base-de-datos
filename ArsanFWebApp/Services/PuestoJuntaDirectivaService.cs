@@ -13,7 +13,7 @@ public class PuestoJuntaDirectivaService
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
     }
 
-    // LISTAR TODOS
+    
     public async Task<List<PuestoJuntaDirectiva>> ObtenerTodosAsync()
     {
         var lista = new List<PuestoJuntaDirectiva>();
@@ -35,7 +35,7 @@ public class PuestoJuntaDirectivaService
         return lista;
     }
 
-    // BUSCAR POR ID
+    
     public async Task<PuestoJuntaDirectiva?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -57,7 +57,7 @@ public class PuestoJuntaDirectivaService
         return null;
     }
 
-    // INSERTAR
+
     public async Task<int> InsertarAsync(PuestoJuntaDirectiva puesto)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -71,7 +71,7 @@ public class PuestoJuntaDirectivaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+
     public async Task<bool> ActualizarAsync(PuestoJuntaDirectiva puesto)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -86,7 +86,7 @@ public class PuestoJuntaDirectivaService
         return result != null;
     }
 
-    // ELIMINAR
+   
     public async Task<(bool exito, string mensaje)> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
