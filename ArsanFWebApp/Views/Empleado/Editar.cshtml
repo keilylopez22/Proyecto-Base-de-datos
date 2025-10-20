@@ -1,0 +1,41 @@
+@model ArsanWebApp.Models.Empleado
+
+<h2>Editar Empleado</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="IdEmpleado" value="@Model.IdEmpleado" />
+
+    <div class="mb-3">
+        <label class="form-label">Id Empleado</label>
+        <p class="form-control-plaintext">@Model.IdEmpleado</p>
+    </div>
+
+    <div class="mb-3">
+        <label for="FechaAlta" class="form-label">Fecha Alta</label>
+        <input type="date" class="form-control" asp-for="FechaAlta" />
+    </div>
+
+    <div class="mb-3">
+        <label for="FechaBaja" class="form-label">Fecha Baja</label>
+        <input type="date" class="form-control" asp-for="FechaBaja" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Estado" class="form-label">Estado</label>
+        <input type="text" class="form-control" asp-for="Estado" />
+    </div>
+
+    <div class="mb-3">
+        <label for="IdPersona" class="form-label">Id Persona</label>
+        <input type="number" class="form-control" asp-for="IdPersona" />
+    </div>
+
+    <div class="mb-3">
+        <label for="IdPuestoEmpleado" class="form-label">Id Puesto</label>
+        <input type="number" class="form-control" asp-for="IdPuestoEmpleado" />
+        <span asp-validation-for="IdPuestoEmpleado" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
