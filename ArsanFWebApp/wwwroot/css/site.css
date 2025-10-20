@@ -29,3 +29,27 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+body {
+    background-image: url('https://www.promotoradehogares.mx/wp-content/uploads/2023/08/sf.amenidad.entrada2_web.jpg'); /* cambil nombre según tu imagen */
+    background-size: cover;          
+    background-attachment: fixed;     
+    background-position: center;     
+    background-repeat: no-repeat;   
+    color: #fff;                      
+}
+
+.container {
+    background-color: rgba(0, 0, 0, 0.6); 
+    border-radius: 10px;
+    padding: 20px;
+    color: #fff;
+}
+.container {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);  
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
