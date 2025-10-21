@@ -52,7 +52,9 @@
         <tr>
             <th>ID</th>
             <th>ID Empleado</th>
+            <th>Empleado</th>
             <th>ID Turno</th>
+            <th>Turno</th>
             <th>Fecha Asignación</th>
             <th>Acciones</th>
         </tr>
@@ -65,7 +67,9 @@
                 <tr>
                     <td>@item.IdAsignacionTurno</td>
                     <td>@item.IdEmpleado</td>
+                    <td>@item.NombreEmpleado</td>
                     <td>@item.IdTurno</td>
+                    <td>@item.NombreTurno</td>
                     <td>@item.FechaAsignacion.ToString("dd/MM/yyyy")</td>
                     <td>
                         <a asp-action="Editar" asp-route-id="@item.IdAsignacionTurno" class="btn btn-sm btn-warning me-1">
@@ -85,7 +89,7 @@
         else
         {
             <tr>
-                <td colspan="5" class="text-muted text-center">No hay registros para mostrar.</td>
+                <td colspan="7" class="text-muted text-center">No hay registros para mostrar.</td>
             </tr>
         }
     </tbody>
