@@ -954,7 +954,7 @@ GO
 -- #############################################
 
 -- Buscar puesto empleado por descripcion
-CREATE OR ALTER PROCEDURE SS_BuscarPuestoEmpleadoPorDescripcion
+CREATE OR ALTER PROCEDURE SP_BuscarPuestoEmpleadoPorDescripcion
 @Descripcion VARCHAR(50)
 AS
 BEGIN
@@ -1788,7 +1788,7 @@ END;
 GO
 
 -- Eliminar linea de carro
-CREATE OR ALTER PROCEDURE SPEliminarLinea
+CREATE OR ALTER PROCEDURE SP_EliminarLinea
     @IdLinea INT
 AS
 BEGIN
