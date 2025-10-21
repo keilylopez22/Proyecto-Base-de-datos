@@ -4,11 +4,13 @@
     ViewData["Title"] = "Vehículos Prohibidos";
     var paginaActual = ViewBag.PaginaActual ?? 1;
     var totalPaginas = ViewBag.TotalPaginas ?? 1;
-    var fecha = ViewBag.Fecha as DateTime?;
+    var idVehiculoProhibido = ViewBag.IdVehiculoProhibido;
+    var fechaBusqueda = ViewBag.FechaBusqueda as DateOnly?;
 }
 
 <h2 class="mb-4">Vehículos Prohibidos</h2>
 
+<!-- Mensajes -->
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success">@TempData["Success"]</div>
@@ -18,38 +20,44 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
+<!-- Formulario de búsqueda -->
 <form method="get" asp-action="Index" class="row g-3 mb-3">
     <div class="col-md-3">
-        <label for="idBuscar" class="form-label">Buscar por ID</label>
-        <input type="number" name="idBuscar" class="form-control" placeholder="Ej: 1" />
+        <label for="idVehiculoProhibido" class="form-label">ID Vehículo Prohibido</label>
+        <input type="number" name="idProhibido" value="@idVehiculoProhibido" class="form-control" placeholder="Ej: 3" />
     </div>
     <div class="col-md-3">
-        <label for="fecha" class="form-label">Buscar por Fecha</label>
-        <input type="date" name="fecha" value="@(fecha?.ToString("yyyy-MM-dd"))" class="form-control" />
+        <label for="fecha" class="form-label">Fecha</label>
+        <input type="date" name="fecha" 
+               value="@(fechaBusqueda.HasValue ? fechaBusqueda.Value.ToString("yyyy-MM-dd") : "")" 
+               class="form-control" />
     </div>
     <div class="col-md-2 d-flex align-items-end">
         <button type="submit" class="btn btn-primary w-100">Buscar</button>
     </div>
 </form>
 
+<!-- Botón Crear -->
 <div class="mb-3">
     <a asp-action="Crear" class="btn btn-success">
         <i class="bi bi-plus-circle"></i> Nuevo Vehículo Prohibido
     </a>
 </div>
 
-<table class="table table-bordered table-striped align-middle text-center">
-    <thead class="table-dark">
+<!-- Tabla de resultados -->
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark text-center">
         <tr>
             <th>ID</th>
             <th>Fecha</th>
             <th>Motivo</th>
-            <th>Id Vehículo</th>
+            <th>Placa</th>
+            <th>Marca</th>
             <th>Acciones</th>
         </tr>
     </thead>
-    <tbody>
-        @if (Model.Any())
+    <tbody class="text-center">
+        @if (Model != null && Model.Any())
         {
             foreach (var item in Model)
             {
@@ -57,12 +65,18 @@
                     <td>@item.IdVehiculoProhibido</td>
                     <td>@(item.Fecha.HasValue ? item.Fecha.Value.ToString("dd/MM/yyyy") : "-")</td>
                     <td>@item.Motivo</td>
-                    <td>@item.IdVehiculo</td>
+                    <td>@item.Placa</td>
+                    <td>@item.Marca</td>
                     <td>
-                        <a asp-action="Editar" asp-route-id="@item.IdVehiculoProhibido" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Editar" asp-route-id="@item.IdVehiculoProhibido" class="btn btn-sm btn-warning me-1">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+
                         <form asp-action="Eliminar" asp-route-id="@item.IdVehiculoProhibido" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('¿Seguro que deseas eliminar este registro?');">Eliminar</button>
+                            <button type="submit" class="btn btn-sm btn-danger" 
+                                    onclick="return confirm('¿Seguro que deseas eliminar este vehículo prohibido?');">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -70,11 +84,14 @@
         }
         else
         {
-            <tr><td colspan="5" class="text-muted">No hay registros para mostrar.</td></tr>
+            <tr>
+                <td colspan="6" class="text-muted text-center">No hay registros para mostrar.</td>
+            </tr>
         }
     </tbody>
 </table>
 
+<!-- Paginación -->
 @if (totalPaginas > 1)
 {
     <nav>
@@ -84,7 +101,10 @@
                 <li class="page-item @(i == paginaActual ? "active" : "")">
                     <a class="page-link" asp-action="Index"
                        asp-route-pagina="@i"
-                       asp-route-fecha="@(fecha?.ToString("yyyy-MM-dd"))">@i</a>
+                       asp-route-idProhibido="@idVehiculoProhibido"
+                       asp-route-fecha="@(fechaBusqueda.HasValue ? fechaBusqueda.Value.ToString("yyyy-MM-dd") : null)">
+                        @i
+                    </a>
                 </li>
             }
         </ul>
