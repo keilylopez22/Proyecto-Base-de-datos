@@ -17,6 +17,7 @@ builder.Services.AddScoped<EmpleadoService>();
 builder.Services.AddScoped<PuestoEmpleadoService>();
 builder.Services.AddScoped<TurnoService>();
 builder.Services.AddScoped<AsignacionTurnoService>();
+builder.Services.AddScoped<VehiculoProhibidoService>();
 
 var app = builder.Build();
 
