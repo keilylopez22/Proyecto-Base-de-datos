@@ -1,0 +1,89 @@
+@model List<ArsanWebApp.Models.DocumentoPersona>
+@{
+    ViewData["Title"] = "Gestión de Documentos";
+    int paginaActual = ViewBag.PaginaActual ?? 1;
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
+    int? busquedaTipo = ViewBag.BusquedaTipo;
+    int? busquedaNumero = ViewBag.BusquedaNumero;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3">
+    <a class="btn btn-primary" asp-action="Create">Agregar Documento</a>
+</div>
+
+<!-- Formulario de búsqueda -->
+<form class="form-inline mb-3" method="get" asp-action="Index">
+        <div class="form-group mr-2">
+        <label for="numeroDocumento" class="mr-2">Número Documento:</label>
+        <input type="number" class="form-control" id="numeroDocumento" name="numeroDocumento" value="@(busquedaNumero?.ToString() ?? "")" />
+    </div>
+    <div class="form-group mr-2">
+        <label for="idTipoDocumento" class="mr-2">Tipo Documento:</label>
+        <input type="number" class="form-control" id="idTipoDocumento" name="idTipoDocumento" value="@(busquedaTipo?.ToString() ?? "")" />
+    </div>
+    <button type="submit" class="btn btn-info">Buscar</button>
+    <a class="btn btn-secondary ml-2" asp-action="Index">Limpiar</a>
+</form>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID DocumentoPersona</th>
+            <th>Numero Documento</th>
+            <th>Tipo Documento</th>
+            <th>Persona</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var doc in Model)
+        {
+                <tr>
+                    <td>@doc.IdDocumentoPersona</td>
+                    <td>@doc.NumeroDocumento</td>
+                <td>@doc.TipoDocumentoNombre</td>
+                <td>@doc.NombrePersona</td>
+                <td>@doc.Observaciones</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-idTipoDocumento="@doc.IdTipoDocumento" asp-route-idPersona="@doc.IdPersona">Editar</a>
+                    <form asp-action="Delete" asp-route-idTipoDocumento="@doc.IdTipoDocumento" asp-route-idPersona="@doc.IdPersona" method="post" style="display:inline-block">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Desea eliminar este documento?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Paginación -->
+@if (totalPaginas > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= totalPaginas; i++)
+            {
+                <li class="page-item @(i == paginaActual ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-pagina="@i"
+                       asp-route-numeroDocumento="@(busquedaNumero)"
+                       asp-route-idTipoDocumento="@(busquedaTipo)">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
