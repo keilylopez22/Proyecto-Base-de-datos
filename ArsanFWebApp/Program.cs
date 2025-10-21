@@ -18,6 +18,7 @@ builder.Services.AddScoped<PuestoEmpleadoService>();
 builder.Services.AddScoped<TurnoService>();
 builder.Services.AddScoped<AsignacionTurnoService>();
 builder.Services.AddScoped<VehiculoProhibidoService>();
+builder.Services.AddScoped<DocumentoPersonaService>();
 builder.Services.AddScoped<PuestoJuntaDirectivaService>();
 builder.Services.AddScoped<JuntaDirectivaService>();
 builder.Services.AddScoped<MiembroJuntaDirectivaService>();

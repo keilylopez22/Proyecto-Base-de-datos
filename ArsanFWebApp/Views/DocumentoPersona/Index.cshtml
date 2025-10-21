@@ -1,0 +1,72 @@
+@model List<ArsanWebApp.Models.DocumentoPersona>
+@{
+    ViewData["Title"] = "Gestión de Documentos";
+    int paginaActual = ViewBag.PaginaActual ?? 1;
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3">
+    <a class="btn btn-primary" asp-action="Create">Agregar Documento</a>
+</div>
+
+<form asp-action="BuscarPorNumero" method="post" class="mb-3">
+    <div class="input-group">
+        <input type="number" name="numeroDocumento" class="form-control" placeholder="Buscar por número" value="@ViewBag.BusquedaNumero" />
+        <button type="submit" class="btn btn-secondary">Buscar</button>
+    </div>
+</form>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Número Documento</th>
+            <th>Tipo Documento</th>
+            <th>Persona</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var doc in Model)
+        {
+            <tr>
+                <td>@doc.NumeroDocumento</td>
+                <td>@doc.TipoDocumentoNombre</td>
+                <td>@doc.NombrePersona</td>
+                <td>@doc.Observaciones</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-idTipoDocumento="@doc.IdTipoDocumento" asp-route-idPersona="@doc.IdPersona">Editar</a>
+                    <form asp-action="Delete" asp-route-idTipoDocumento="@doc.IdTipoDocumento" asp-route-idPersona="@doc.IdPersona" method="post" style="display:inline-block">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Desea eliminar este documento?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (totalPaginas > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= totalPaginas; i++)
+            {
+                <li class="page-item @(i == paginaActual ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-pagina="@i" asp-route-numeroDocumento="@ViewBag.BusquedaNumero" asp-route-idTipoDocumento="@ViewBag.BusquedaTipo">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
