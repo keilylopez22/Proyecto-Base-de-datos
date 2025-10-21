@@ -1,0 +1,30 @@
+@model ArsanWebApp.Models.PersonaNoGrata
+
+<h2>Agregar Persona No Grata</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="IdPersona">Persona</label>
+        <select asp-for="IdPersona" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Personas, "IdPersona", "Cui"))">
+            <option value="">-- Seleccione una persona --</option>
+        </select>
+        <span asp-validation-for="IdPersona" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="FechaInicio">Fecha de Inicio</label>
+        <input asp-for="FechaInicio" class="form-control" type="date" />
+        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="FechaFin">Fecha de Fin (opcional)</label>
+        <input asp-for="FechaFin" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Motivo"></label>
+        <textarea asp-for="Motivo" class="form-control" maxlength="100"></textarea>
+        <span asp-validation-for="Motivo" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-danger">Agregar a Lista</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
