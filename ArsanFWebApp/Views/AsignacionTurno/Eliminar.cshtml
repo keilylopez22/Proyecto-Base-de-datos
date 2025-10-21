@@ -1,0 +1,17 @@
+@model ArsanWebApp.Models.AsignacionTurno
+
+@{
+    ViewData["Title"] = "Eliminar Asignación";
+}
+
+<h2>Eliminar Asignación</h2>
+
+<div class="alert alert-warning">
+    ¿Está seguro que desea eliminar la asignación de <strong>@Model.NombreEmpleado</strong> para el turno <strong>@Model.NombreTurno</strong> en la fecha <strong>@Model.FechaAsignacion.ToString("dd/MM/yyyy")</strong>?
+</div>
+
+<form asp-action="ConfirmarEliminar" method="post">
+    <input type="hidden" asp-for="IdAsignacionTurno" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
