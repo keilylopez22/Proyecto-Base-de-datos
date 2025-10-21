@@ -1,0 +1,17 @@
+@model ArsanWebApp.Models.VehiculoProhibido
+
+@{
+    ViewData["Title"] = "Eliminar Vehículo Prohibido";
+}
+
+<h2>Eliminar Vehículo Prohibido</h2>
+
+<div class="alert alert-warning">
+    ¿Está seguro que desea eliminar el vehículo prohibido <strong>@Model.Placa</strong> de la marca <strong>@Model.Marca</strong> con motivo <strong>@Model.Motivo</strong> y fecha <strong>@Model.Fecha?.ToString("dd/MM/yyyy")</strong>?
+</div>
+
+<form asp-action="ConfirmarEliminar" method="post">
+    <input type="hidden" asp-for="IdVehiculoProhibido" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

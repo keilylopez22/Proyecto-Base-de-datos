@@ -1,0 +1,36 @@
+@model ArsanWebApp.Models.VehiculoProhibido
+
+@{
+    ViewData["Title"] = "Editar Vehículo Prohibido";
+}
+
+<h2>Editar Vehículo Prohibido</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="IdVehiculoProhibido" />
+
+    <div class="mb-3">
+        <label class="form-label">ID Vehículo</label>
+        <input asp-for="IdVehiculo" class="form-control" />
+        <span asp-validation-for="IdVehiculo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Fecha</label>
+        <input asp-for="Fecha" type="date" class="form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Motivo</label>
+        <input asp-for="Motivo" class="form-control" />
+        <span asp-validation-for="Motivo" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
