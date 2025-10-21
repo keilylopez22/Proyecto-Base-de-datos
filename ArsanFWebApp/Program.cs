@@ -15,7 +15,7 @@ builder.Services.AddScoped<PropietarioService>();
 builder.Services.AddScoped<ViviendaService>();
 builder.Services.AddScoped<EmpleadoService>();
 builder.Services.AddScoped<PuestoEmpleadoService>();
-
+builder.Services.AddScoped<TurnoService>();
 
 var app = builder.Build();
 
