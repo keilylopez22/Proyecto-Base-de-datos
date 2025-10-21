@@ -13,6 +13,8 @@ builder.Services.AddScoped<PersonaService>();
 builder.Services.AddScoped<TipoViviendaService>();
 builder.Services.AddScoped<PropietarioService>();
 builder.Services.AddScoped<ViviendaService>();
+builder.Services.AddScoped<EmpleadoService>();
+builder.Services.AddScoped<PuestoEmpleadoService>();
 builder.Services.AddScoped<PuestoJuntaDirectivaService>();
 builder.Services.AddScoped<JuntaDirectivaService>();
 builder.Services.AddScoped<MiembroJuntaDirectivaService>();
