@@ -7,4 +7,7 @@ public class PersonaNoGrata
     public DateOnly? FechaFin { get; set; }
     public string? Motivo { get; set; }
     public int IdPersona { get; set; }
+
+    public String? NombreCompleto { get; set;}
+
 }
