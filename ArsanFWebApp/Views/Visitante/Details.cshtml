@@ -1,0 +1,28 @@
+@model ArsanWebApp.Models.Visitante
+
+<h2>Detalles del Visitante</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">ID:</dt>
+    <dd class="col-sm-9">@Model.IdVisitante</dd>
+
+    <dt class="col-sm-3">Nombre Completo:</dt>
+    <dd class="col-sm-9">@Model.NombreCompleto</dd>
+
+    <dt class="col-sm-3">Tipo Documento:</dt>
+    <dd class="col-sm-9">@Model.TipoDocumento</dd>
+
+    <dt class="col-sm-3">Número Documento:</dt>
+    <dd class="col-sm-9">@Model.NumeroDocumento</dd>
+
+    <dt class="col-sm-3">Teléfono:</dt>
+    <dd class="col-sm-9">@Model.Telefono</dd>
+
+    <dt class="col-sm-3">Motivo Visita:</dt>
+    <dd class="col-sm-9">@Model.MotivoVisita</dd>
+</dl>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdVisitante" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+</div>

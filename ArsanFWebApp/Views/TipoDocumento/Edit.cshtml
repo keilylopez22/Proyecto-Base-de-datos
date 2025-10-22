@@ -1,0 +1,14 @@
+@model ArsanWebApp.Models.TipoDocumento
+
+<h2>Editar Tipo de Documento</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="IdTipoDocumento" />
+    <div class="form-group">
+        <label asp-for="Nombre">Nombre</label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

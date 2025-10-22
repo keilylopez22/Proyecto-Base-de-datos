@@ -1,0 +1,46 @@
+@model ArsanWebApp.Models.RegistroAccesos
+
+<h2>Detalles del Registro de Acceso</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">ID:</dt>
+    <dd class="col-sm-9">@Model.IdAcceso</dd>
+
+    <dt class="col-sm-3">Fecha Ingreso:</dt>
+    <dd class="col-sm-9">@(Model.FechaIngreso.HasValue ? Model.FechaIngreso.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</dd>
+
+    <dt class="col-sm-3">Fecha Salida:</dt>
+    <dd class="col-sm-9">
+        @if (Model.FechaSalida.HasValue)
+        {
+            @Model.FechaSalida.Value.ToString("dd/MM/yyyy HH:mm")
+        }
+        else
+        {
+            <span class="badge bg-warning">En curso</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Vehículo:</dt>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Placa) ? "N/A" : Model.Placa)</dd>
+
+    <dt class="col-sm-3">Visitante:</dt>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Visitante) ? "N/A" : Model.Visitante)</dd>
+
+    <dt class="col-sm-3">Residente:</dt>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Residente) ? "N/A" : Model.Residente)</dd>
+
+    <dt class="col-sm-3">Garita:</dt>
+    <dd class="col-sm-9">@Model.Garita</dd>
+
+    <dt class="col-sm-3">Cluster:</dt>
+    <dd class="col-sm-9">@Model.Cluster</dd>
+
+    <dt class="col-sm-3">Empleado:</dt>
+    <dd class="col-sm-9">@Model.Empleado</dd>
+</dl>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.IdAcceso" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Volver a la lista</a>
+</div>

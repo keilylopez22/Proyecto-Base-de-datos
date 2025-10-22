@@ -8,4 +8,5 @@ public class Visitante
     public int? Telefono { get; set; }
     public string? MotivoVisita { get; set; }
     public int IdTipoDocumento { get; set; }
+    public string? TipoDocumento { get; set; } 
 }
