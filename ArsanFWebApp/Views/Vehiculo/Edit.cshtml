@@ -1,0 +1,93 @@
+@model ArsanWebApp.Models.Vehiculo
+
+<h2>Editar Vehículo</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="IdVehiculo" />
+    
+    <!-- Mismo contenido que la vista Create, pero con los valores actuales -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Placa">Placa *</label>
+                <input asp-for="Placa" class="form-control" required />
+                <span asp-validation-for="Placa" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Año">Año</label>
+                <input asp-for="Año" class="form-control" type="number" min="1900" max="@(DateTime.Now.Year + 1)" />
+                <span asp-validation-for="Año" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="IdLinea">Línea *</label>
+                <select asp-for="IdLinea" class="form-control" asp-items="ViewBag.Lineas" required>
+                    <option value="">-- Seleccione una línea --</option>
+                </select>
+                <span asp-validation-for="IdLinea" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="NumeroVivienda">Vivienda *</label>
+                <select asp-for="NumeroVivienda" class="form-control" asp-items="ViewBag.Viviendas" required id="viviendaSelect">
+                    <option value="">-- Seleccione una vivienda --</option>
+                </select>
+                <span asp-validation-for="NumeroVivienda" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdCluster">Cluster *</label>
+        <select asp-for="IdCluster" class="form-control" asp-items="ViewBag.Clusters" required id="clusterSelect">
+            <option value="">-- Seleccione un cluster --</option>
+        </select>
+        <span asp-validation-for="IdCluster" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Mismo JavaScript que en Create
+        document.addEventListener('DOMContentLoaded', function() {
+            const viviendaSelect = document.getElementById('viviendaSelect');
+            const clusterSelect = document.getElementById('clusterSelect');
+
+            if (viviendaSelect && clusterSelect) {
+                viviendaSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    
+                    if (selectedOption.value && selectedOption.text) {
+                        const text = selectedOption.text;
+                        const clusterMatch = text.match(/ - (.+)$/);
+                        
+                        if (clusterMatch && clusterMatch[1]) {
+                            const clusterName = clusterMatch[1];
+                            
+                            for (let i = 0; i < clusterSelect.options.length; i++) {
+                                if (clusterSelect.options[i].text === clusterName) {
+                                    clusterSelect.value = clusterSelect.options[i].value;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        clusterSelect.value = '';
+                    }
+                });
+            }
+        });
+    </script>
+}

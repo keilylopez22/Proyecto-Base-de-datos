@@ -1,0 +1,132 @@
+@model ArsanWebApp.Models.Vehiculo
+
+<h2>Registrar Nuevo Vehículo</h2>
+
+<form asp-action="Create" id="vehiculoForm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Placa">Placa *</label>
+                <input asp-for="Placa" class="form-control" required />
+                <span asp-validation-for="Placa" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Año">Año</label>
+                <input asp-for="Año" class="form-control" type="number" min="1900" max="@(DateTime.Now.Year + 1)" />
+                <span asp-validation-for="Año" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="IdLinea">Línea *</label>
+                <select asp-for="IdLinea" class="form-control" asp-items="ViewBag.Lineas" required id="lineaSelect">
+                    <option value="">-- Seleccione una línea --</option>
+                </select>
+                <span asp-validation-for="IdLinea" class="text-danger"></span>
+                <!-- Campo oculto para IdMarca -->
+                <input type="hidden" asp-for="IdMarca" id="idMarcaHidden" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="NumeroVivienda">Vivienda *</label>
+                <select asp-for="NumeroVivienda" class="form-control" asp-items="ViewBag.Viviendas" required id="viviendaSelect">
+                    <option value="">-- Seleccione una vivienda --</option>
+                </select>
+                <span asp-validation-for="NumeroVivienda" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdCluster">Cluster *</label>
+        <select asp-for="IdCluster" class="form-control" asp-items="ViewBag.Clusters" required id="clusterSelect">
+            <option value="">-- Seleccione un cluster --</option>
+        </select>
+        <span asp-validation-for="IdCluster" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const lineaSelect = document.getElementById('lineaSelect');
+            const idMarcaHidden = document.getElementById('idMarcaHidden');
+            const viviendaSelect = document.getElementById('viviendaSelect');
+            const clusterSelect = document.getElementById('clusterSelect');
+
+            // Mapeo de líneas a marcas (desde el ViewBag)
+            const lineaMarcaMap = {};
+            @if (ViewBag.LineasConMarca != null)
+            {
+                foreach (var item in ViewBag.LineasConMarca)
+                {
+                    <text>
+                    lineaMarcaMap['@item.IdLinea'] = '@item.IdMarca';
+                    </text>
+                }
+            }
+
+            // Mapeo de viviendas a clusters
+            const viviendaClusterMap = {};
+            @if (ViewBag.Viviendas != null)
+            {
+                foreach (var item in ViewBag.Viviendas)
+                {
+                    <text>
+                    viviendaClusterMap['@item.Value'] = '@item.Text'.split(' - ')[1];
+                    </text>
+                }
+            }
+
+            // Cuando se selecciona una línea, actualizar IdMarca
+            if (lineaSelect && idMarcaHidden) {
+                lineaSelect.addEventListener('change', function() {
+                    const selectedLineaId = this.value;
+                    if (selectedLineaId && lineaMarcaMap[selectedLineaId]) {
+                        idMarcaHidden.value = lineaMarcaMap[selectedLineaId];
+                    } else {
+                        idMarcaHidden.value = '';
+                    }
+                });
+            }
+
+            // Cuando se selecciona una vivienda, actualizar cluster
+            if (viviendaSelect && clusterSelect) {
+                viviendaSelect.addEventListener('change', function() {
+                    const selectedViviendaId = this.value;
+                    if (selectedViviendaId && viviendaClusterMap[selectedViviendaId]) {
+                        const clusterName = viviendaClusterMap[selectedViviendaId];
+                        for (let i = 0; i < clusterSelect.options.length; i++) {
+                            if (clusterSelect.options[i].text === clusterName) {
+                                clusterSelect.value = clusterSelect.options[i].value;
+                                break;
+                            }
+                        }
+                    } else {
+                        clusterSelect.value = '';
+                    }
+                });
+            }
+
+            // Validar antes de enviar el formulario
+            document.getElementById('vehiculoForm').addEventListener('submit', function(e) {
+                if (!idMarcaHidden.value) {
+                    e.preventDefault();
+                    alert('Por favor seleccione una línea válida');
+                    return false;
+                }
+            });
+        });
+    </script>
+}

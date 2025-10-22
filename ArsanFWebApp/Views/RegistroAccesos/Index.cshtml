@@ -1,0 +1,95 @@
+@model List<ArsanWebApp.Models.RegistroAccesos>
+
+<h2>Registros de Acceso</h2>
+
+<!-- Barra de búsqueda -->
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Búsqueda</h5>
+        <form asp-action="SearchByDate" method="get" class="row">
+            <div class="col-md-6">
+                <label for="fecha" class="form-label">Buscar por fecha:</label>
+                <div class="input-group">
+                    <input type="date" name="fecha" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")">
+                    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<p><a asp-action="Create" class="btn btn-primary">Registrar Nuevo Acceso</a></p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (ViewBag.SearchType != null)
+{
+    <div class="alert alert-info">
+        <strong>Búsqueda:</strong> @ViewBag.SearchType
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary float-end">Ver todos</a>
+    </div>
+}
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha Ingreso</th>
+                <th>Fecha Salida</th>
+                <th>Vehículo</th>
+                <th>Visitante</th>
+                <th>Residente</th>
+                <th>Garita</th>
+                <th>Cluster</th>
+                <th>Empleado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var registro in Model)
+            {
+                <tr>
+                    <td>@registro.IdAcceso</td>
+                    <td>@(registro.FechaIngreso.HasValue ? registro.FechaIngreso.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</td>
+                    <td>@(registro.FechaSalida.HasValue ? registro.FechaSalida.Value.ToString("dd/MM/yyyy HH:mm") : "En curso")</td>
+                    <td>@(registro.Placa ?? "N/A")</td>
+                    <td>@(registro.Visitante ?? "N/A")</td>
+                    <td>@(registro.Residente ?? "N/A")</td>
+                    <td>@registro.Garita</td>
+                    <td>@registro.Cluster</td>
+                    <td>@registro.Empleado</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@registro.IdAcceso" class="btn btn-sm btn-info">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@registro.IdAcceso" class="btn btn-sm btn-warning">Editar</a>
+                        <form asp-action="Delete" asp-route-id="@registro.IdAcceso" method="post" style="display:inline;" 
+                              onsubmit="return confirm('¿Eliminar este registro?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">
+        @if (ViewBag.SearchType != null)
+        {
+            <p>No se encontraron registros para la búsqueda actual.</p>
+        }
+        else
+        {
+            <p>No hay registros de acceso.</p>
+        }
+    </div>
+}

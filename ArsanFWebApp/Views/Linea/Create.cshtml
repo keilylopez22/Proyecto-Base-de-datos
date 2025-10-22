@@ -1,0 +1,21 @@
+@model ArsanWebApp.Models.Linea
+
+<h2>Crear Línea</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Descripcion">Descripción</label>
+        <input asp-for="Descripcion" class="form-control" />
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdMarca">Marca</label>
+        <select asp-for="IdMarca" class="form-control" 
+                asp-items="@(new SelectList(ViewBag.Marcas, "IdMarca", "Descripcion"))">
+            <option value="">-- Seleccione una marca --</option>
+        </select>
+        <span asp-validation-for="IdMarca" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

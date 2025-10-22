@@ -1,0 +1,31 @@
+@model ArsanWebApp.Models.Vehiculo
+
+<h2>Detalles del Vehículo</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">ID:</dt>
+    <dd class="col-sm-9">@Model.IdVehiculo</dd>
+
+    <dt class="col-sm-3">Placa:</dt>
+    <dd class="col-sm-9">@Model.Placa</dd>
+
+    <dt class="col-sm-3">Año:</dt>
+    <dd class="col-sm-9">@Model.Año</dd>
+
+    <dt class="col-sm-3">Línea:</dt>
+    <dd class="col-sm-9">@Model.Linea</dd>
+
+    <dt class="col-sm-3">Marca:</dt>
+    <dd class="col-sm-9">@Model.Marca</dd>
+
+    <dt class="col-sm-3">Vivienda:</dt>
+    <dd class="col-sm-9">@Model.Vivienda</dd>
+
+    <dt class="col-sm-3">Cluster:</dt>
+    <dd class="col-sm-9">@Model.Cluster</dd>
+</dl>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdVehiculo" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+</div>
