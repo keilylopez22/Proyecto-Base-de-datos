@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
 
+
 namespace ArsanWebApp.Services;
 
 public class PersonaService
@@ -27,7 +28,56 @@ public class PersonaService
         return personas;
     }
 
- 
+    public async Task<(List<Persona> Items, int TotalCount)> ObtenerPersonasPaginadoAsync(
+    int pageIndex, 
+    int pageSize, 
+    string? cuiFilter = null, 
+    string? nombreFilter = null)
+{
+    using var conn = new SqlConnection(_connectionString);
+    await conn.OpenAsync();
+    using var cmd = new SqlCommand("SP_ObtenerPersonasPaginado", conn);
+    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+    cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+    cmd.Parameters.AddWithValue("@PageSize", pageSize);
+    cmd.Parameters.AddWithValue("@CuiFilter", (object?)cuiFilter ?? DBNull.Value);
+    cmd.Parameters.AddWithValue("@NombreFilter", (object?)nombreFilter ?? DBNull.Value);
+
+    var personas = new List<Persona>();
+    int totalCount = 0;
+
+    using (var reader = await cmd.ExecuteReaderAsync())
+    {
+        // Primer result set: personas
+        while (await reader.ReadAsync())
+        {
+            personas.Add(new Persona
+            {
+                IdPersona = Convert.ToInt32(reader["IdPersona"]),
+                Cui = reader["Cui"] as string ?? string.Empty,
+                PrimerNombre = reader["PrimerNombre"] as string ?? string.Empty,
+                SegundoNombre = reader["SegundoNombre"] as string,
+                PrimerApellido = reader["PrimerApellido"] as string ?? string.Empty,
+                SegundoApellido = reader["SegundoApellido"] as string,
+                Telefono = reader["Telefono"] as string,
+                Genero = reader["Genero"] as char?
+            });
+        }
+
+        // Segundo result set: TotalCount
+        if (await reader.NextResultAsync())
+        {
+            if (await reader.ReadAsync())
+            {
+                totalCount = Convert.ToInt32(reader["TotalCount"]);
+            }
+        }
+    }
+
+    return (personas, totalCount);
+}
+
+    
     public async Task<Persona?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
