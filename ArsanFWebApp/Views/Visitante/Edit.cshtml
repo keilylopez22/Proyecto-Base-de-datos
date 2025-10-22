@@ -1,0 +1,37 @@
+@model ArsanWebApp.Models.Visitante
+
+<h2>Editar Visitante</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="IdVisitante" />
+    <div class="form-group">
+        <label asp-for="NombreCompleto">Nombre Completo</label>
+        <input asp-for="NombreCompleto" class="form-control" />
+        <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdTipoDocumento">Tipo de Documento</label>
+        <select asp-for="IdTipoDocumento" class="form-control" 
+                asp-items="@(new SelectList(ViewBag.TiposDocumento, "IdTipoDocumento", "Nombre"))">
+            <option value="">-- Seleccione tipo de documento --</option>
+        </select>
+        <span asp-validation-for="IdTipoDocumento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="NumeroDocumento">Número de Documento</label>
+        <input asp-for="NumeroDocumento" class="form-control" />
+        <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Telefono">Teléfono</label>
+        <input asp-for="Telefono" class="form-control" />
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="MotivoVisita">Motivo de Visita</label>
+        <input asp-for="MotivoVisita" class="form-control" />
+        <span asp-validation-for="MotivoVisita" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

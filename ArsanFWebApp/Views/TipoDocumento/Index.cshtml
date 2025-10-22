@@ -1,0 +1,40 @@
+@model List<ArsanWebApp.Models.TipoDocumento>
+
+<h2>Tipos de Documento</h2>
+
+<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo Tipo</a></p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tipo in Model)
+        {
+            <tr>
+                <td>@tipo.IdTipoDocumento</td>
+                <td>@tipo.Nombre</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@tipo.IdTipoDocumento" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@tipo.IdTipoDocumento" method="post" style="display:inline;" 
+                          onsubmit="return confirm('¿Eliminar este tipo de documento?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
