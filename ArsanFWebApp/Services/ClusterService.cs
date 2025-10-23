@@ -105,4 +105,26 @@ public class ClusterService
     {
         return await _residencialService.ObtenerTodosAsync();
     }
+
+
+//este metodo se utiliza en el controlador de MultaVivienda para llenar el dropdown de Clusters
+    public async Task<List<Cluster>> ListarAsync()
+    {
+        var lista = new List<Cluster>();
+
+        using var conn = new SqlConnection(_connectionString);
+        using var cmd = new SqlCommand("SELECT IdCluster, Descripcion FROM Cluster", conn);
+        await conn.OpenAsync();
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            lista.Add(new Cluster
+            {
+                IdCluster = reader.GetInt32(reader.GetOrdinal("IdCluster")),
+                Descripcion = reader["Descripcion"] as string
+            });
+        }
+        return lista;
+    }
 }

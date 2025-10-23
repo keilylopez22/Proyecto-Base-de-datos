@@ -1,25 +1,64 @@
-@model List<ArsanWebApp.Models.Residencial>
+@model List<ArsanWebApp.Models.MultaVivienda>
+@{
+    ViewBag.Title = "Multas Vivienda";
+    int totalCount = ViewBag.TotalCount ?? 0;
+    int pageIndex = ViewBag.PageIndex ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+}
 
-<h2>Residenciales</h2>
-<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+<h1>Multas de Vivienda</h1>
 
-<table class="table table-striped">
+<!-- Filtros -->
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-3">
+        <input type="text" name="multaViviendaFilter" value="@ViewBag.MultaViviendaFilter" class="form-control" placeholder="Fecha infracción (yyyy-mm-dd)">
+    </div>
+    <div class="col-md-3">
+        <input type="text" name="tipoMultaFilter" value="@ViewBag.TipoMultaFilter" class="form-control" placeholder="Tipo de multa">
+    </div>
+    <div class="col-md-2">
+        <input type="number" name="numeroViviendaFilter" value="@ViewBag.NumeroViviendaFilter" class="form-control" placeholder="Número vivienda">
+    </div>
+    <div class="col-md-2">
+        <input type="number" name="clusterFilter" value="@ViewBag.ClusterFilter" class="form-control" placeholder="Cluster">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+</form>
+
+<a href="@Url.Action("Create")" class="btn btn-success mb-3">Nueva Multa</a>
+
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Nombre</th>
+            <th>Monto</th>
+            <th>Observaciones</th>
+            <th>Fecha Infracción</th>
+            <th>Fecha Registro</th>
+            <th>Estado Pago</th>
+            <th>Tipo Multa</th>
+            <th>Número Vivienda</th>
+            <th>Cluster</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var r in Model)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@r.IdResidencial</td>
-                <td>@r.Nombre</td>
+                <td>@item.Monto</td>
+                <td>@item.Observaciones</td>
+                <td>@item.FechaInfraccion?.ToString("yyyy-MM-dd")</td>
+                <td>@item.FechaRegistro?.ToString("yyyy-MM-dd")</td>
+                <td>@item.EstadoPago</td>
+                <td>@item.NombreTipoMulta</td>
+                <td>@item.NumeroVivienda</td>
+                <td>@item.NombreCluster</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@r.IdResidencial" class="btn btn-sm btn-warning">Editar</a>
-                    <form asp-action="Delete" asp-route-id="@r.IdResidencial" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este residencial?')">
+                    <a href="@Url.Action("Edit", new { id = item.IdMultaVivienda })" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@item.IdMultaVivienda" method="post" style="display:inline-block" onsubmit="return confirm('¿Eliminar esta multa?');">
                         <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                     </form>
                 </td>
@@ -27,3 +66,21 @@
         }
     </tbody>
 </table>
+
+<!-- Paginación -->
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize, multaViviendaFilter = ViewBag.MultaViviendaFilter, tipoMultaFilter = ViewBag.TipoMultaFilter, numeroViviendaFilter = ViewBag.NumeroViviendaFilter, clusterFilter = ViewBag.ClusterFilter })">Anterior</a>
+        </li>
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(pageIndex == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageIndex = i, pageSize, multaViviendaFilter = ViewBag.MultaViviendaFilter, tipoMultaFilter = ViewBag.TipoMultaFilter, numeroViviendaFilter = ViewBag.NumeroViviendaFilter, clusterFilter = ViewBag.ClusterFilter })">@i</a>
+            </li>
+        }
+        <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, multaViviendaFilter = ViewBag.MultaViviendaFilter, tipoMultaFilter = ViewBag.TipoMultaFilter, numeroViviendaFilter = ViewBag.NumeroViviendaFilter, clusterFilter = ViewBag.ClusterFilter })">Siguiente</a>
+        </li>
+    </ul>
+</nav>

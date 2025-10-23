@@ -11,4 +11,6 @@ public class MultaVivienda
     public int IdTipoMulta { get; set; }
     public int NumeroVivienda { get; set; }
     public int IdCluster { get; set; }
+    public string? NombreTipoMulta { get; set; }
+    public string? NombreCluster { get; set; }
 }

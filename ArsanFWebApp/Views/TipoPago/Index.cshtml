@@ -1,0 +1,37 @@
+@model List<ArsanWebApp.Models.TipoPago>
+
+<h2>Tipos de Pago</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.IdTipoPago</td>
+                <td>@t.Nombre</td>
+                <td>@t.Descripcion</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@t.IdTipoPago" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@t.IdTipoPago" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

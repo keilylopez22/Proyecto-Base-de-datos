@@ -1,13 +1,63 @@
-@model ArsanWebApp.Models.Residencial
+@model ArsanWebApp.Models.MultaVivienda
 
-<h2>Crear Residencial</h2>
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
-        <span asp-validation-for="Nombre" class="text-danger"></span>
+<h1>Nueva Multa Vivienda</h1>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Monto" class="form-label"></label>
+        <input asp-for="Monto" class="form-control" />
+        <span asp-validation-for="Monto" class="text-danger"></span>
     </div>
+
+    <div class="mb-3">
+        <label asp-for="Observaciones" class="form-label"></label>
+        <input asp-for="Observaciones" class="form-control" />
+        <span asp-validation-for="Observaciones" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FechaInfraccion" class="form-label"></label>
+        <input asp-for="FechaInfraccion" type="date" class="form-control" />
+        <span asp-validation-for="FechaInfraccion" class="text-danger"></span>
+    </div>
+     <div class="mb-3">
+        <label asp-for="FechaRegistro" class="form-label"></label>
+        <input asp-for="FechaRegistro" type="date" class="form-control" />
+        <span asp-validation-for="FechaRegistro" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EstadoPago" class="form-label"></label>
+        <input asp-for="EstadoPago" class="form-control" />
+        <span asp-validation-for="EstadoPago" class="text-danger"></span>
+    </div>
+    
+
+    <div class="mb-3">
+        <label asp-for="IdTipoMulta" class="form-label"></label>
+        <select asp-for="IdTipoMulta" class="form-control" asp-items="@(new SelectList(ViewBag.TiposMulta, "IdTipoMulta", "Nombre"))"></select>
+
+        <span asp-validation-for="IdTipoMulta" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NumeroVivienda" class="form-label"></label>
+        <input asp-for="NumeroVivienda" class="form-control" />
+        <span asp-validation-for="NumeroVivienda" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdCluster" class="form-label"></label>
+       <select asp-for="IdCluster" class="form-control" asp-items="@(new SelectList(ViewBag.Clusters, "IdCluster", "Descripcion"))"></select>
+
+        <span asp-validation-for="IdCluster" class="text-danger"></span>
+    </div>
+
     <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

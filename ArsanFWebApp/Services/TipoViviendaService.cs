@@ -13,7 +13,7 @@ public class TipoViviendaService
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
     }
 
-    // LISTAR TODOS
+  
     public async Task<List<TipoVivienda>> ObtenerTodosAsync()
     {
         var lista = new List<TipoVivienda>();
@@ -30,7 +30,6 @@ public class TipoViviendaService
         return lista;
     }
 
-    // BUSCAR POR ID
     public async Task<TipoVivienda?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -45,7 +44,6 @@ public class TipoViviendaService
         return null;
     }
 
-    // INSERTAR
     public async Task<int> InsertarAsync(TipoVivienda tipo)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -62,7 +60,7 @@ public class TipoViviendaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+
     public async Task<bool> ActualizarAsync(TipoVivienda tipo)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -80,7 +78,7 @@ public class TipoViviendaService
         return result != null;
     }
 
-    // ELIMINAR
+
     public async Task<bool> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -93,7 +91,6 @@ public class TipoViviendaService
         return result != null;
     }
 
-    // Método auxiliar para mapear el reader
     private static TipoVivienda MapTipoVivienda(SqlDataReader reader)
 {
     return new TipoVivienda
