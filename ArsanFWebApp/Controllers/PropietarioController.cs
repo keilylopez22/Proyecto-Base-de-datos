@@ -16,11 +16,26 @@ public class PropietarioController : Controller
     }
 
     
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        string? EstadoFilter,
+        string? NombreFilter,
+        int pageIndex = 1,
+        int pageSize = 10)
+        
     {
-        var propietarios = await _propietarioService.ObtenerTodosAsync();
-        return View(propietarios);
-    }
+        var (items, totalCount) = await _propietarioService.ObtenerTodosAsync(pageIndex, pageSize,EstadoFilter, NombreFilter);
+
+
+            
+
+        var paginatedList = new PaginatedList<Propietario>(items, totalCount, pageIndex, pageSize);
+        
+        ViewBag.EstadoFilter = EstadoFilter;
+        ViewBag.NombreFilter = NombreFilter;
+        ViewBag.PageSize = pageSize;
+        return View(paginatedList);
+        
+        }
 
     public async Task<IActionResult> Create()
     {

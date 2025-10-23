@@ -23,11 +23,11 @@ public class ClusterController : Controller
 
     
     public async Task<IActionResult> Index(
-    string? clusterFilter,
-    string? residencialFilter,
-    int pageIndex = 1,
-    int pageSize = 10)
-{
+        string? clusterFilter,
+        string? residencialFilter,
+        int pageIndex = 1,
+        int pageSize = 10)
+    {
     var (items, totalCount) = await _clusterService.ObtenerTodosAsync(
         pageIndex, pageSize, clusterFilter, residencialFilter);
 
@@ -39,7 +39,7 @@ public class ClusterController : Controller
     ViewBag.PageSize = pageSize;
 
     return View(paginatedList);
-}
+    }
 
     public async Task<IActionResult> Create()
     {

@@ -125,5 +125,5 @@ public class ViviendaService
 
     public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync(pageIndex: 1, pageSize: int.MaxValue).ContinueWith(t => t.Result.Items);
     public async Task<List<TipoVivienda>> ObtenerTiposViviendaAsync() => await _tipoViviendaService.ObtenerTodosAsync();
-    public async Task<List<Propietario>> ObtenerPropietariosAsync() => await _propietarioService.ObtenerTodosAsync();
+    public async Task<List<Propietario>> ObtenerPropietariosAsync() => await _propietarioService.ObtenerTodosAsync(1, int.MaxValue).ContinueWith(t => t.Result.items);
 }

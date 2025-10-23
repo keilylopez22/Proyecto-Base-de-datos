@@ -137,7 +137,7 @@ public class MiembroJuntaDirectivaService
         await _juntaDirectivaService.ObtenerTodasAsync();
 
     public async Task<List<Propietario>> ObtenerPropietariosAsync() =>
-        await _propietarioService.ObtenerTodosAsync();
+        await _propietarioService.ObtenerTodosAsync( 1, int.MaxValue).ContinueWith(t => t.Result.items);
 
     public async Task<List<PuestoJuntaDirectiva>> ObtenerPuestosAsync() =>
         await _puestoService.ObtenerTodosAsync();

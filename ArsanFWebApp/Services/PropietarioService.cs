@@ -16,26 +16,52 @@ public class PropietarioService
     }
 
   
-    public async Task<List<Propietario>> ObtenerTodosAsync()
+    public async Task<(List<Propietario> items, int TotalCount)> ObtenerTodosAsync(
+        int pageIndex,
+        int pageSize,
+        string? EstadoFilter = null,
+        string? NombreFilter = null
+
+
+    )
     {
-        var lista = new List<Propietario>();
+        
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllPropietarios", conn);
-        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@EstadoFilter", (object?)EstadoFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NombreFilter", (object?)NombreFilter ?? DBNull.Value);
+
+        var lista = new List<Propietario>();
+        int totalCount = 0;
+
+        using (var reader = await cmd.ExecuteReaderAsync())
+
         {
-            lista.Add(new Propietario
+            while (await reader.ReadAsync())
+                lista.Add(new Propietario
+                {
+                    IdPropietario = Convert.ToInt32(reader["IdPropietario"]),
+                    Estado = reader["Estado"] as string ?? string.Empty,
+                    IdPersona = Convert.ToInt32(reader["IdPersona"]),
+                    NombreCompleto = reader["NombreCompleto"] as string
+                });
+
+            if (await reader.NextResultAsync()) 
             {
-                IdPropietario = Convert.ToInt32(reader["IdPropietario"]),
-                Estado = reader["Estado"] as string ?? string.Empty,
-                IdPersona = Convert.ToInt32(reader["IdPersona"]),
-                NombreCompleto = reader["NombreCompleto"] as string
-            });
+                if (await reader.ReadAsync())
+                {
+                    totalCount = Convert.ToInt32(reader["TotalCount"]);
+                }
+            }
         }
-        return lista;
+
+        return (lista, totalCount);
+       
     }
 
 
