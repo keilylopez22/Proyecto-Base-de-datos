@@ -64,7 +64,7 @@ public class PersonaService
             });
         }
 
-        // Segundo result set: TotalCount
+        
         if (await reader.NextResultAsync())
         {
             if (await reader.ReadAsync())
