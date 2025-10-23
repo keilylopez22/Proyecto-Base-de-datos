@@ -8,17 +8,29 @@ public class ViviendaController : Controller
 {
     private readonly ViviendaService _service;
 
+
     public ViviendaController(ViviendaService service)
     {
         _service = service;
+        
     }
 
   
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        string? PropietarioFilter ,
+        string? TipoViviendaFilter,
+        string? ClusterFilter,
+        int PageIndex = 1,
+        int PageSize = 10)
     {
-        var viviendas = await _service.ObtenerTodasAsync();
-        return View(viviendas);
-    }
+        var (viviendas, totalCount) = await _service.ObtenerTodasAsync(PageIndex, PageSize, PropietarioFilter, TipoViviendaFilter,ClusterFilter);
+        var paginatedList = new PaginatedList<Vivienda>(viviendas, totalCount, PageIndex, PageSize);
+        ViewBag.PropietarioFilter = PropietarioFilter;
+        ViewBag.TipoViviendaFilter = TipoViviendaFilter;
+        ViewBag.ClusterFilter = ClusterFilter;
+        ViewBag.pageSize = PageSize;
+        return View(paginatedList);
+    }   
 
     public async Task<IActionResult> Create()
     {

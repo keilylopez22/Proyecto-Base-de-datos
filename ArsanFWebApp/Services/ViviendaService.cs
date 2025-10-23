@@ -24,27 +24,51 @@ public class ViviendaService
     }
 
  
-    public async Task<List<Vivienda>> ObtenerTodasAsync()
+    public async Task<(List<Vivienda> viviendas, int totalCount)> ObtenerTodasAsync(
+        int pageIndex,
+        int pageSize,
+        string? propietarioFilter ,
+        string? tipoViviendaFilter ,
+        string? clusterFilter)
     {
-        var lista = new List<Vivienda>();
+        
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllViviendas", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@PropietarioFilter", (object?)propietarioFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TipoViviendaFilter", (object?)tipoViviendaFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ClusterFilter", (object?)clusterFilter ?? DBNull.Value);
+        var viviendas = new List<Vivienda>();
+        int totalCount = 0;
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        using (var reader = await cmd.ExecuteReaderAsync())
+
         {
-            lista.Add(new Vivienda
+            while (await reader.ReadAsync())
             {
-                NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
-                IdCluster = Convert.ToInt32(reader["IdCluster"]), 
-                Cluster = reader["Cluster"] as string,
-                TipoVivienda = reader["TipoVivienda"] as string,
-                Propietario = reader["Propietario"] as string
-            });
+                viviendas.Add(new Vivienda
+                {
+                    NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
+                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                    Cluster = reader["Cluster"] as string,
+                    TipoVivienda = reader["TipoVivienda"] as string,
+                    Propietario = reader["Propietario"] as string
+                });
+
+            }
+            if (await reader.NextResultAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    totalCount = Convert.ToInt32(reader["TotalCount"]);
+                }
+            }
         }
-        return lista;
+        return (viviendas, totalCount);
+        
     }
 
   
