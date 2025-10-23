@@ -14,20 +14,39 @@ public class TipoViviendaService
     }
 
 
-    public async Task<List<TipoVivienda>> ObtenerTodosAsync()
+    public async Task<(List<TipoVivienda>items, int totalCount)> ObtenerTodosAsync(
+        int pageIndex,
+        int pageSize)
     {
-        var lista = new List<TipoVivienda>();
+        
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllTiposVivienda", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        var lista = new List<TipoVivienda>();
+        int totalCount = 0;
+
+        using (var reader = await cmd.ExecuteReaderAsync())
+
         {
-            lista.Add(MapTipoVivienda(reader));
+            while (await reader.ReadAsync())
+                lista.Add(MapTipoVivienda(reader));
+
+
+            if (await reader.NextResultAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    totalCount = Convert.ToInt32(reader["TotalCount"]
+                );
+                }
+            }
         }
-        return lista;
+        return (lista, totalCount);
+        
     }
 
 
