@@ -103,5 +103,5 @@ public class JuntaDirectivaService
     }
 
    
-    public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync();
+    public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync( pageIndex: 1, pageSize: int.MaxValue).ContinueWith(t => t.Result.Items);
 }

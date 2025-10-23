@@ -1,6 +1,31 @@
-@model List<ArsanWebApp.Models.Cluster>
+@model ArsanWebApp.Models.PaginatedList<ArsanWebApp.Models.Cluster>
 
 <h2>Clusters</h2>
+
+<!-- Formulario de filtros -->
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <input name="clusterFilter" value="@ViewBag.ClusterFilter" class="form-control" placeholder="Filtrar por nombre de cluster" />
+        </div>
+        <div class="col-md-3">
+            <input name="residencialFilter" value="@ViewBag.ResidencialFilter" class="form-control" placeholder="Filtrar por nombre Residencial" />
+        </div>
+        <div class="col-md-2">
+            <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                <option value="5" selected="@(ViewBag.PageSize == 2)">2 por página</option>
+                <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+        <div class="col-md-2">
+            <a asp-action="Create" class="btn btn-success">Crear Nueva</a>
+        </div>
+    </div>
+</form>
 <p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
 
 <table class="table table-striped">
@@ -29,3 +54,32 @@
         }
     </tbody>
 </table>
+
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Página">
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?pageIndex=@(Model.PageIndex - 1)&residencialFilter=@ViewBag.ResidencialFilter&clusterFilter=@ViewBag.ClusterFilter&pageSize=@ViewBag.PageSize">Anterior</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" href="?pageIndex=@ViewBag&residencialFilter=@ViewBag.ResidencialFilter&clusterFilter=@ViewBag.ClusterFilter&pageSize=@ViewBag.PageSize">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?pageIndex=@(Model.PageIndex + 1)&residencialFilter=@ViewBag.ResidencialFilter&clusterFilter=@ViewBag.ClusterFilter&pageSize=@ViewBag.PageSize">Siguiente</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

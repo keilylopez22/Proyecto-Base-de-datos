@@ -19,7 +19,7 @@ public class PersonaService
         var personas = new List<Persona>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SELECT * FROM Persona", conn);
+        using var cmd = new SqlCommand("SP_SelectAllPersonas", conn);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
