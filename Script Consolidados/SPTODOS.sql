@@ -151,7 +151,7 @@ END;
 GO
 
 -- ACTUALIZAR
-CREATE OR ALTER PROCEDURE PSActualizarCluster
+CREATE OR ALTER PROCEDURE SP_ActualizarCluster
 @IdCluster INT,
 @Descripcion VARCHAR (30)
 AS
@@ -180,7 +180,7 @@ GO
 -- #############################################
 
 -- INSERTAR
-CREATE OR ALTER PROCEDURE SP__InsertarPersona
+CREATE OR ALTER PROCEDURE SP_InsertarPersona
 @Cui VARCHAR(30) ,
 @PrimerNombre VARCHAR(30) ,
 @SegundoNombre VARCHAR(30) ,
@@ -533,8 +533,15 @@ GO
 
 -- BUSCAR TODOS (SELECT ALL con JOINs)
 CREATE OR ALTER PROCEDURE SP_SelectAllViviendas
+@PageIndex INT = 1,
+@PageSize INT =10,
+@PropietarioFilter VARCHAR(30) = NULL,
+@ClusterFilter VARCHAR(30) = NULL,
+@TipoViviendaFilter VARCHAR(30) = NULL
 AS
 BEGIN
+
+    DECLARE @Offset INT  = (@PageIndex -1) * @PageSize;
     SELECT 
         C.IdCluster,
         V.NumeroVivienda,
@@ -549,12 +556,44 @@ BEGIN
     INNER JOIN Propietario AS P 
         ON V.IdPropietario = P.IdPropietario
     INNER JOIN Persona AS PR 
-        ON P.IdPersona = PR.IdPersona;
+        ON P.IdPersona = PR.IdPersona
+
+    WHERE
+        (@PropietarioFilter IS NULL OR 
+        PR.PrimerNombre LIKE '%' + @PropietarioFilter +'%' OR
+        PR.PrimerApellido LIKE '%'+ @PropietarioFilter + '%')AND
+        (@ClusterFilter  IS NULL OR C.Descripcion LIKE '%' + @ClusterFilter)AND
+        (@TipoViviendaFilter  IS NULL OR TV.Descripcion LIKE '%' + @TipoViviendaFilter + '%')
+        ORDER BY C.IdCluster, V.NumeroVivienda
+        OFFSET @Offset ROWS
+        FETCH NEXT @PageSize ROWS ONLY;
+
+        SELECT COUNT(*) AS TotalCount
+        FROM Vivienda AS V
+    INNER JOIN Cluster AS C 
+        ON V.IdCluster = C.IdCluster
+    INNER JOIN TipoVivienda AS TV 
+        ON V.IdTipoVivienda = TV.IdTipoVivienda
+    INNER JOIN Propietario AS P 
+        ON V.IdPropietario = P.IdPropietario
+    INNER JOIN Persona AS PR 
+        ON P.IdPersona = PR.IdPersona
+
+    WHERE
+        (@PropietarioFilter IS NULL OR 
+        PR.PrimerNombre LIKE '%' + @PropietarioFilter +'%' OR
+        PR.PrimerApellido LIKE '%'+ @PropietarioFilter + '%')AND
+        (@ClusterFilter  IS NULL OR C.Descripcion LIKE '%' + @ClusterFilter)AND
+        (@TipoViviendaFilter  IS NULL OR TV.Descripcion LIKE '%' + @TipoViviendaFilter + '%');
+        
+        
+
 END;
+EXEC SP_SelectAllViviendas
 GO
 
 -- BUSCAR POR CLAVE COMPUESTA (PK)
-Create OR Alter Procedure BuscarVivienda
+Create OR Alter Procedure SP_BuscarVivienda
 @NumeroVivienda INT,
 @IdCluster INT
 AS
@@ -565,7 +604,7 @@ End;
 GO
 
 -- BUSCAR POR PROPIETARIO (con JOINs a TipoVivienda y Persona)
-Create Or Alter Procedure buscarViviendaPorPropietario
+Create Or Alter Procedure SP_buscarViviendaPorPropietario
 @IdPropietario Int
 As
 Begin
@@ -653,7 +692,7 @@ BEGIN
 END;
 GO
 
-CREATE OR ALTER   PROCEDURE [dbo].[SP_ObtenerResidentes]
+CREATE OR ALTER PROCEDURE SP_ObtenerResidentes
 AS
 BEGIN
 SELECT r.IdResidente,
@@ -718,7 +757,7 @@ END;
 GO
 
 -- ELIMINAR
-CREATE OR ALTER PROCEDURE PSEliminarResidente
+CREATE OR ALTER PROCEDURE SP_EliminarResidente
 @IdResidente INT
 AS
 BEGIN
