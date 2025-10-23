@@ -1640,7 +1640,7 @@ GO
 -- #############################################
 
 -- Buscar empleado por nombre 
-CREATE OR ALTER PROCEDURE PS_BuscarEmpleadoPorNombre
+CREATE OR ALTER PROCEDURE SP_BuscarEmpleadoPorNombre
 @PrimerNombre VARCHAR(50),
 @PrimerApellido VARCHAR(50)
 AS
@@ -1651,7 +1651,7 @@ WHERE p.PrimerNombre = @PrimerNombre AND p.PrimerApellido = @PrimerApellido
 END
 
 GO
-CREATE OR ALTER PROCEDURE PS_ObtenerEmpleadosPorPuesto
+CREATE OR ALTER PROCEDURE SP_ObtenerEmpleadosPorPuesto
 @IdPuestoEmpleado INT
 AS
 BEGIN
