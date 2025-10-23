@@ -14,10 +14,15 @@ public class TipoViviendaController : Controller
     }
 
   
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        int PageIndex = 1,
+        int pageSize = 10)
     {
-        var tipos = await _service.ObtenerTodosAsync();
-        return View(tipos);
+        var (items, totalCount) = await _service.ObtenerTodosAsync(PageIndex, pageSize);
+        
+        var PaginatedList = new PaginatedList<TipoVivienda>(items, totalCount, PageIndex, pageSize);
+        ViewBag.pageSize = pageSize;
+        return View(PaginatedList);
     }
 
 

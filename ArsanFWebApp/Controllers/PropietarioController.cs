@@ -35,7 +35,7 @@ public class PropietarioController : Controller
         ViewBag.PageSize = pageSize;
         return View(paginatedList);
         
-        }
+    }
 
     public async Task<IActionResult> Create()
     {
