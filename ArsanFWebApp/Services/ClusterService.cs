@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
 
+
 namespace ArsanWebApp.Services;
 
 public class ClusterService
@@ -16,25 +17,47 @@ public class ClusterService
     }
 
 
-    public async Task<List<Cluster>> ObtenerTodosAsync()
+    public async Task<(List<Cluster> Items, int TotalCount)> ObtenerTodosAsync(
+        int pageIndex,
+        int pageSize,
+        string? clusterFilter = null,
+        string? residencialFilter = null)
     {
-        var lista = new List<Cluster>();
+       
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllClusters", conn);
-        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@clusterFilter", (object?)clusterFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ResidencialFilter", (object?)residencialFilter ?? DBNull.Value);
+
+        var clusters = new List<Cluster>();
+        int totalCount = 0;
+
+        using (var reader = await cmd.ExecuteReaderAsync())
         {
-            lista.Add(new Cluster
+            while (await reader.ReadAsync())
+                clusters.Add(new Cluster
+                {
+                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                    Descripcion = reader["NombreCluster"] as string ?? string.Empty,
+                    Residencial = reader["Residencial"] as string
+                });
+            
+             if (await reader.NextResultAsync()) 
             {
-                IdCluster = Convert.ToInt32(reader["IdCluster"]),
-                Descripcion = reader["NombreCluster"] as string ?? string.Empty,
-                Residencial = reader["Residencial"] as string
-            });
+                if (await reader.ReadAsync())
+                {
+                    totalCount = Convert.ToInt32(reader["TotalCount"]);
+                }
+            }
         }
-        return lista;
+
+        return (clusters, totalCount);
     }
 
     public async Task<Cluster?> BuscarPorIdAsync(int id)

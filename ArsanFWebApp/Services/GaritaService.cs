@@ -107,5 +107,6 @@ public class GaritaService
 
 
     public async Task<List<Cluster>> ObtenerClustersAsync() => 
-        await _clusterService.ObtenerTodosAsync();
+        await _clusterService.ObtenerTodosAsync(pageIndex: 1, pageSize: int.MaxValue)
+            .ContinueWith(t => t.Result.Items);
 }
