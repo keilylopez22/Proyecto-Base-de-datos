@@ -123,6 +123,8 @@ BEGIN
         AND (@ClusterFilter IS NULL OR C.Descripcion LIKE '%' + @ClusterFilter + '%')
 
 END;
+
+EXEC  SP_SelectAllClusters
 GO
 
 -- BUSCAR POR ID (PK)
@@ -197,10 +199,37 @@ GO
 
 -- BUSCAR TODOS (SELECT ALL)
 CREATE OR ALTER PROCEDURE SP_SelectAllPersonas
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @CuiFilter VARCHAR(30) = NULL,
+    @NombreFilter VARCHAR(30) = NULL
 AS
 BEGIN
-    SELECT *
-    FROM Persona;
+   
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT 
+        IdPersona, Cui, PrimerNombre, SegundoNombre, 
+        PrimerApellido, SegundoApellido, Telefono, Genero
+    FROM Persona
+    WHERE 
+        (@CuiFilter IS NULL OR Cui LIKE '%' + @CuiFilter + '%')
+        AND (@NombreFilter IS NULL OR 
+             PrimerNombre LIKE '%' + @NombreFilter + '%' OR
+             PrimerApellido LIKE '%' + @NombreFilter + '%')
+    ORDER BY IdPersona
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    -- Devolver total de registros (para el paginador)
+    SELECT COUNT(*) AS TotalCount
+    FROM Persona
+    WHERE 
+        (@CuiFilter IS NULL OR Cui LIKE '%' + @CuiFilter + '%')
+        AND (@NombreFilter IS NULL OR 
+             PrimerNombre LIKE '%' + @NombreFilter + '%' OR
+             PrimerApellido LIKE '%' + @NombreFilter + '%');
 END;
 GO
 
@@ -299,8 +328,13 @@ GO
 
 -- BUSCAR TODOS (SELECT ALL con JOIN)
 CREATE OR ALTER PROCEDURE SP_SelectAllPropietarios
+@PageIndex INT =1,
+@PageSize INT = 10,
+@EstadoFilter VARCHAR(10) = NULL,
+@NombreFilter VARCHAR(30) = NULL
 AS
 BEGIN
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
     SELECT 
         P.IdPropietario, 
         P.Estado,
@@ -308,8 +342,26 @@ BEGIN
         CONCAT(PR.PrimerNombre, ' ', COALESCE(PR.SegundoNombre, ''), ' ', PR.PrimerApellido, ' ', COALESCE(PR.SegundoApellido, '')) AS NombreCompleto
     FROM Propietario AS P
     INNER JOIN Persona AS PR 
-        ON P.IdPersona = PR.IdPersona;
+        ON P.IdPersona = PR.IdPersona
+    WHERE 
+        (@EstadoFilter IS NULL OR P.Estado LIKE '%' + @EstadoFilter + '%' )
+        AND (@NombreFilter IS NULL OR PR.PrimerNombre LIKE '%' + @NombreFilter + '%' 
+        OR PR.PrimerApellido LIKE '%' + @NombreFilter + '%')
+    ORDER BY IdPropietario
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    FROM Propietario AS P
+    INNER JOIN Persona AS PR 
+    ON P.IdPersona = PR.IdPersona
+    WHERE
+    (@EstadoFilter IS NULL OR P.Estado LIKE '%' + @EstadoFilter + '%' )
+        AND (@NombreFilter IS NULL OR PR.PrimerNombre LIKE '%' + @NombreFilter + '%' 
+        OR PR.PrimerApellido LIKE '%' + @NombreFilter + '%');
+
 END;
+EXEC SP_SelectAllPropietarios
 GO
 
 -- BUSCAR POR ID (PK)
@@ -387,10 +439,20 @@ GO
 
 -- BUSCAR TODOS (SELECT ALL)
 CREATE OR ALTER PROCEDURE SP_SelectAllTiposVivienda
+@PageIndex INT = 1,
+@PageSize INT = 10
 AS
 BEGIN
+    
+    Declare @Offset INT = (@PageIndex -1 ) * @PageSize;
     SELECT *
-    FROM TipoVivienda;
+    FROM TipoVivienda
+    ORDER BY IdTipoVivienda
+    OFFSET @Offset ROWS
+    FETCH NEXT  @PageSize ROWS ONLY;
+
+    SELECT  COUNT(*) AS TotalCount
+    FROM  TipoVivienda
 END;
 GO
 
@@ -3253,3 +3315,37 @@ BEGIN
 		END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE SP_ObtenerPersonasPaginado
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @CuiFilter VARCHAR(30) = NULL,
+    @NombreFilter VARCHAR(30) = NULL
+AS
+BEGIN
+   
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT 
+        IdPersona, Cui, PrimerNombre, SegundoNombre, 
+        PrimerApellido, SegundoApellido, Telefono, Genero
+    FROM Persona
+    WHERE 
+        (@CuiFilter IS NULL OR Cui LIKE '%' + @CuiFilter + '%')
+        AND (@NombreFilter IS NULL OR 
+             PrimerNombre LIKE '%' + @NombreFilter + '%' OR
+             PrimerApellido LIKE '%' + @NombreFilter + '%')
+    ORDER BY IdPersona
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    
+    SELECT COUNT(*) AS TotalCount
+    FROM Persona
+    WHERE 
+        (@CuiFilter IS NULL OR Cui LIKE '%' + @CuiFilter + '%')
+        AND (@NombreFilter IS NULL OR 
+             PrimerNombre LIKE '%' + @NombreFilter + '%' OR
+             PrimerApellido LIKE '%' + @NombreFilter + '%');
+END;
