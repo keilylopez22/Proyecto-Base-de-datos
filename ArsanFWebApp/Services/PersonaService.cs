@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
 
+
 namespace ArsanWebApp.Services;
 
 public class PersonaService
@@ -13,13 +14,12 @@ public class PersonaService
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
     }
 
-    // LISTAR (opcional: podrías hacer un SP para listar todas)
     public async Task<List<Persona>> ObtenerTodasAsync()
     {
         var personas = new List<Persona>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SELECT * FROM Persona", conn);
+        using var cmd = new SqlCommand("SP_SelectAllPersonas", conn);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -28,7 +28,56 @@ public class PersonaService
         return personas;
     }
 
-    // BUSCAR POR ID
+    public async Task<(List<Persona> Items, int TotalCount)> ObtenerPersonasPaginadoAsync(
+    int pageIndex, 
+    int pageSize, 
+    string? cuiFilter = null, 
+    string? nombreFilter = null)
+{
+    using var conn = new SqlConnection(_connectionString);
+    await conn.OpenAsync();
+    using var cmd = new SqlCommand("SP_ObtenerPersonasPaginado", conn);
+    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+    cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+    cmd.Parameters.AddWithValue("@PageSize", pageSize);
+    cmd.Parameters.AddWithValue("@CuiFilter", (object?)cuiFilter ?? DBNull.Value);
+    cmd.Parameters.AddWithValue("@NombreFilter", (object?)nombreFilter ?? DBNull.Value);
+
+    var personas = new List<Persona>();
+    int totalCount = 0;
+
+    using (var reader = await cmd.ExecuteReaderAsync())
+    {
+        // Primer result set: personas
+        while (await reader.ReadAsync())
+        {
+            personas.Add(new Persona
+            {
+                IdPersona = Convert.ToInt32(reader["IdPersona"]),
+                Cui = reader["Cui"] as string ?? string.Empty,
+                PrimerNombre = reader["PrimerNombre"] as string ?? string.Empty,
+                SegundoNombre = reader["SegundoNombre"] as string,
+                PrimerApellido = reader["PrimerApellido"] as string ?? string.Empty,
+                SegundoApellido = reader["SegundoApellido"] as string,
+                Telefono = reader["Telefono"] as string,
+                Genero = reader["Genero"] as char?
+            });
+        }
+
+        // Segundo result set: TotalCount
+        if (await reader.NextResultAsync())
+        {
+            if (await reader.ReadAsync())
+            {
+                totalCount = Convert.ToInt32(reader["TotalCount"]);
+            }
+        }
+    }
+
+    return (personas, totalCount);
+}
+
+    
     public async Task<Persona?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -43,7 +92,7 @@ public class PersonaService
         return null;
     }
 
-    // INSERTAR
+
     public async Task<int> InsertarAsync(Persona persona)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -64,7 +113,7 @@ public class PersonaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+ 
     public async Task<bool> ActualizarAsync(Persona persona)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -86,7 +135,7 @@ public class PersonaService
         return result != null;
     }
 
-    // ELIMINAR
+ 
     public async Task<bool> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -118,21 +167,4 @@ public class PersonaService
         };
     }
 
-    // Método auxiliar para mapear el reader
-    /*private static Persona MapPersona(SqlDataReader reader)
-    {
-        return new Persona
-        {
-            IdPersona = reader.GetInt32("IdPersona"),
-            Cui = reader.GetString("Cui"),
-            PrimerNombre = reader.GetString("PrimerNombre"),
-            SegundoNombre = reader.IsDBNull("SegundoNombre") ? null : reader.GetString("SegundoNombre"),
-            PrimerApellido = reader.GetString("PrimerApellido"),
-            SegundoApellido = reader.IsDBNull("SegundoApellido") ? null : reader.GetString("SegundoApellido"),
-            Telefono = reader.IsDBNull("Telefono") ? null : reader.GetString("Telefono"),
-            Genero = reader.IsDBNull("Genero") ? null : reader.GetChar("Genero"),
-            FechaNacimiento = reader.IsDBNull("FechaNacimiento") ? null : DateOnly.FromDateTime(reader.GetDateTime("FechaNacimiento")),
-            EstadoCivil = reader.IsDBNull("EstadoCivil") ? null : reader.GetString("EstadoCivil")
-        };
-    }*/
 }

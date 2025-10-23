@@ -23,7 +23,7 @@ public class ViviendaService
         _propietarioService = propietarioService;
     }
 
-    // LISTAR TODOS (con JOINs)
+ 
     public async Task<List<Vivienda>> ObtenerTodasAsync()
     {
         var lista = new List<Vivienda>();
@@ -38,7 +38,7 @@ public class ViviendaService
             lista.Add(new Vivienda
             {
                 NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
-                IdCluster = Convert.ToInt32(reader["IdCluster"]), // No viene directamente, pero lo necesitamos para editar/eliminar
+                IdCluster = Convert.ToInt32(reader["IdCluster"]), 
                 Cluster = reader["Cluster"] as string,
                 TipoVivienda = reader["TipoVivienda"] as string,
                 Propietario = reader["Propietario"] as string
@@ -47,7 +47,7 @@ public class ViviendaService
         return lista;
     }
 
-    // BUSCAR POR CLAVE COMPUESTA
+  
     public async Task<Vivienda?> BuscarPorClaveAsync(int numeroVivienda, int idCluster)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -71,7 +71,7 @@ public class ViviendaService
         return null;
     }
 
-    // INSERTAR
+   
     public async Task<int> InsertarAsync(Vivienda vivienda)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -87,7 +87,6 @@ public class ViviendaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
     public async Task<bool> ActualizarAsync(Vivienda vivienda)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -103,7 +102,7 @@ public class ViviendaService
         return rowsAffected > 0;
     }
 
-    // ELIMINAR
+    
     public async Task<(bool exito, string mensaje)> EliminarAsync(int numeroVivienda, int idCluster)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -124,8 +123,7 @@ public class ViviendaService
         }
     }
 
-    // Métodos para obtener listas de dependencias
-    public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync();
+    public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync(pageIndex: 1, pageSize: int.MaxValue).ContinueWith(t => t.Result.Items);
     public async Task<List<TipoVivienda>> ObtenerTiposViviendaAsync() => await _tipoViviendaService.ObtenerTodosAsync();
-    public async Task<List<Propietario>> ObtenerPropietariosAsync() => await _propietarioService.ObtenerTodosAsync();
+    public async Task<List<Propietario>> ObtenerPropietariosAsync() => await _propietarioService.ObtenerTodosAsync(1, int.MaxValue).ContinueWith(t => t.Result.items);
 }

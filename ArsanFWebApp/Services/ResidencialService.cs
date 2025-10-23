@@ -13,7 +13,7 @@ public class ResidencialService
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
     }
 
-    // LISTAR TODOS
+   
     public async Task<List<Residencial>> ObtenerTodosAsync()
     {
         var lista = new List<Residencial>();
@@ -34,7 +34,6 @@ public class ResidencialService
         return lista;
     }
 
-    // BUSCAR POR ID
     public async Task<Residencial?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -57,7 +56,7 @@ public class ResidencialService
         return null;
     }
 
-    // INSERTAR
+   
     public async Task<int> InsertarAsync(Residencial residencial)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -70,7 +69,6 @@ public class ResidencialService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
     public async Task<bool> ActualizarAsync(Residencial residencial)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -84,7 +82,7 @@ public class ResidencialService
         return rowsAffected > 0;
     }
 
-    // ELIMINAR
+   
     public async Task<bool> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);

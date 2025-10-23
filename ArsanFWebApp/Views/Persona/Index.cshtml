@@ -1,13 +1,38 @@
-@model List<ArsanWebApp.Models.Persona>
+@model ArsanWebApp.Models.PaginatedList<ArsanWebApp.Models.Persona>
 
 <h2>Personas</h2>
-<p><a asp-action="Create" class="btn btn-primary">Crear Nueva</a></p>
 
+<!-- Formulario de filtros -->
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <input name="cuiFilter" value="@ViewBag.CuiFilter" class="form-control" placeholder="Filtrar por CUI" />
+        </div>
+        <div class="col-md-3">
+            <input name="nombreFilter" value="@ViewBag.NombreFilter" class="form-control" placeholder="Filtrar por nombre o apellido" />
+        </div>
+        <div class="col-md-2">
+            <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                <option value="5" selected="@(ViewBag.PageSize == 5)">5 por página</option>
+                <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+        <div class="col-md-2">
+            <a asp-action="Create" class="btn btn-success">Crear Nueva</a>
+        </div>
+    </div>
+</form>
+
+<!-- Tabla de datos -->
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Nombre Completo</th>
             <th>CUI</th>
+            <th>Nombre Completo</th>
             <th>Teléfono</th>
             <th>Acciones</th>
         </tr>
@@ -16,8 +41,8 @@
         @foreach (var p in Model)
         {
             <tr>
-                <td>@p.PrimerNombre @p.SegundoNombre @p.PrimerApellido @p.SegundoApellido</td>
                 <td>@p.Cui</td>
+                <td>@p.PrimerNombre @p.SegundoNombre @p.PrimerApellido @p.SegundoApellido</td>
                 <td>@p.Telefono</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@p.IdPersona" class="btn btn-sm btn-warning">Editar</a>
@@ -29,3 +54,32 @@
         }
     </tbody>
 </table>
+
+<!-- Paginación -->
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Página">
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?pageIndex=@(Model.PageIndex - 1)&cuiFilter=@ViewBag.CuiFilter&nombreFilter=@ViewBag.NombreFilter&pageSize=@ViewBag.PageSize">Anterior</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" href="?pageIndex=@i&cuiFilter=@ViewBag.CuiFilter&nombreFilter=@ViewBag.NombreFilter&pageSize=@ViewBag.PageSize">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?pageIndex=@(Model.PageIndex + 1)&cuiFilter=@ViewBag.CuiFilter&nombreFilter=@ViewBag.NombreFilter&pageSize=@ViewBag.PageSize">Siguiente</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

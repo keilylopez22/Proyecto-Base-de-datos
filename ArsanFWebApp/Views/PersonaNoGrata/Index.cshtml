@@ -1,0 +1,42 @@
+@model List<ArsanWebApp.Models.PersonaNoGrata>
+
+<h2>Personas No Gratas</h2>
+<p><a asp-action="Create" class="btn btn-primary">Agregar a Lista</a></p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Motivo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.NombreCompleto</td>
+                <td>@p.FechaInicio</td>
+                <td>@(p.FechaFin?.ToString("yyyy-MM-dd") ?? "Indefinido")</td>
+                <td>@p.Motivo</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.IdPersonaNoGrata" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@p.IdPersonaNoGrata" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar de la lista de no gratos?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

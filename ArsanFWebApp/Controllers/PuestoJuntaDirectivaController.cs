@@ -13,17 +13,15 @@ public class PuestoJuntaDirectivaController : Controller
         _service = service;
     }
 
-    // GET: PuestoJuntaDirectiva
     public async Task<IActionResult> Index()
     {
         var puestos = await _service.ObtenerTodosAsync();
         return View(puestos);
     }
 
-    // GET: PuestoJuntaDirectiva/Create
     public IActionResult Create() => View();
 
-    // POST: PuestoJuntaDirectiva/Create
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(PuestoJuntaDirectiva puesto)
@@ -36,7 +34,7 @@ public class PuestoJuntaDirectivaController : Controller
         return View(puesto);
     }
 
-    // GET: PuestoJuntaDirectiva/Edit/5
+
     public async Task<IActionResult> Edit(int id)
     {
         var puesto = await _service.BuscarPorIdAsync(id);
@@ -44,7 +42,6 @@ public class PuestoJuntaDirectivaController : Controller
         return View(puesto);
     }
 
-    // POST: PuestoJuntaDirectiva/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, PuestoJuntaDirectiva puesto)
@@ -58,7 +55,7 @@ public class PuestoJuntaDirectivaController : Controller
         return View(puesto);
     }
 
-    // POST: PuestoJuntaDirectiva/Delete/5
+  
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)

@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
 
+
 namespace ArsanWebApp.Services;
 
 public class ClusterService
@@ -15,29 +16,50 @@ public class ClusterService
         _residencialService = residencialService;
     }
 
-    // LISTAR TODOS (con JOIN a Residencial)
-    public async Task<List<Cluster>> ObtenerTodosAsync()
+
+    public async Task<(List<Cluster> Items, int TotalCount)> ObtenerTodosAsync(
+        int pageIndex,
+        int pageSize,
+        string? clusterFilter = null,
+        string? residencialFilter = null)
     {
-        var lista = new List<Cluster>();
+       
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllClusters", conn);
-        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@clusterFilter", (object?)clusterFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ResidencialFilter", (object?)residencialFilter ?? DBNull.Value);
+
+        var clusters = new List<Cluster>();
+        int totalCount = 0;
+
+        using (var reader = await cmd.ExecuteReaderAsync())
         {
-            lista.Add(new Cluster
+            while (await reader.ReadAsync())
+                clusters.Add(new Cluster
+                {
+                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                    Descripcion = reader["NombreCluster"] as string ?? string.Empty,
+                    Residencial = reader["Residencial"] as string
+                });
+            
+             if (await reader.NextResultAsync()) 
             {
-                IdCluster = Convert.ToInt32(reader["IdCluster"]),
-                Descripcion = reader["NombreCluster"] as string ?? string.Empty,
-                Residencial = reader["Residencial"] as string
-            });
+                if (await reader.ReadAsync())
+                {
+                    totalCount = Convert.ToInt32(reader["TotalCount"]);
+                }
+            }
         }
-        return lista;
+
+        return (clusters, totalCount);
     }
 
-    // BUSCAR POR ID
     public async Task<Cluster?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -59,7 +81,7 @@ public class ClusterService
         return null;
     }
 
-    // INSERTAR
+ 
     public async Task<int> InsertarAsync(Cluster cluster)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -73,12 +95,12 @@ public class ClusterService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+ 
     public async Task<bool> ActualizarAsync(Cluster cluster)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SP_ActualizarCluster", conn); // ⚠️ Nota: nombre del SP_
+        using var cmd = new SqlCommand("SP_ActualizarCluster", conn); 
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@IdCluster", cluster.IdCluster);
         cmd.Parameters.AddWithValue("@Descripcion", cluster.Descripcion);
@@ -87,7 +109,7 @@ public class ClusterService
         return result != null;
     }
 
-    // ELIMINAR
+    
     public async Task<bool> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -100,7 +122,7 @@ public class ClusterService
         return result != null;
     }
 
-    // Obtener lista de Residenciales para el dropdown en Create/Edit
+   
     public async Task<List<Residencial>> ObtenerResidencialesAsync()
     {
         return await _residencialService.ObtenerTodosAsync();

@@ -13,17 +13,17 @@ public class TipoViviendaController : Controller
         _service = service;
     }
 
-    // GET: TipoVivienda
+  
     public async Task<IActionResult> Index()
     {
         var tipos = await _service.ObtenerTodosAsync();
         return View(tipos);
     }
 
-    // GET: TipoVivienda/Create
+
     public IActionResult Create() => View();
 
-    // POST: TipoVivienda/Create
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TipoVivienda tipo)
@@ -36,7 +36,7 @@ public class TipoViviendaController : Controller
         return View(tipo);
     }
 
-    // GET: TipoVivienda/Edit/5
+
     public async Task<IActionResult> Edit(int id)
     {
         var tipo = await _service.BuscarPorIdAsync(id);
@@ -44,7 +44,6 @@ public class TipoViviendaController : Controller
         return View(tipo);
     }
 
-    // POST: TipoVivienda/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TipoVivienda tipo)
@@ -58,7 +57,7 @@ public class TipoViviendaController : Controller
         return View(tipo);
     }
 
-    // POST: TipoVivienda/Delete/5
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)

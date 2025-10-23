@@ -30,6 +30,7 @@ public class TipoViviendaService
         return lista;
     }
 
+
     public async Task<TipoVivienda?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -43,6 +44,7 @@ public class TipoViviendaService
             return MapTipoVivienda(reader);
         return null;
     }
+
 
     public async Task<int> InsertarAsync(TipoVivienda tipo)
     {
@@ -91,6 +93,7 @@ public class TipoViviendaService
         return result != null;
     }
 
+   
     private static TipoVivienda MapTipoVivienda(SqlDataReader reader)
 {
     return new TipoVivienda

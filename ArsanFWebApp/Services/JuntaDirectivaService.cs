@@ -15,7 +15,7 @@ public class JuntaDirectivaService
         _clusterService = clusterService;
     }
 
-    // LISTAR TODOS (con JOIN a Cluster)
+  
     public async Task<List<JuntaDirectiva>> ObtenerTodasAsync()
     {
         var lista = new List<JuntaDirectiva>();
@@ -37,7 +37,7 @@ public class JuntaDirectivaService
         return lista;
     }
 
-    // BUSCAR POR ID
+  
     public async Task<JuntaDirectiva?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -58,7 +58,6 @@ public class JuntaDirectivaService
         return null;
     }
 
-    // INSERTAR
     public async Task<int> InsertarAsync(JuntaDirectiva junta)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -71,7 +70,7 @@ public class JuntaDirectivaService
         return Convert.ToInt32(result);
     }
 
-    // ACTUALIZAR
+
     public async Task<bool> ActualizarAsync(JuntaDirectiva junta)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -84,8 +83,6 @@ public class JuntaDirectivaService
         var result = await cmd.ExecuteScalarAsync();
         return result != null;
     }
-
-    // ELIMINAR
     public async Task<(bool exito, string mensaje)> EliminarAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -105,6 +102,6 @@ public class JuntaDirectivaService
         }
     }
 
-    // Obtener lista de Clusters para el dropdown
-    public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync();
+   
+    public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync( pageIndex: 1, pageSize: int.MaxValue).ContinueWith(t => t.Result.Items);
 }

@@ -18,6 +18,7 @@ builder.Services.AddScoped<JuntaDirectivaService>();
 builder.Services.AddScoped<MiembroJuntaDirectivaService>();
 builder.Services.AddScoped<TurnoService>();
 builder.Services.AddScoped<GaritaService>();
+builder.Services.AddScoped<PersonaNoGrataService>();
 
 
 

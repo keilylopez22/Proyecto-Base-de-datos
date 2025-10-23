@@ -1,82 +1,64 @@
+// Controllers/PersonaNoGrataController.cs
 using Microsoft.AspNetCore.Mvc;
 using ArsanWebApp.Models;
 using ArsanWebApp.Services;
 
-namespace ArsanFWebApp.Controllers;
+namespace ArsanWebApp.Controllers;
 
-public class PersonaController : Controller
+public class PersonaNoGrataController : Controller
 {
-    private readonly PersonaService _service;
+    private readonly PersonaNoGrataService _service;
 
-    public PersonaController(PersonaService service)
+    public PersonaNoGrataController(PersonaNoGrataService service)
     {
         _service = service;
     }
 
-
-    /*public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index()
     {
         var personas = await _service.ObtenerTodasAsync();
         return View(personas);
-    }*/
+    }
 
-    public async Task<IActionResult> Index(
-    string? cuiFilter,
-    string? nombreFilter,
-    int pageIndex = 1,
-    int pageSize = 10)
-{
-    var (personas, totalCount) = await _service.ObtenerPersonasPaginadoAsync(
-        pageIndex, pageSize, cuiFilter, nombreFilter);
-
-    var paginatedList = new PaginatedList<Persona>(personas, totalCount, pageIndex, pageSize);
-
-    // Pasar filtros a la vista para mantenerlos en el formulario
-    ViewBag.CuiFilter = cuiFilter;
-    ViewBag.NombreFilter = nombreFilter;
-    ViewBag.PageSize = pageSize;
-
-    return View(paginatedList);
-}
-
- 
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        ViewBag.Personas = await _service.ObtenerPersonasAsync();
         return View();
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Persona persona)
+    public async Task<IActionResult> Create(PersonaNoGrata persona)
     {
         if (ModelState.IsValid)
         {
             await _service.InsertarAsync(persona);
             return RedirectToAction(nameof(Index));
         }
+        ViewBag.Personas = await _service.ObtenerPersonasAsync();
         return View(persona);
     }
-
 
     public async Task<IActionResult> Edit(int id)
     {
         var persona = await _service.BuscarPorIdAsync(id);
         if (persona == null) return NotFound();
+
+        ViewBag.Personas = await _service.ObtenerPersonasAsync();
         return View(persona);
     }
 
-   
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Persona persona)
+    public async Task<IActionResult> Edit(int id, PersonaNoGrata persona)
     {
-        if (id != persona.IdPersona) return BadRequest();
+        if (id != persona.IdPersonaNoGrata) return BadRequest();
         if (ModelState.IsValid)
         {
             await _service.ActualizarAsync(persona);
             return RedirectToAction(nameof(Index));
         }
+        ViewBag.Personas = await _service.ObtenerPersonasAsync();
         return View(persona);
     }
 
@@ -84,7 +66,8 @@ public class PersonaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        await _service.EliminarAsync(id);
+        var (exito, mensaje) = await _service.EliminarAsync(id);
+        TempData[exito ? "Success" : "Error"] = mensaje;
         return RedirectToAction(nameof(Index));
     }
 }

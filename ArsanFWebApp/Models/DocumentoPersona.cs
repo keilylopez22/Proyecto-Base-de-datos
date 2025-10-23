@@ -3,7 +3,7 @@ namespace ArsanWebApp.Models;
 public class DocumentoPersona
 {
     public int NumeroDocumento { get; set; }
-    public int IdTipoDocumento { get; set; } // Parte de PK compuesta
-    public int IdPersona { get; set; }       // Parte de PK compuesta
+    public int IdTipoDocumento { get; set; } 
+    public int IdPersona { get; set; }       
     public string? Observaciones { get; set; }
 }

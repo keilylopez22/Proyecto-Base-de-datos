@@ -15,21 +15,39 @@ public class ClusterController : Controller
         _residencialService = residencialService;
     }
 
-    // GET: Cluster
-    public async Task<IActionResult> Index()
+    /*public async Task<IActionResult> Index()
     {
         var clusters = await _clusterService.ObtenerTodosAsync();
         return View(clusters);
+    }*/
+
+    
+    public async Task<IActionResult> Index(
+        string? clusterFilter,
+        string? residencialFilter,
+        int pageIndex = 1,
+        int pageSize = 10)
+    {
+    var (items, totalCount) = await _clusterService.ObtenerTodosAsync(
+        pageIndex, pageSize, clusterFilter, residencialFilter);
+
+    var paginatedList = new PaginatedList<Cluster>(items, totalCount, pageIndex, pageSize);
+
+    // Pasar filtros a la vista para mantenerlos en el formulario
+    ViewBag.ResidencialFilter = residencialFilter;
+    ViewBag.DescripcionFilter = clusterFilter;
+    ViewBag.PageSize = pageSize;
+
+    return View(paginatedList);
     }
 
-    // GET: Cluster/Create
     public async Task<IActionResult> Create()
     {
         ViewBag.Residenciales = await _residencialService.ObtenerTodosAsync();
         return View();
     }
 
-    // POST: Cluster/Create
+ 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Cluster cluster)
@@ -43,7 +61,6 @@ public class ClusterController : Controller
         return View(cluster);
     }
 
-    // GET: Cluster/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
         var cluster = await _clusterService.BuscarPorIdAsync(id);
@@ -53,7 +70,7 @@ public class ClusterController : Controller
         return View(cluster);
     }
 
-    // POST: Cluster/Edit/5
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Cluster cluster)
@@ -68,7 +85,6 @@ public class ClusterController : Controller
         return View(cluster);
     }
 
-    // POST: Cluster/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
