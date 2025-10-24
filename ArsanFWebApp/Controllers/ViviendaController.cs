@@ -23,7 +23,7 @@ public class ViviendaController : Controller
         int PageIndex = 1,
         int PageSize = 10)
     {
-        var (viviendas, totalCount) = await _service.ObtenerTodasAsync(PageIndex, PageSize, PropietarioFilter, TipoViviendaFilter,ClusterFilter);
+        var (viviendas, totalCount) = await _service.ObtenerTodasPaginadasAsync(PageIndex, PageSize, PropietarioFilter, TipoViviendaFilter,ClusterFilter);
         var paginatedList = new PaginatedList<Vivienda>(viviendas, totalCount, PageIndex, PageSize);
         ViewBag.PropietarioFilter = PropietarioFilter;
         ViewBag.TipoViviendaFilter = TipoViviendaFilter;

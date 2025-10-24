@@ -1,6 +1,46 @@
-@model List<ArsanWebApp.Models.ResidenteCompleto>
+@model ArsanWebApp.Models.PaginatedList<ArsanWebApp.Models.Residente>
 
 <h2>Lista de Residentes</h2>
+
+
+<form method="get" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-2">
+            <input name="nombreFilter" value="@ViewBag.NombreFilter" class="form-control" placeholder="Nombre o apellido" />
+        </div>
+        <div class="col-md-2">
+            <select name="esInquilinoFilter" class="form-control">
+                <option value="">Todos</option>
+                <option value="true" selected="@(ViewBag.EsInquilinoFilter?.ToString() == "True")">Inquilino</option>
+                <option value="false" selected="@(ViewBag.EsInquilinoFilter?.ToString() == "False")">Propietario</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input name="estadoFilter" value="@ViewBag.EstadoFilter" class="form-control" placeholder="Estado" />
+        </div>
+        <div class="col-md-2">
+            <input name="clusterFilter" value="@ViewBag.ClusterFilter" class="form-control" placeholder="Cluster" />
+        </div>
+        <div class="col-md-2">
+            <input name="numeroViviendaFilter" value="@ViewBag.NumeroViviendaFilter" class="form-control" placeholder="Núm. Vivienda" type="number" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a asp-action="Create" class="btn btn-success ms-2">Nuevo</a>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-2">
+            <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                <option value="5" selected="@(ViewBag.PageSize == 5)">5 por página</option>
+                <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+            </select>
+        </div>
+
+        
+    </div>
+</form>
 
 <table class="table table-striped">
     <thead>
@@ -11,6 +51,7 @@
             <th>Cluster</th>
             <th>Inquilino</th>
             <th>Estado</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -23,7 +64,51 @@
                 <td>@r.ClusterDescripcion</td>
                 <td>@(r.EsInquilino ? "Sí" : "No")</td>
                 <td>@(r.Estado ?? "Activo")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@r.IdResidente" class="btn btn-sm btn-warning">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@r.IdResidente" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar residente?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Página">
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?pageIndex=@(Model.PageIndex - 1)&nombreFilter=@ViewBag.NombreFilter&esInquilinoFilter=@ViewBag.EsInquilinoFilter&estadoFilter=@ViewBag.EstadoFilter&clusterFilter=@ViewBag.ClusterFilter&numeroViviendaFilter=@ViewBag.NumeroViviendaFilter&pageSize=@ViewBag.PageSize">
+                        Anterior
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" 
+                       href="?pageIndex=@i&nombreFilter=@ViewBag.NombreFilter&esInquilinoFilter=@ViewBag.EsInquilinoFilter&estadoFilter=@ViewBag.EstadoFilter&clusterFilter=@ViewBag.ClusterFilter&numeroViviendaFilter=@ViewBag.NumeroViviendaFilter&pageSize=@ViewBag.PageSize">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?pageIndex=@(Model.PageIndex + 1)&nombreFilter=@ViewBag.NombreFilter&esInquilinoFilter=@ViewBag.EsInquilinoFilter&estadoFilter=@ViewBag.EstadoFilter&clusterFilter=@ViewBag.ClusterFilter&numeroViviendaFilter=@ViewBag.NumeroViviendaFilter&pageSize=@ViewBag.PageSize">
+                        Siguiente
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}s

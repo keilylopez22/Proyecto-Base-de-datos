@@ -1,11 +1,20 @@
-namespace ArsanWebApp.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-public class Residente
+namespace ArsanWebApp.Models
 {
-    public int IdResidente { get; set; }
-    public int IdPersona { get; set; }
-    public int NumeroVivienda { get; set; }
-    public int IdCluster { get; set; }
-    public bool EsInquilino { get; set; }
-    public string? Estado { get; set; }
+    public class Residente
+    {
+        public int IdResidente { get; set; }
+        public int IdPersona { get; set; }
+        public int NumeroVivienda { get; set; }
+        public int IdCluster { get; set; }
+        public bool EsInquilino { get; set; }
+        public string? Estado { get; set; }
+  
+        public string ClusterDescripcion { get; set; } = string.Empty;
+        public string? NombreCompleto{get; set; }
+    }
 }
