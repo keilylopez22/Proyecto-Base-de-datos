@@ -14,22 +14,17 @@ namespace ArsanWebApp.Controllers
             _service = service;
         }
 
-        // INDEX con búsqueda y paginación
         public async Task<IActionResult> Index(int pagina = 1, int? idEmpleado = null, int? idTurno = null, DateTime? fechaAsignacion = null)
         {
-            var lista = await _service.ObtenerTodosAsync();
+            var (lista, total) = await _service.ObtenerTodosAsync(
+                pagina,
+                TamanioPagina,
+                idEmpleado,
+                idTurno,
+                fechaAsignacion
+            );
 
-            if (idEmpleado.HasValue)
-                lista = lista.Where(x => x.IdEmpleado == idEmpleado.Value).ToList();
-
-            if (idTurno.HasValue)
-                lista = lista.Where(x => x.IdTurno == idTurno.Value).ToList();
-
-            if (fechaAsignacion.HasValue)
-                lista = lista.Where(x => x.FechaAsignacion.Date == fechaAsignacion.Value.Date).ToList();
-
-            int totalPaginas = (int)Math.Ceiling(lista.Count / (double)TamanioPagina);
-            var listaPagina = lista.Skip((pagina - 1) * TamanioPagina).Take(TamanioPagina).ToList();
+            int totalPaginas = (int)Math.Ceiling(total / (double)TamanioPagina);
 
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = totalPaginas;
@@ -37,26 +32,22 @@ namespace ArsanWebApp.Controllers
             ViewBag.IdTurno = idTurno;
             ViewBag.FechaAsignacion = fechaAsignacion;
 
-            return View(listaPagina);
+            return View(lista);
         }
 
-        // GET Crear
         public IActionResult Crear() => View();
 
-        // POST Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(AsignacionTurno asignacion)
         {
-            if (!ModelState.IsValid)
-                return View(asignacion);
+            if (!ModelState.IsValid) return View(asignacion);
 
             await _service.CrearAsync(asignacion);
             TempData["Success"] = "Asignación creada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
-        // GET Editar
         public async Task<IActionResult> Editar(int id)
         {
             var asignacion = await _service.BuscarPorIdAsync(id);
@@ -64,20 +55,17 @@ namespace ArsanWebApp.Controllers
             return View(asignacion);
         }
 
-        // POST Editar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(AsignacionTurno asignacion)
         {
-            if (!ModelState.IsValid)
-                return View(asignacion);
+            if (!ModelState.IsValid) return View(asignacion);
 
             await _service.ActualizarAsync(asignacion);
             TempData["Success"] = "Asignación actualizada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
-        // GET Eliminar
         public async Task<IActionResult> Eliminar(int id)
         {
             var asignacion = await _service.BuscarPorIdAsync(id);
@@ -85,7 +73,6 @@ namespace ArsanWebApp.Controllers
             return View(asignacion);
         }
 
-        // POST Eliminar
         [HttpPost, ActionName("ConfirmarEliminar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmarEliminar(int id)

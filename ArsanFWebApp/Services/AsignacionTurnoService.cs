@@ -22,42 +22,42 @@ namespace ArsanWebApp.Services
                 IdEmpleado = Convert.ToInt32(dr["IdEmpleado"]),
                 IdTurno = Convert.ToInt32(dr["IdTurno"]),
                 FechaAsignacion = dr["FechaAsignacion"] == DBNull.Value ? default(DateTime) : Convert.ToDateTime(dr["FechaAsignacion"]),
-                NombreEmpleado = HasColumn(dr, "NombreEmpleado") ? dr["NombreEmpleado"] as string : (HasColumn(dr, "Nombre Empleado") ? dr["Nombre Empleado"] as string : null),
-                NombreTurno = HasColumn(dr, "Turno") ? dr["Turno"] as string : (HasColumn(dr, "NombreTurno") ? dr["NombreTurno"] as string : null)
+                NombreEmpleado = null, // Ya no mapeamos
+                NombreTurno = null     // Ya no mapeamos
             };
         }
 
-        private static bool HasColumn(SqlDataReader reader, string columnName)
-        {
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                if (string.Equals(reader.GetName(i), columnName, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            return false;
-        }
-
-        public async Task<List<AsignacionTurno>> ObtenerTodosAsync()
+        public async Task<(List<AsignacionTurno> lista, int total)> ObtenerTodosAsync(
+            int pagina,
+            int tamanioPagina,
+            int? idEmpleado = null,
+            int? idTurno = null,
+            DateTime? fechaFilter = null)
         {
             var lista = new List<AsignacionTurno>();
+            int total = 0;
 
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            var query = @"SELECT st.IdAsignacionTurno, st.IdEmpleado, st.IdTurno, st.FechaAsignacion,
-                          p.PrimerNombre + ' ' + p.PrimerApellido AS [Nombre Empleado],
-                          t.Descripcion AS Turno
-                          FROM AsignacionTurno st
-                          INNER JOIN Empleado e ON st.IdEmpleado = e.IdEmpleado
-                          INNER JOIN Persona p ON e.IdEmpleado = p.IdPersona
-                          INNER JOIN Turno t ON st.IdTurno = t.IdTurno";
+            using var cmd = new SqlCommand("SP_SelectAllAsignacionTurno", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
 
-            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PageIndex", pagina);
+            cmd.Parameters.AddWithValue("@PageSize", tamanioPagina);
+            cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado.HasValue ? idEmpleado.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdTurno", idTurno.HasValue ? idTurno.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@FechaFilter", fechaFilter.HasValue ? fechaFilter.Value : (object)DBNull.Value);
+
             using var reader = await cmd.ExecuteReaderAsync();
+
             while (await reader.ReadAsync())
                 lista.Add(Map(reader));
 
-            return lista;
+            if (await reader.NextResultAsync() && await reader.ReadAsync())
+                total = Convert.ToInt32(reader["TotalCount"]);
+
+            return (lista, total);
         }
 
         public async Task<AsignacionTurno?> BuscarPorIdAsync(int id)
@@ -76,24 +76,6 @@ namespace ArsanWebApp.Services
             return null;
         }
 
-        public async Task<List<AsignacionTurno>> BuscarPorEmpleadoAsync(int idEmpleado)
-        {
-            var lista = new List<AsignacionTurno>();
-
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            using var cmd = new SqlCommand("SP_BuscarAsignacionTurnoPorEmplead", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
-
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                lista.Add(Map(reader));
-
-            return lista;
-        }
-
         public async Task CrearAsync(AsignacionTurno asignacion)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -101,7 +83,7 @@ namespace ArsanWebApp.Services
 
             using var cmd = new SqlCommand("SP_CrearAsignacionTurno", conn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@FechaAsignacion", asignacion.FechaAsignacion == default(DateTime) ? (object)DBNull.Value : asignacion.FechaAsignacion);
+            cmd.Parameters.AddWithValue("@FechaAsignacion", asignacion.FechaAsignacion == default ? DBNull.Value : asignacion.FechaAsignacion);
             cmd.Parameters.AddWithValue("@IdEmpleado", asignacion.IdEmpleado);
             cmd.Parameters.AddWithValue("@IdTurno", asignacion.IdTurno);
 
@@ -116,7 +98,7 @@ namespace ArsanWebApp.Services
             using var cmd = new SqlCommand("SP_ActualizarAsignacionTurno", conn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@IdAsignacionTurno", asignacion.IdAsignacionTurno);
-            cmd.Parameters.AddWithValue("@FechaAsignacion", asignacion.FechaAsignacion == default(DateTime) ? (object)DBNull.Value : asignacion.FechaAsignacion);
+            cmd.Parameters.AddWithValue("@FechaAsignacion", asignacion.FechaAsignacion == default ? DBNull.Value : asignacion.FechaAsignacion);
             cmd.Parameters.AddWithValue("@IdEmpleado", asignacion.IdEmpleado);
             cmd.Parameters.AddWithValue("@IdTurno", asignacion.IdTurno);
 
