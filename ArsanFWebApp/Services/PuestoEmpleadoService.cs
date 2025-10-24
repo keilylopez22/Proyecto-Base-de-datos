@@ -24,42 +24,33 @@ public class PuestoEmpleadoService
         };
     }
 
-    // Obtener todos
-    public async Task<List<PuestoEmpleado>> ObtenerTodosAsync()
+    // Listado con paginación
+    public async Task<(List<PuestoEmpleado> Lista, int TotalCount)> ObtenerTodosAsync(int page = 1, int pageSize = 10, string nombreFilter = null)
     {
         var lista = new List<PuestoEmpleado>();
+        int totalCount = 0;
+
         using var con = new SqlConnection(_connectionString);
         await con.OpenAsync();
 
-        using var cmd = new SqlCommand("SELECT * FROM PuestoEmpleado ORDER BY IdPuestoEmpleado", con);
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+        using var cmd = new SqlCommand("SP_SelectAllPuestoEmpleado", con)
         {
-            lista.Add(MapPuestoEmpleado(reader));
-        }
-        return lista;
-    }
+            CommandType = CommandType.StoredProcedure
+        };
 
-    // Buscar por Id y/o nombre
-    public async Task<List<PuestoEmpleado>> BuscarAsync(int? id = null, string? nombre = null)
-    {
-        var lista = new List<PuestoEmpleado>();
-        using var con = new SqlConnection(_connectionString);
-        await con.OpenAsync();
-
-        var sql = "SELECT * FROM PuestoEmpleado WHERE 1=1";
-        if (id.HasValue) sql += " AND IdPuestoEmpleado = @Id";
-        if (!string.IsNullOrEmpty(nombre)) sql += " AND Nombre LIKE @Nombre + '%'";
-
-        using var cmd = new SqlCommand(sql, con);
-        if (id.HasValue) cmd.Parameters.AddWithValue("@Id", id.Value);
-        if (!string.IsNullOrEmpty(nombre)) cmd.Parameters.AddWithValue("@Nombre", nombre);
+        cmd.Parameters.AddWithValue("@PageIndex", page);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@NombreFilter", string.IsNullOrEmpty(nombreFilter) ? (object)DBNull.Value : nombreFilter);
 
         using var reader = await cmd.ExecuteReaderAsync();
+
         while (await reader.ReadAsync())
             lista.Add(MapPuestoEmpleado(reader));
 
-        return lista;
+        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+        return (lista, totalCount);
     }
 
     // Buscar por Id
@@ -68,13 +59,57 @@ public class PuestoEmpleadoService
         using var con = new SqlConnection(_connectionString);
         await con.OpenAsync();
 
-        using var cmd = new SqlCommand("SELECT * FROM PuestoEmpleado WHERE IdPuestoEmpleado = @Id", con);
-        cmd.Parameters.AddWithValue("@Id", id);
+        using var cmd = new SqlCommand("SP_ObtenerPuestoEmpleadoPorId", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@IdPuestoEmpleado", id);
 
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return MapPuestoEmpleado(reader);
+
         return null;
+    }
+
+    // Buscar por nombre
+    public async Task<List<PuestoEmpleado>> BuscarPorNombreAsync(string nombre)
+    {
+        var lista = new List<PuestoEmpleado>();
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("SP_BuscarPuestoTrabajoPorNombre", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@Nombre", nombre);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            lista.Add(MapPuestoEmpleado(reader));
+
+        return lista;
+    }
+
+    // Buscar por descripción
+    public async Task<List<PuestoEmpleado>> BuscarPorDescripcionAsync(string descripcion)
+    {
+        var lista = new List<PuestoEmpleado>();
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("PS_BuscarPuestoEmpleadoPorDescripcion", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@Descripcion", descripcion);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            lista.Add(MapPuestoEmpleado(reader));
+
+        return lista;
     }
 
     // Crear
@@ -83,7 +118,10 @@ public class PuestoEmpleadoService
         using var con = new SqlConnection(_connectionString);
         await con.OpenAsync();
 
-        using var cmd = new SqlCommand("INSERT INTO PuestoEmpleado (Nombre, Descripcion) VALUES (@Nombre, @Descripcion)", con);
+        using var cmd = new SqlCommand("SP_CrearPuestoEmpleado", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
         cmd.Parameters.AddWithValue("@Nombre", puesto.Nombre ?? "");
         cmd.Parameters.AddWithValue("@Descripcion", puesto.Descripcion ?? "");
 
@@ -96,8 +134,11 @@ public class PuestoEmpleadoService
         using var con = new SqlConnection(_connectionString);
         await con.OpenAsync();
 
-        using var cmd = new SqlCommand("UPDATE PuestoEmpleado SET Nombre=@Nombre, Descripcion=@Descripcion WHERE IdPuestoEmpleado=@Id", con);
-        cmd.Parameters.AddWithValue("@Id", puesto.IdPuestoEmpleado);
+        using var cmd = new SqlCommand("SP_ActualizarPuestoEmpleado", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@IdPuestoEmpleado", puesto.IdPuestoEmpleado);
         cmd.Parameters.AddWithValue("@Nombre", puesto.Nombre ?? "");
         cmd.Parameters.AddWithValue("@Descripcion", puesto.Descripcion ?? "");
 
@@ -110,8 +151,11 @@ public class PuestoEmpleadoService
         using var con = new SqlConnection(_connectionString);
         await con.OpenAsync();
 
-        using var cmd = new SqlCommand("DELETE FROM PuestoEmpleado WHERE IdPuestoEmpleado=@Id", con);
-        cmd.Parameters.AddWithValue("@Id", id);
+        using var cmd = new SqlCommand("SP_EliminarPuestoEmpleado", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@IdPuestoEmpleado", id);
 
         await cmd.ExecuteNonQueryAsync();
     }

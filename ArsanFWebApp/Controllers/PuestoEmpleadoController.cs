@@ -14,36 +14,18 @@ namespace ArsanWebApp.Controllers
         }
 
         // GET: Index con búsqueda y paginación
-        public async Task<IActionResult> Index(int? buscarId, string buscarNombre, int page = 1, int pageSize = 5)
+        public async Task<IActionResult> Index(string buscarNombre, int page = 1, int pageSize = 5)
         {
-            // Obtener todos los puestos
-            var puestos = await _service.ObtenerTodosAsync();
+            // Llamamos al SP con paginación
+            var (lista, totalCount) = await _service.ObtenerTodosAsync(page, pageSize, buscarNombre);
 
-            // Filtrar por Id si se pasa
-            if (buscarId.HasValue)
-            {
-                puestos = puestos.Where(p => p.IdPuestoEmpleado == buscarId.Value).ToList();
-            }
-
-            // Filtrar por Nombre si se pasa
-            if (!string.IsNullOrEmpty(buscarNombre))
-            {
-                puestos = puestos
-                    .Where(p => !string.IsNullOrEmpty(p.Nombre) && p.Nombre.Contains(buscarNombre, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-
-            // Paginación
-            int totalItems = puestos.Count;
-            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-            var paged = puestos.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             ViewBag.Page = page;
             ViewBag.TotalPages = totalPages;
-            ViewBag.BuscarId = buscarId;
             ViewBag.BuscarNombre = buscarNombre;
 
-            return View(paged);
+            return View(lista);
         }
 
         // GET: Create
@@ -94,14 +76,6 @@ namespace ArsanWebApp.Controllers
         {
             await _service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Buscar por Id
-        public async Task<IActionResult> BuscarPorId(int id)
-        {
-            var puesto = await _service.BuscarPorIdAsync(id);
-            if (puesto == null) return NotFound();
-            return View(puesto);
         }
     }
 }
