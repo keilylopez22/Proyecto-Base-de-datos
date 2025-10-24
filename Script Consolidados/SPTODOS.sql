@@ -687,11 +687,13 @@ AS
 BEGIN
     DECLARE @Offset INT = (@PageIndex -1) * @PageSize;
     SELECT 
+        P.IdPersona,
+        C.IdCluster,
         R.IdResidente,
         R.NumeroVivienda,
         R.Estado,
         R.EsInquilino,
-        C.Descripcion AS Cluster,
+        C.Descripcion AS ClusterDescripcion,
         CONCAT(P.PrimerNombre, ' ', COALESCE(P.SegundoNombre, ''), ' ', P.PrimerApellido, ' ', COALESCE(P.SegundoApellido, '')) AS NombreCompleto
     FROM Residente AS R
     INNER JOIN Persona AS P 
@@ -716,7 +718,7 @@ BEGIN
      OFFSET @Offset ROWS
      FETCH NEXT @PageSize ROWS ONLY;
 
-     SELECT COUNT(*)
+     SELECT COUNT(*) AS TotalCount
      FROM Residente AS R
     INNER JOIN Persona AS P 
         ON R.IdPersona = P.IdPersona
@@ -1691,6 +1693,51 @@ GO
 -- 16. TABLA: Empleado
 -- #############################################
 
+
+CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@FechaAltaFilter DATE = NULL,
+@FechaBajaFilter DATE = NULL,
+@NombreEmpleadoFilter VARCHAR(50) = NULL,
+@PuestoFilter VARCHAR(50) = NULL
+AS
+BEGIN
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+    SELECT e.IdEmpleado, p.PrimerNombre + ' ' + p.PrimerApellido AS NombreCompleto , PE.Nombre, PE.Descripcion, E.FechaAlta, E.FechaBaja
+    FROM Persona AS p
+    INNER JOIN Empleado e ON p.IdPersona = e.IdPersona
+    INNER JOIN PuestoEmpleado AS PE ON e.IdPuestoEmpleado = PE.IdPuestoEmpleado
+    WHERE
+    (@FechaAltaFilter IS NULL OR
+    E.FechaAlta = @FechaAltaFilter)AND
+    (@FechaBajaFilter IS NULL OR
+     E.FechaBaja =@FechaBajaFilter)AND
+    (@NombreEmpleadoFilter  IS NULL OR 
+     p.PrimerNombre + ' ' + p.PrimerApellido LIKE '%' + @NombreEmpleadoFilter + '%')AND
+    (@PuestoFilter  IS NULL OR
+     PE.Nombre LIKE '%' + @PuestoFilter + '%')
+     ORDER BY E.IdEmpleado
+     OFFSET @Offset ROWS
+     FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    FROM Persona AS p
+    INNER JOIN Empleado e ON p.IdPersona = e.IdPersona
+    INNER JOIN PuestoEmpleado AS PE ON e.IdPuestoEmpleado = PE.IdPuestoEmpleado
+    WHERE
+    (@FechaAltaFilter IS NULL OR
+    E.FechaAlta = @FechaAltaFilter)AND
+    (@FechaBajaFilter IS NULL OR
+     E.FechaBaja =@FechaBajaFilter)AND
+    (@NombreEmpleadoFilter  IS NULL OR 
+     p.PrimerNombre + ' ' + p.PrimerApellido LIKE '%' + @NombreEmpleadoFilter + '%')AND
+    (@PuestoFilter  IS NULL OR
+     PE.Nombre LIKE '%' + @PuestoFilter + '%')
+
+END;  
+EXEC SP_SelectAllEmpleado
+GO
 -- Buscar empleado por nombre 
 CREATE OR ALTER PROCEDURE SP_BuscarEmpleadoPorNombre
 @PrimerNombre VARCHAR(50),
@@ -2098,6 +2145,94 @@ GO
 -- 20. TABLA: RegistroAcceso
 -- #############################################
 
+CREATE OR ALTER PROCEDURE SP_SelectAllRegistroAcceso
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @FechaIngresoDesde DATETIME = NULL,
+    @FechaIngresoHasta DATETIME = NULL,
+    @IdGaritaFilter INT = NULL,
+    @IdEmpleadoFilter INT = NULL,
+    @TipoAccesoFilter VARCHAR(10) = NULL 
+AS
+BEGIN
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    
+    SELECT 
+        ra.IdAcceso,
+        ra.FechaIngreso,
+        ra.FechaSalida,
+        ra.Observaciones,
+        ra.IdVehiculo,
+        ra.IdGarita,
+        ra.IdVisitante,
+        ra.IdResidente,
+        ra.IdEmpleado,
+        g.IdCluster AS IdClusterGarita,
+        c.Descripcion AS ClusterGarita,
+       
+        CASE 
+            WHEN ra.IdVehiculo IS NOT NULL THEN 'Vehículo'
+            WHEN ra.IdVisitante IS NOT NULL THEN 'Visitante'
+            WHEN ra.IdResidente IS NOT NULL THEN 'Residente'
+            ELSE 'Empleado'
+        END AS TipoAcceso,
+        COALESCE(v.Placa, vis.NombreCompleto, res.NombreCompleto, emp.NombreCompleto) AS DescripcionAcceso
+    FROM RegistroAccesos ra
+    INNER JOIN Garita g ON ra.IdGarita = g.IdGarita
+    INNER JOIN Cluster c ON g.IdCluster = c.IdCluster
+    LEFT JOIN Vehiculo v ON ra.IdVehiculo = v.IdVehiculo
+    LEFT JOIN Visitante vis ON ra.IdVisitante = vis.IdVisitante
+    LEFT JOIN (
+        SELECT r.IdResidente, 
+               CONCAT(p.PrimerNombre, ' ', ISNULL(p.SegundoNombre, ''), ' ', p.PrimerApellido, ' ', ISNULL(p.SegundoApellido, '')) AS NombreCompleto
+        FROM Residente r
+        INNER JOIN Persona p ON r.IdPersona = p.IdPersona
+    ) res ON ra.IdResidente = res.IdResidente
+    LEFT JOIN (
+        SELECT e.IdEmpleado,
+               CONCAT(p.PrimerNombre, ' ', ISNULL(p.SegundoNombre, ''), ' ', p.PrimerApellido, ' ', ISNULL(p.SegundoApellido, '')) AS NombreCompleto
+        FROM Empleado e
+        INNER JOIN Persona p ON e.IdPersona = p.IdPersona
+    ) emp ON ra.IdEmpleado = emp.IdEmpleado
+    WHERE 
+        (@FechaIngresoDesde IS NULL OR ra.FechaIngreso >= @FechaIngresoDesde)
+        AND (@FechaIngresoHasta IS NULL OR ra.FechaIngreso <= @FechaIngresoHasta)
+        AND (@IdGaritaFilter IS NULL OR ra.IdGarita = @IdGaritaFilter)
+        AND (@IdEmpleadoFilter IS NULL OR ra.IdEmpleado = @IdEmpleadoFilter)
+        AND (
+            @TipoAccesoFilter IS NULL OR
+            (@TipoAccesoFilter = 'Vehiculo' AND ra.IdVehiculo IS NOT NULL) OR
+            (@TipoAccesoFilter = 'Visitante' AND ra.IdVisitante IS NOT NULL) OR
+            (@TipoAccesoFilter = 'Residente' AND ra.IdResidente IS NOT NULL) OR
+            (@TipoAccesoFilter = 'Empleado' AND ra.IdVehiculo IS NULL AND ra.IdVisitante IS NULL AND ra.IdResidente IS NULL)
+        )
+    ORDER BY ra.FechaIngreso DESC
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    -- Total de registros
+    SELECT COUNT(*) AS TotalCount
+    FROM RegistroAccesos ra
+    WHERE 
+        (@FechaIngresoDesde IS NULL OR ra.FechaIngreso >= @FechaIngresoDesde)
+        AND (@FechaIngresoHasta IS NULL OR ra.FechaIngreso <= @FechaIngresoHasta)
+        AND (@IdGaritaFilter IS NULL OR ra.IdGarita = @IdGaritaFilter)
+        AND (@IdEmpleadoFilter IS NULL OR ra.IdEmpleado = @IdEmpleadoFilter)
+        AND (
+            @TipoAccesoFilter IS NULL OR
+            (@TipoAccesoFilter = 'Vehiculo' AND ra.IdVehiculo IS NOT NULL) OR
+            (@TipoAccesoFilter = 'Visitante' AND ra.IdVisitante IS NOT NULL) OR
+            (@TipoAccesoFilter = 'Residente' AND ra.IdResidente IS NOT NULL) OR
+            (@TipoAccesoFilter = 'Empleado' AND ra.IdVehiculo IS NULL AND ra.IdVisitante IS NULL AND ra.IdResidente IS NULL)
+        );
+END;
+
+Exec SP_SelectAllRegistroAcceso
+
+Go
+
 --Actualizar registro acceso
 CREATE OR ALTER PROCEDURE SP_ActualizarRegistroAccesos
     @IdRegistroAcceso INT,
@@ -2283,7 +2418,50 @@ GO
 -- #############################################
 -- 22. TABLA: Vehiculo
 -- #############################################
+CREATE OR ALTER PROCEDURE SP_SelectAllVehiculo
+@PageIndex  INT= 1,
+@PageSize  INT = 10,
+@AnioFilter INT= NULL,
+@MarcaFilter VARCHAR(20) = NULL,
+@LineaFilter VARCHAR(20) = NULL
+As
+BEGIN
 
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize
+    SELECT V.Año, V.Placa ,M.Descripcion AS Marca ,L.Descripcion AS Linea
+    FROM Vehiculo AS V
+    INNER JOIN MARCA AS M ON  V.IdMarca = M.IdMarca
+    INNER JOIN Linea AS L ON V.IdLinea = L.IdLinea
+    WHERE
+    (@AnioFilter IS NULL OR 
+    V.Año = @AnioFilter)AND
+    (@MarcaFilter IS NULL OR
+    M.Descripcion LIKE '' + @MarcaFilter + '')AND
+    (@LineaFilter IS NULL OR
+    L.Descripcion  LIKE '' + @LineaFilter + '')
+    ORDER BY V.IdVehiculo
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT (*)
+    FROM Vehiculo AS V
+    INNER JOIN MARCA AS M ON  V.IdMarca = M.IdMarca
+    INNER JOIN Linea AS L ON V.IdLinea = L.IdLinea
+    WHERE
+    (@AnioFilter IS NULL OR 
+    V.Año = @AnioFilter)AND
+    (@MarcaFilter IS NULL OR
+    M.Descripcion LIKE '' + @MarcaFilter + '')AND
+    (@LineaFilter IS NULL OR
+    L.Descripcion  LIKE '' + @LineaFilter + '')
+
+   
+END;
+EXEC SP_SelectAllVehiculo
+
+
+
+GO
 -- Actualizar vehiculo
 CREATE OR ALTER PROCEDURE SP_ActualizarVehiculo
     @IdVehiculo INT,
@@ -2434,6 +2612,38 @@ GO
 -- 23. TABLA: Visitante 
 -- #############################################
 
+CREATE OR ALTER PROCEDURE SP_SelectAllVisitante
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@NumeroDocumentoFilter VARCHAR(20) = NULL,
+@NombreVisitanteFilter VARCHAR(100) = NULL
+AS
+BEGIN
+    DECLARE @Offset INT  =(@PageIndex - 1) * @PageSize
+    SELECT V.*, T.Nombre AS NombreDocumento
+    FROM Visitante AS V 
+    INNER JOIN TipoDocumento AS T ON V.IdTipoDocumento = T.IdTipoDocumento
+    WHERE
+    (@NumeroDocumentoFilter IS NULL OR
+    V.NumeroDocumento LIKE '' + @NumeroDocumentoFilter + '')AND
+    (@NombreVisitanteFilter IS NULL OR
+    V.NombreCompleto LIKE '' +@NombreVisitanteFilter + '')
+    ORDER BY V.IdVisitante
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT (*) AS TotalCount
+    FROM Visitante AS V
+    WHERE
+    (@NumeroDocumentoFilter IS NULL OR
+    V.NumeroDocumento LIKE '' + @NumeroDocumentoFilter + '')AND
+    (@NombreVisitanteFilter IS NULL OR
+    V.NombreCompleto LIKE '' +@NombreVisitanteFilter + '')
+    
+
+END;
+exec SP_SelectAllVisitante
+go
 --Actualizar vehiculo
 CREATE OR ALTER PROCEDURE SP_ActualizarVisitante
     @IdVisitante INT,
