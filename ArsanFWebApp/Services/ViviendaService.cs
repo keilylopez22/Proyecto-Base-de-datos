@@ -23,15 +23,45 @@ public class ViviendaService
         _propietarioService = propietarioService;
     }
 
- 
-    public async Task<(List<Vivienda> viviendas, int totalCount)> ObtenerTodasAsync(
+    public async Task<List<Vivienda>> ObtenerTodasAsync()
+    {
+        var viviendas = new List<Vivienda>();
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        using var cmd = new SqlCommand("SP_SelectAllViviendas", conn);
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        
+        using (var reader = await cmd.ExecuteReaderAsync())
+
+        {
+            while (await reader.ReadAsync())
+            {
+                viviendas.Add(new Vivienda
+                {
+                    NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
+                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                    Cluster = reader["Cluster"] as string,
+                    TipoVivienda = reader["TipoVivienda"] as string,
+                    Propietario = reader["Propietario"] as string
+                });
+
+            }
+            return viviendas;
+        }
+      
+
+    }
+
+
+
+    public async Task<(List<Vivienda> viviendas, int totalCount)> ObtenerTodasPaginadasAsync(
         int pageIndex,
         int pageSize,
-        string? propietarioFilter ,
-        string? tipoViviendaFilter ,
+        string? propietarioFilter,
+        string? tipoViviendaFilter,
         string? clusterFilter)
     {
-        
+
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllViviendas", conn);
@@ -68,7 +98,7 @@ public class ViviendaService
             }
         }
         return (viviendas, totalCount);
-        
+
     }
 
   

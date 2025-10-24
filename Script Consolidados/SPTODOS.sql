@@ -675,8 +675,17 @@ GO
 
 -- BUSCAR TODOS (SELECT ALL con JOINs)
 CREATE OR ALTER PROCEDURE SP_SelectAllResidentes
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@NombreResidenteFilter VARCHAR (30) = NULL,
+@EsInquilinoFilter BIT= 0,
+@EstadoFilter VARCHAR(10) = NULL,
+@ClusterFilter VARCHAR(30) = NULL,
+@NumeroViviendaFilter INT = NULL,
+@GeneroFilter CHAR(1)  = NULL
 AS
 BEGIN
+    DECLARE @Offset INT = (@PageIndex -1) * @PageSize;
     SELECT 
         R.IdResidente,
         R.NumeroVivienda,
@@ -688,8 +697,51 @@ BEGIN
     INNER JOIN Persona AS P 
         ON R.IdPersona = P.IdPersona
     INNER JOIN Cluster AS C 
-        ON R.IdCluster = C.IdCluster;
+        ON R.IdCluster = C.IdCluster
+    WHERE 
+    (@NombreResidenteFilter IS NULL OR
+     P.PrimerNombre LIKE '%' + @NombreResidenteFilter + '%' OR
+     P.SegundoNombre LIKE '%' + @NombreResidenteFilter + '%')AND
+    (@EsInquilinoFilter IS NULL OR
+     R.EsInquilino = COALEsce(@EsInquilinoFilter,0))AND
+    (@EstadoFilter IS NULL OR
+     R.Estado LIKE '%' + @EstadoFilter + '%')AND
+    (@ClusterFilter  IS NULL OR 
+     C.Descripcion LIKE '%' + @ClusterFilter + '%')AND
+    (@NumeroViviendaFilter  IS NULL OR
+     R.NumeroVivienda = @NumeroViviendaFilter)AND
+     (@GeneroFilter IS NULL OR
+     P.Genero LIKE '%' + @GeneroFilter + '%')
+     ORDER BY IdResidente
+     OFFSET @Offset ROWS
+     FETCH NEXT @PageSize ROWS ONLY;
+
+     SELECT COUNT(*)
+     FROM Residente AS R
+    INNER JOIN Persona AS P 
+        ON R.IdPersona = P.IdPersona
+    INNER JOIN Cluster AS C 
+        ON R.IdCluster = C.IdCluster
+    WHERE 
+    (@NombreResidenteFilter IS NULL OR
+     P.PrimerNombre LIKE '%' + @NombreResidenteFilter + '%' OR
+     P.SegundoNombre LIKE '%' + @NombreResidenteFilter + '%')AND
+    (@EsInquilinoFilter IS NULL OR
+     R.EsInquilino= Coalesce(@EsInquilinoFilter, 0 ))AND
+    (@EstadoFilter IS NULL OR
+     R.Estado LIKE '%' + @EstadoFilter + '%')AND
+    (@ClusterFilter  IS NULL OR 
+     C.Descripcion LIKE '%' + @ClusterFilter + '%')AND
+    (@NumeroViviendaFilter  IS NULL OR
+     R.NumeroVivienda = @NumeroViviendaFilter )AND
+     (@GeneroFilter IS NULL OR
+     P.Genero LIKE '%' + @GeneroFilter + '%')
+     
+    
 END;
+EXEC SP_SelectAllResidentes
+
+
 GO
 
 CREATE OR ALTER PROCEDURE SP_ObtenerResidentes
