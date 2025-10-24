@@ -69,23 +69,6 @@ namespace ArsanWebApp.Services
             return null;
         }
 
-        public async Task<List<VehiculoProhibido>> BuscarPorFechaAsync(DateTime fecha)
-        {
-            var lista = new List<VehiculoProhibido>();
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            using var cmd = new SqlCommand("SP_BuscarVehiculoProhiubidoPorFecha", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@Fecha", fecha);
-
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                lista.Add(Map(reader));
-
-            return lista;
-        }
-
         public async Task CrearAsync(VehiculoProhibido vp)
         {
             using var conn = new SqlConnection(_connectionString);
