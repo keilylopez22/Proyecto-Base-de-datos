@@ -15,7 +15,6 @@ namespace ArsanWebApp.Services
        }
 
 
-        // Obtener pagos con paginación y filtros
         public (List<Pago> pagos, int totalCount) GetPagos(DateTime? fechaPagoFilter, decimal? montoFilter, string nombreTipoPagoFilter, int pageIndex = 1, int pageSize = 10)
         {
             var pagos = new List<Pago>();
@@ -57,7 +56,6 @@ namespace ArsanWebApp.Services
             return (pagos, totalCount);
         }
 
-        // Crear pago
         public int CrearPago(Pago pago)
         {
             using (var con = new SqlConnection(_connectionString))
@@ -74,7 +72,6 @@ namespace ArsanWebApp.Services
             }
         }
 
-        // Obtener pago por ID
         public Pago GetPagoById(int id)
         {
             Pago pago = null;
@@ -103,7 +100,6 @@ namespace ArsanWebApp.Services
             return pago;
         }
 
-        // Actualizar pago
         public void ActualizarPago(Pago pago)
         {
             using (var con = new SqlConnection(_connectionString))
@@ -121,7 +117,6 @@ namespace ArsanWebApp.Services
             }
         }
 
-        // Eliminar pago
         public void EliminarPago(int id)
         {
             using (var con = new SqlConnection(_connectionString))
@@ -135,7 +130,6 @@ namespace ArsanWebApp.Services
             }
         }
 
-        // Obtener tipos de pago
         public List<TipoPago> GetAllTipoPago()
         {
             var list = new List<TipoPago>();
