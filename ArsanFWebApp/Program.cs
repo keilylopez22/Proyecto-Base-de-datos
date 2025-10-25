@@ -28,7 +28,7 @@ builder.Services.AddScoped<ReciboService>();
 builder.Services.AddScoped<DetalleReciboService>();
 builder.Services.AddScoped<PuestoEmpleadoService>();
 builder.Services.AddScoped<AsignacionTurnoService>();
-builder.Services.AddScoped<RegistroAccesoService>();
+//builder.Services.AddScoped<RegistroAccesoService>();
 
 
 
