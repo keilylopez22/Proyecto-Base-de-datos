@@ -1,10 +1,10 @@
 CREATE OR ALTER PROCEDURE SP_ActualizarEmpleados
-@IdEmpleado INT,
-@FechaAlta DATE,
-@FechaBaja DATE,
-@Estado varchar(10),
-@IdPersona INT,
-@IdPuestoEmpleado INT
+@IdEmpleado INT = NULL,
+@FechaAlta DATE = NULL,
+@FechaBaja DATE = NULL,
+@Estado varchar(10) = NULL,
+@IdPersona INT = NULL,
+@IdPuestoEmpleado INT = NULL
 AS 
 BEGIN
 
