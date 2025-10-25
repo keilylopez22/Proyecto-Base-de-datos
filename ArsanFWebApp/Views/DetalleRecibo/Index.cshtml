@@ -1,29 +1,89 @@
-@model List<ArsanWebApp.Models.Residencial>
+@model List<ArsanWebApp.Models.DetalleRecibo>
+@{
+    ViewData["Title"] = "Detalles del Recibo";
+    var idRecibo = ViewBag.IdRecibo;
+}
+@{
+    ViewBag.Title = "Detalles del Recibo";
+    int totalCount = ViewBag.TotalCount ?? 0;
+    int pageIndex = ViewBag.PageIndex ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+}
 
-<h2>Residenciales</h2>
-<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+<div class="container mt-4">
+    <h2>Detalles del Recibo @idRecibo</h2>
+    <form method="get" class="mb-3">
+        <div class="row">
+            
+        
+            <div class="col-md-2">
+                <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                    <option value="5" selected="@(ViewBag.PageSize == 2)">5 por página</option>
+                    <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                    <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+            <div class="col-md-2">
+            </div>
+        </div>
+    </form>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var r in Model)
-        {
+    <div class="d-flex justify-content-between mb-3">
+        <a asp-controller="Recibo" asp-action="Index" class="btn btn-secondary">Regresar</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
             <tr>
-                <td>@r.IdResidencial</td>
-                <td>@r.Nombre</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@r.IdResidencial" class="btn btn-sm btn-warning">Editar</a>
-                    <form asp-action="Delete" asp-route-id="@r.IdResidencial" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este residencial?')">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
-                </td>
+                <th>ID Detalle</th>
+                <th>Servicio</th>
+                <th>Monto</th>
+                <th>Propietario</th>
+                <th>Vivienda</th>
+                <th>Cluster</th>
             </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdDetalleRecibo</td>
+                        <td>@item.NombreServicio</td>
+                        <td>@item.MontoServicio</td>
+                        <td>@item.NombrePropietario</td>
+                        <td>@item.NumeroVivienda</td>
+                        <td>@item.NombreCluster</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">No hay detalles disponibles para este recibo.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize, IdReciboFilter = ViewBag.IdReciboFilter})">Anterior</a>
+        </li>
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(pageIndex == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageIndex = i, pageSize, IdReciboFilter = ViewBag.IdReciboFilter})">@i</a>
+            </li>
         }
-    </tbody>
-</table>
+        <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, IdReciboFilter = ViewBag.IdReciboFilter})">Siguiente</a>
+        </li>
+    </ul>
+</nav>

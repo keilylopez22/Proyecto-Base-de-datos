@@ -1,0 +1,84 @@
+@model IEnumerable<ArsanWebApp.Models.Recibo>
+@{
+    ViewBag.Title = "Detalles del Recibo";
+    int totalCount = ViewBag.TotalCount ?? 0;
+    int pageIndex = ViewBag.PageIndex ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+}
+@{
+    ViewData["Title"] = "Listado de Recibos";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Listado de Recibos</h2>
+    <form method="get" class="mb-3">
+        <div class="row">
+            
+        
+            <div class="col-md-2">
+                <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                    <option value="5" selected="@(ViewBag.PageSize == 2)">2 por página</option>
+                    <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                    <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+            <div class="col-md-2">
+            </div>
+        </div>
+    </form>
+    <div class="mb-3 text-end">
+        <a asp-action="Create" class="btn btn-primary">+ Nuevo Recibo</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th># Recibo</th>
+                <th>Fecha</th>
+                <th>Pago</th>
+                <th>N° Vivienda</th>
+                <th>Cluster</th>
+                <th>Propietario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.IdRecibo</td>
+                    <td>@item.FechaEmision</td>
+                    <td>@item.IdPago</td>
+                    <td>@item.NumeroVivienda</td>
+                    <td>@item.NombreCluster</td>
+                    <td>@item.NombreCompleto</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.IdRecibo" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.IdRecibo" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize})">Anterior</a>
+        </li>
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(pageIndex == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageIndex = i, pageSize})">@i</a>
+            </li>
+        }
+        <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize})">Siguiente</a>
+        </li>
+    </ul>
+</nav>

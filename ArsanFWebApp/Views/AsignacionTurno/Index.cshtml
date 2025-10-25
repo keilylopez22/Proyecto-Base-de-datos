@@ -1,0 +1,38 @@
+@model IEnumerable<ArsanWebApp.Models.AsignacionTurno>
+
+<h2>Asignaciones de Turno</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nueva Asignación</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Empleado</th>
+            <th>Turno</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var asignacion in Model)
+        {
+            <tr>
+                <td>@asignacion.FechaAsignacion.ToShortDateString()</td>
+                <td>@asignacion.NombreEmpleado</td>
+                <td>@asignacion.TurnoDescripcion</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@asignacion.IdAsignacionTurno" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@asignacion.IdAsignacionTurno" class="btn btn-sm btn-danger"
+                       onclick="return confirm('¿Seguro que deseas eliminar esta asignación?');">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

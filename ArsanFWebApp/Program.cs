@@ -4,7 +4,6 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
 Console.WriteLine($"Conexión a la base de datos con cadena: {connectionString}");
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ResidenteService>();
 builder.Services.AddScoped<ResidencialService>();
@@ -19,17 +18,27 @@ builder.Services.AddScoped<MiembroJuntaDirectivaService>();
 builder.Services.AddScoped<TurnoService>();
 builder.Services.AddScoped<GaritaService>();
 builder.Services.AddScoped<PersonaNoGrataService>();
+builder.Services.AddScoped<TipoMultaService>();
+builder.Services.AddScoped<MultaViviendaService>();
+builder.Services.AddScoped<ServicioService>();
+builder.Services.AddScoped<CobroServicioViviendaService>();
+builder.Services.AddScoped<TipoPagoService>();
+builder.Services.AddScoped<PagoService>();
+builder.Services.AddScoped<ReciboService>();
+builder.Services.AddScoped<DetalleReciboService>();
+builder.Services.AddScoped<PuestoEmpleadoService>();
+builder.Services.AddScoped<AsignacionTurnoService>();
+builder.Services.AddScoped<RegistroAccesoService>();
+
 
 
 
 var app = builder.Build();
 
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

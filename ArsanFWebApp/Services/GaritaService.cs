@@ -31,7 +31,6 @@ public class GaritaService
             {
                 IdGarita = Convert.ToInt32(reader["IdGarita"]),
                 IdCluster = Convert.ToInt32(reader["IdCluster"]),
-                Residencial = reader["Residencial"] as string
             });
         }
         return lista;

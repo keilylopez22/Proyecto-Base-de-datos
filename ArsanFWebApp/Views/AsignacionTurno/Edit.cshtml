@@ -1,0 +1,28 @@
+@model ArsanWebApp.Models.AsignacionTurno
+
+<h2>Editar Asignación de Turno</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="IdAsignacionTurno"/>
+    <div class="form-group">
+        <label asp-for="FechaAsignacion"></label>
+        <input asp-for="FechaAsignacion" class="form-control" type="date"/>
+        <span asp-validation-for="FechaAsignacion" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdEmpleado"></label>
+        <input asp-for="IdEmpleado" class="form-control" type="number"/>
+        <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IdTurno"></label>
+        <input asp-for="IdTurno" class="form-control" type="number"/>
+        <span asp-validation-for="IdTurno" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

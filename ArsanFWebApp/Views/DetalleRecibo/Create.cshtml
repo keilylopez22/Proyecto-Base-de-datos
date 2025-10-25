@@ -1,13 +1,16 @@
-@model ArsanWebApp.Models.Residencial
+@model ArsanWebApp.Models.DetalleRecibo
 
-<h2>Crear Residencial</h2>
+<h2>Agregar Detalle Recibo</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="IdRecibo" />
     <div class="form-group">
-        <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
-        <span asp-validation-for="Nombre" class="text-danger"></span>
+        <label asp-for="IdCobroServicio"></label>
+        <input asp-for="IdCobroServicio" class="form-control"/>
     </div>
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    <div class="form-group">
+        <label asp-for="IdMultaVivienda"></label>
+        <input asp-for="IdMultaVivienda" class="form-control"/>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Guardar</button>
 </form>
