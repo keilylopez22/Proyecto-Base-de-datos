@@ -10,4 +10,7 @@ public class CobroServicioVivienda
     public int IdServicio { get; set; }
     public int NumeroVivienda { get; set; }
     public int IdCluster { get; set; }
+    public string? NombreServicio { get; set; }
+    public string? NombreCluster { get; set; }
+    
 }

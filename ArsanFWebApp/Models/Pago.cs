@@ -7,4 +7,5 @@ public class Pago
     public decimal? MontoTotal { get; set; }
     public int IdTipoPago { get; set; }
     public string? Referencia { get; set; }
+    public string? NombreTipoPago { get; set; }
 }

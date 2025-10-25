@@ -9,6 +9,26 @@
 
 <h1>Multas de Vivienda</h1>
 
+<form method="get" class="mb-3">
+    <div class="row">
+        
+       
+        <div class="col-md-2">
+            <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                <option value="5" selected="@(ViewBag.PageSize == 2)">2 por página</option>
+                <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+        <div class="col-md-2">
+            <a asp-action="Create" class="btn btn-success">Crear Nueva</a>
+        </div>
+    </div>
+</form>
+
 <!-- Filtros -->
 <form method="get" class="row g-3 mb-3">
     <div class="col-md-3">
@@ -67,7 +87,7 @@
     </tbody>
 </table>
 
-<!-- Paginación -->
+
 <nav>
     <ul class="pagination">
         <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
