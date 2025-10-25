@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
+using Azure;
 
 namespace ArsanWebApp.Services
 {
@@ -20,44 +21,38 @@ namespace ArsanWebApp.Services
         {
             var lista = new List<Recibo>();
             int TotalCount = 0;
-            _connectionString = configuration.GetConnectionString("SqlServerConnection") 
-                ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
-        }
-        
-
-        public List<Recibo> ObtenerTodos()
-        {
-            var lista = new List<Recibo>();
-
             using var cn = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("SP_SelectAllRecibo", cn)
             {
                 CommandType = System.Data.CommandType.StoredProcedure
             };
-            cmd.Parameters.AddWithValue("@PageIndex", 1);
-            cmd.Parameters.AddWithValue("@PageSize", 1000);
-            cmd.Parameters.AddWithValue("@FechaEmisionFilter", DBNull.Value);
-            cmd.Parameters.AddWithValue("@IdPagoFilter", DBNull.Value);
-            cmd.Parameters.AddWithValue("@NumeroViviendaFilter", DBNull.Value);
-            cmd.Parameters.AddWithValue("@ClusterFilter", DBNull.Value);
+            cmd.Parameters.AddWithValue("@PageIndex", PageIndex);
+            cmd.Parameters.AddWithValue("@PageSize", PageSize);
+            cmd.Parameters.AddWithValue("@FechaEmisionFilter", (Object?)FechaEmisionFilter ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdPagoFilter", (Object?)IdPagoFilter ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@NumeroViviendaFilter", (Object?)NumeroViviendaFilter ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@ClusterFilter", (Object?)ClusterFilter ?? DBNull.Value);
 
             cn.Open();
-            using var reader = cmd.ExecuteReader();
-            while (reader.Read())
+            using (var reader = cmd.ExecuteReader())
             {
-                lista.Add(new Recibo
+                while (reader.Read())
                 {
-                    IdRecibo = Convert.ToInt32(reader["IdRecibo"]),
-                    FechaEmision = reader["FechaEmision"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaEmision"])) : null,
-                    IdPago = Convert.ToInt32(reader["IdPago"]),
-                    NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
-                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
-                    NombreCompleto = reader["NombreCompleto"] != DBNull.Value ? reader["NombreCompleto"].ToString() : "",
-                    NombreCluster = reader["NombreCluster"] != DBNull.Value ? reader["NombreCluster"].ToString() : ""
-                });
+                    lista.Add(new Recibo
+                    {
+                        IdRecibo = Convert.ToInt32(reader["IdRecibo"]),
+                        FechaEmision = reader["FechaEmision"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaEmision"])) : null,
+                        IdPago = Convert.ToInt32(reader["IdPago"]),
+                        NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
+                        IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                        NombreCompleto = reader["NombreCompleto"] != DBNull.Value ? reader["NombreCompleto"].ToString() : "",
+                        NombreCluster = reader["NombreCluster"] != DBNull.Value ? reader["NombreCluster"].ToString() : ""
+                    });
+                }
+                TotalCount = reader.NextResult() && reader.Read() ? Convert.ToInt32(reader["TotalCount"]) : 0;
             }
 
-            return lista;
+            return (lista, TotalCount);
         }
 
         public Recibo ObtenerPorId(int id)
@@ -90,7 +85,6 @@ namespace ArsanWebApp.Services
             return recibo;
         }
 
-        // Nuevo método para obtener propietario por vivienda y cluster
         public string ObtenerPropietario(int numeroVivienda, int idCluster)
         {
             using var cn = new SqlConnection(_connectionString);
@@ -105,7 +99,6 @@ namespace ArsanWebApp.Services
             return result?.ToString();
         }
 
-        // Insertar un nuevo recibo
         public int Insertar(Recibo r)
         {
             using (var cn = new SqlConnection(_connectionString))
@@ -122,7 +115,6 @@ namespace ArsanWebApp.Services
             }
         }
 
-        // Actualizar un recibo
         public void Actualizar(Recibo r)
         {
             using (var cn = new SqlConnection(_connectionString))
