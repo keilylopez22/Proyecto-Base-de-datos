@@ -23,28 +23,82 @@ public class ViviendaService
         _propietarioService = propietarioService;
     }
 
- 
     public async Task<List<Vivienda>> ObtenerTodasAsync()
     {
-        var lista = new List<Vivienda>();
+        var viviendas = new List<Vivienda>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         using var cmd = new SqlCommand("SP_SelectAllViviendas", conn);
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        
+        using (var reader = await cmd.ExecuteReaderAsync())
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
         {
-            lista.Add(new Vivienda
+            while (await reader.ReadAsync())
             {
-                NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
-                IdCluster = Convert.ToInt32(reader["IdCluster"]), 
-                Cluster = reader["Cluster"] as string,
-                TipoVivienda = reader["TipoVivienda"] as string,
-                Propietario = reader["Propietario"] as string
-            });
+                viviendas.Add(new Vivienda
+                {
+                    NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
+                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                    Cluster = reader["Cluster"] as string,
+                    TipoVivienda = reader["TipoVivienda"] as string,
+                    Propietario = reader["Propietario"] as string
+                });
+
+            }
+            return viviendas;
         }
-        return lista;
+      
+
+    }
+
+
+
+    public async Task<(List<Vivienda> viviendas, int totalCount)> ObtenerTodasPaginadasAsync(
+        int pageIndex,
+        int pageSize,
+        string? propietarioFilter,
+        string? tipoViviendaFilter,
+        string? clusterFilter)
+    {
+
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        using var cmd = new SqlCommand("SP_SelectAllViviendas", conn);
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@PropietarioFilter", (object?)propietarioFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TipoViviendaFilter", (object?)tipoViviendaFilter ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ClusterFilter", (object?)clusterFilter ?? DBNull.Value);
+        var viviendas = new List<Vivienda>();
+        int totalCount = 0;
+
+        using (var reader = await cmd.ExecuteReaderAsync())
+
+        {
+            while (await reader.ReadAsync())
+            {
+                viviendas.Add(new Vivienda
+                {
+                    NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
+                    IdCluster = Convert.ToInt32(reader["IdCluster"]),
+                    Cluster = reader["Cluster"] as string,
+                    TipoVivienda = reader["TipoVivienda"] as string,
+                    Propietario = reader["Propietario"] as string
+                });
+
+            }
+            if (await reader.NextResultAsync())
+            {
+                if (await reader.ReadAsync())
+                {
+                    totalCount = Convert.ToInt32(reader["TotalCount"]);
+                }
+            }
+        }
+        return (viviendas, totalCount);
+
     }
 
   
@@ -124,6 +178,6 @@ public class ViviendaService
     }
 
     public async Task<List<Cluster>> ObtenerClustersAsync() => await _clusterService.ObtenerTodosAsync(pageIndex: 1, pageSize: int.MaxValue).ContinueWith(t => t.Result.Items);
-    public async Task<List<TipoVivienda>> ObtenerTiposViviendaAsync() => await _tipoViviendaService.ObtenerTodosAsync();
+    public async Task<List<TipoVivienda>> ObtenerTiposViviendaAsync() => await _tipoViviendaService.ObtenerTodosAsync(1, int.MaxValue).ContinueWith(t => t.Result.items);
     public async Task<List<Propietario>> ObtenerPropietariosAsync() => await _propietarioService.ObtenerTodosAsync(1, int.MaxValue).ContinueWith(t => t.Result.items);
 }

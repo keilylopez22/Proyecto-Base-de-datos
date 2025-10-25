@@ -48,7 +48,7 @@ public class PersonaService
 
     using (var reader = await cmd.ExecuteReaderAsync())
     {
-        // Primer result set: personas
+        
         while (await reader.ReadAsync())
         {
             personas.Add(new Persona
@@ -64,7 +64,7 @@ public class PersonaService
             });
         }
 
-        // Segundo result set: TotalCount
+        
         if (await reader.NextResultAsync())
         {
             if (await reader.ReadAsync())
