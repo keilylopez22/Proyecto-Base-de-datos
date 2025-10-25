@@ -1230,6 +1230,35 @@ WHERE IdPuestoEmpleado = @IdPuestoEmpleado
 END
 
 GO
+
+CREATE OR ALTER PROCEDURE SP_SelectAllPuestoEmpleado
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @NombreFilter VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT 
+        IdPuestoEmpleado,
+        Nombre,
+        Descripcion
+    FROM PuestoEmpleado
+    WHERE
+        (@NombreFilter IS NULL OR Nombre LIKE '%' + @NombreFilter + '%')
+    ORDER BY IdPuestoEmpleado
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    FROM PuestoEmpleado
+    WHERE
+        (@NombreFilter IS NULL OR Nombre LIKE '%' + @NombreFilter + '%');
+END;
+GO
+
 -- #############################################
 -- 12. TABLA: Turno
 -- #############################################
@@ -1457,6 +1486,47 @@ END
 
 
 GO
+
+CREATE OR ALTER PROCEDURE SP_SelectAllAsignacionTurno
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @IdEmpleado INT = NULL,
+    @IdTurno INT = NULL,
+    @FechaFilter DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT
+        AT.IdAsignacionTurno,
+        (P.PrimerNombre + ' ' + P.PrimerApellido) AS NombreCompleto,
+        T.Descripcion AS Turno,
+        AT.FechaAsignacion,
+        AT.IdEmpleado,
+        AT.IdTurno
+    FROM AsignacionTurno AS AT
+    INNER JOIN Empleado AS E ON AT.IdEmpleado = E.IdEmpleado
+    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
+    INNER JOIN Turno AS T ON AT.IdTurno = T.IdTurno
+    WHERE
+        (@IdEmpleado IS NULL OR AT.IdEmpleado = @IdEmpleado)
+        AND (@IdTurno IS NULL OR AT.IdTurno = @IdTurno)
+        AND (@FechaFilter IS NULL OR AT.FechaAsignacion = @FechaFilter)
+    ORDER BY AT.IdAsignacionTurno
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    FROM AsignacionTurno AS AT
+    WHERE
+        (@IdEmpleado IS NULL OR AT.IdEmpleado = @IdEmpleado)
+        AND (@IdTurno IS NULL OR AT.IdTurno = @IdTurno)
+        AND (@FechaFilter IS NULL OR AT.FechaAsignacion = @FechaFilter);
+END;
+GO
+
 
 -- #############################################
 -- 14. TABLA: PersonaNoGrata
@@ -1699,6 +1769,48 @@ END
 
 GO
 
+CREATE OR ALTER PROCEDURE SP_SelectAllVehiculoProhibido
+    @PageIndex INT = 1,
+    @PageSize INT = 5,
+    @PlacaFilter VARCHAR(20) = NULL,
+    @MotivoFilter VARCHAR(50) = NULL,
+    @FechaFilter DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT 
+        VP.IdVehiculoProhibido,
+        V.Placa,
+        m.Descripcion AS Marca,
+        l.Descripcion AS Linea,
+		VP.Motivo,
+        VP.Fecha,
+        VP.IdVehiculo
+    FROM VehiculoProhibido AS VP
+    INNER JOIN Vehiculo AS V ON VP.IdVehiculo = V.IdVehiculo
+	INNER JOIN Marca m ON V.IdMarca = m.IdMarca
+	INNER JOIN Linea l ON m.IdMarca = l.IdMarca
+    WHERE
+        (@PlacaFilter IS NULL OR V.Placa LIKE '%' + @PlacaFilter + '%')
+        AND (@MotivoFilter IS NULL OR VP.Motivo LIKE '%' + @MotivoFilter + '%')
+        AND (@FechaFilter IS NULL OR VP.Fecha = @FechaFilter)
+    ORDER BY VP.IdVehiculoProhibido
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    FROM VehiculoProhibido AS VP
+    INNER JOIN Vehiculo AS V ON VP.IdVehiculo = V.IdVehiculo
+    WHERE
+        (@PlacaFilter IS NULL OR V.Placa LIKE '%' + @PlacaFilter + '%')
+        AND (@MotivoFilter IS NULL OR VP.Motivo LIKE '%' + @MotivoFilter + '%')
+        AND (@FechaFilter IS NULL OR VP.Fecha = @FechaFilter);
+END
+GO
+
 -- #############################################
 -- 16. TABLA: Empleado
 -- #############################################
@@ -1871,6 +1983,59 @@ BEGIN
         VALUES (@FechaAlta, @FechaBaja, @Estado, @IdPersona, @IdPuestoEmpleado);
 END
 
+GO
+
+CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @NombreFilter VARCHAR(50) = NULL,
+    @PuestoFilter VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT 
+        E.IdEmpleado,
+        (P.PrimerNombre + ' ' + P.PrimerApellido) AS NombreCompleto,
+        E.Estado,
+        E.FechaAlta,
+        E.FechaBaja,
+        P.IdPersona,
+        E.IdPuestoEmpleado
+    FROM Empleado AS E
+    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
+    INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
+    WHERE
+        (@NombreFilter IS NULL 
+            OR P.PrimerNombre LIKE '%' + @NombreFilter + '%'
+            OR P.PrimerApellido LIKE '%' + @NombreFilter + '%')
+        AND (@PuestoFilter IS NULL OR PE.Nombre LIKE '%' + @PuestoFilter + '%')
+    ORDER BY E.IdEmpleado
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+ 
+    SELECT COUNT(*) AS TotalCount
+    FROM Empleado AS E
+    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
+    INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
+    WHERE
+        (@NombreFilter IS NULL 
+            OR P.PrimerNombre LIKE '%' + @NombreFilter + '%'
+            OR P.PrimerApellido LIKE '%' + @NombreFilter + '%')
+        AND (@PuestoFilter IS NULL OR PE.Nombre LIKE '%' + @PuestoFilter + '%');
+END;
+
+
+EXEC SP_SelectAllEmpleado 
+    @PageIndex = 1,
+    @PageSize = 10,
+    @NombreFilter = 'Cristian',
+    @PuestoFilter = 'Guardia';
+
+	SELECT * FROM Empleado WHERE IdEmpleado = 1;
 GO
 
 -- #############################################
@@ -3582,3 +3747,126 @@ BEGIN
              PrimerNombre LIKE '%' + @NombreFilter + '%' OR
              PrimerApellido LIKE '%' + @NombreFilter + '%');
 END;
+-- #############################################
+-- 32. TABLA: DocumentoPersona
+-- #############################################
+
+GO
+CREATE OR ALTER PROCEDURE SP_ActualizarDocumentoPersona
+@IdTipoDocumento INT,
+@IdPersona INT,
+@NumeroDocumento INT,
+@Observaciones VARCHAR(50)
+AS
+BEGIN
+SET NOCOUNT ON
+
+IF NOT EXISTS (SELECT 1 FROM DocumentoPersona WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona)
+BEGIN
+RAISERROR('No existe un documento con esos datos para actualizar.', 16, 1)
+RETURN
+END
+
+UPDATE DocumentoPersona
+SET NumeroDocumento = @NumeroDocumento,
+Observaciones = @Observaciones
+WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona
+END
+
+GO
+CREATE OR ALTER PROCEDURE SP_BuscarDocumentoPersonaPorId
+@IdTipoDocumento INT,
+@IdPersona INT
+AS
+BEGIN
+
+SELECT dp.NumeroDocumento, dp.Observaciones, td.Nombre AS TipoDocumento, CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS Persona FROM DocumentoPersona dp
+INNER JOIN TipoDocumento td ON dp.IdTipoDocumento = td.IdTipoDocumento
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona
+WHERE dp.IdTipoDocumento = @IdTipoDocumento AND dp.IdPersona = @IdPersona;
+END;
+
+GO
+CREATE OR ALTER PROCEDURE SP_BuscarDocumentoPorNumero
+@NumeroDocumento INT
+AS
+BEGIN
+SELECT dp.NumeroDocumento, dp.Observaciones, td.Nombre AS TipoDocumento, CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS Persona FROM DocumentoPersona dp
+INNER JOIN TipoDocumento td ON dp.IdTipoDocumento = td.IdTipoDocumento
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona 
+WHERE dp.NumeroDocumento = @NumeroDocumento;
+END
+
+GO
+CREATE OR ALTER PROCEDURE SP_BuscarDocumentoPorTipo
+@IdTipoDocumento INT
+AS
+BEGIN
+
+SELECT dp.NumeroDocumento, dp.Observaciones, CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS Persona FROM DocumentoPersona dp
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona
+WHERE dp.IdTipoDocumento = @IdTipoDocumento
+END
+
+EXEC SP_BuscarDocumentoPorTipo
+@IdTipoDocumento = 1
+
+GO
+CREATE OR ALTER PROCEDURE SP_EliminarDocumentoPersona
+@IdTipoDocumento INT,
+@IdPersona INT
+AS
+BEGIN
+SET NOCOUNT ON
+
+IF NOT EXISTS (SELECT 1 FROM DocumentoPersona WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona)
+BEGIN
+RAISERROR('El documento no existe o ya fue eliminado.', 16, 1)
+RETURN
+END
+
+DELETE FROM DocumentoPersona WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona
+END
+
+GO
+CREATE OR ALTER PROCEDURE SP_InsertarDocumentoPersona
+    @NumeroDocumento INT,
+    @IdTipoDocumento INT,
+    @IdPersona INT,
+    @Observaciones VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM Persona WHERE IdPersona = @IdPersona)
+    BEGIN
+        RAISERROR('La persona no existe en la tabla Persona.', 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM TipoDocumento WHERE IdTipoDocumento = @IdTipoDocumento)
+    BEGIN
+        RAISERROR('Este tipo de documento no existe.', 16, 1);
+        RETURN;
+    END
+
+
+    IF EXISTS (SELECT 1 FROM DocumentoPersona 
+               WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona)
+    BEGIN
+        RAISERROR('Ya existe un documento para esta persona y tipo.', 16, 1);
+        RETURN;
+    END
+
+    IF EXISTS (SELECT 1 FROM DocumentoPersona
+               WHERE NumeroDocumento = @NumeroDocumento AND IdTipoDocumento = @IdTipoDocumento)
+    BEGIN
+        RAISERROR('Ya existe un documento con ese número para este tipo.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO DocumentoPersona (NumeroDocumento, IdTipoDocumento, IdPersona, Observaciones)
+    VALUES (@NumeroDocumento, @IdTipoDocumento, @IdPersona, @Observaciones);
+END
+
+GO
