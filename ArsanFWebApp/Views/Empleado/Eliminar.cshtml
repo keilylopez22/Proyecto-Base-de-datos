@@ -1,0 +1,12 @@
+@model ArsanWebApp.Models.Empleado
+
+<h2>Eliminar Empleado</h2>
+
+<form asp-action="Eliminar" method="post">
+    <input type="hidden" asp-for="IdEmpleado" value="@Model.IdEmpleado" />
+
+    <p>¿Desea eliminar al empleado <strong>@Model.IdEmpleado - @Model.NombreCompleto</strong>?</p>
+
+    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

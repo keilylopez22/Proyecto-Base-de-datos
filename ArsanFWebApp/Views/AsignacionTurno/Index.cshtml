@@ -1,38 +1,111 @@
 @model IEnumerable<ArsanWebApp.Models.AsignacionTurno>
+@{
+    ViewData["Title"] = "Asignación de Turnos";
+    var paginaActual = ViewBag.PaginaActual ?? 1;
+    var totalPaginas = ViewBag.TotalPaginas ?? 1;
+    var idEmpleado = ViewBag.IdEmpleado;
+    var idTurno = ViewBag.IdTurno;
+    var fechaAsignacion = ViewBag.FechaAsignacion;
+}
 
-<h2>Asignaciones de Turno</h2>
+<h2 class="mb-4">Asignación de Turnos</h2>
 
+<!-- Mensajes -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Nueva Asignación</a>
-</p>
+<!-- Formulario de búsqueda -->
+<form method="get" asp-action="Index" class="row g-3 mb-3">
+    <div class="col-md-3">
+        <label for="idEmpleado" class="form-label">ID Empleado</label>
+        <input type="number" name="idEmpleado" value="@idEmpleado" class="form-control" placeholder="Ej: 5" />
+    </div>
+    <div class="col-md-3">
+        <label for="idTurno" class="form-label">ID Turno</label>
+        <input type="number" name="idTurno" value="@idTurno" class="form-control" placeholder="Ej: 2" />
+    </div>
+    <div class="col-md-3">
+        <label for="fechaAsignacion" class="form-label">Fecha Asignación</label>
+        <input type="date" name="fechaAsignacion" value="@(fechaAsignacion?.ToString("yyyy-MM-dd"))" class="form-control" />
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+    </div>
+</form>
 
-<table class="table table-striped">
-    <thead>
+<!-- Botón crear -->
+<div class="mb-3">
+    <a asp-action="Crear" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nueva Asignación
+    </a>
+</div>
+
+<!-- Tabla de resultados -->
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark text-center">
         <tr>
-            <th>Fecha</th>
-            <th>Empleado</th>
-            <th>Turno</th>
+            <th>ID</th>
+            <th>ID Empleado</th>
+            <th>ID Turno</th>
+            <th>Fecha Asignación</th>
             <th>Acciones</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var asignacion in Model)
+    <tbody class="text-center">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.IdAsignacionTurno</td>
+                    <td>@item.IdEmpleado</td>
+                    <td>@item.IdTurno</td>
+                    <td>@item.FechaAsignacion.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@item.IdAsignacionTurno" class="btn btn-sm btn-warning me-1">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+
+                        <form asp-action="ConfirmarEliminar" asp-route-id="@item.IdAsignacionTurno" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar esta asignación?');">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@asignacion.FechaAsignacion.ToShortDateString()</td>
-                <td>@asignacion.NombreEmpleado</td>
-                <td>@asignacion.TurnoDescripcion</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@asignacion.IdAsignacionTurno" class="btn btn-sm btn-warning">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@asignacion.IdAsignacionTurno" class="btn btn-sm btn-danger"
-                       onclick="return confirm('¿Seguro que deseas eliminar esta asignación?');">Eliminar</a>
-                </td>
+                <td colspan="5" class="text-muted text-center">No hay registros para mostrar.</td>
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Paginación -->
+@if (totalPaginas > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= totalPaginas; i++)
+            {
+                <li class="page-item @(i == paginaActual ? "active" : "")">
+                    <a class="page-link" asp-action="Index" 
+                       asp-route-pagina="@i" 
+                       asp-route-idEmpleado="@idEmpleado"
+                       asp-route-idTurno="@idTurno"
+                       asp-route-fechaAsignacion="@(fechaAsignacion?.ToString("yyyy-MM-dd"))">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

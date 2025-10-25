@@ -1,0 +1,36 @@
+@model ArsanWebApp.Models.AsignacionTurno
+
+@{
+    ViewData["Title"] = "Editar Asignación";
+}
+
+<h2>Editar Asignación</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="IdAsignacionTurno" />
+
+    <div class="mb-3">
+        <label class="form-label">ID Empleado</label>
+        <input asp-for="IdEmpleado" class="form-control" />
+        <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">ID Turno</label>
+        <input asp-for="IdTurno" class="form-control" />
+        <span asp-validation-for="IdTurno" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Fecha Asignación</label>
+        <input asp-for="FechaAsignacion" type="date" class="form-control" />
+        <span asp-validation-for="FechaAsignacion" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

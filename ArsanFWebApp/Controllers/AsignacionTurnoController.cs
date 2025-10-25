@@ -1,81 +1,85 @@
-using ArsanWebApp.Models;
-using ArsanWebApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using ArsanWebApp.Services;
+using ArsanWebApp.Models;
 
 namespace ArsanWebApp.Controllers
 {
     public class AsignacionTurnoController : Controller
     {
         private readonly AsignacionTurnoService _service;
+        private const int TamanioPagina = 10;
 
         public AsignacionTurnoController(AsignacionTurnoService service)
         {
             _service = service;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pagina = 1, int? idEmpleado = null, int? idTurno = null, DateTime? fechaAsignacion = null)
         {
-            var lista = await _service.ListarTodosAsync();
+            var (lista, total) = await _service.ObtenerTodosAsync(
+                pagina,
+                TamanioPagina,
+                idEmpleado,
+                idTurno,
+                fechaAsignacion
+            );
+
+            int totalPaginas = (int)Math.Ceiling(total / (double)TamanioPagina);
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.IdEmpleado = idEmpleado;
+            ViewBag.IdTurno = idTurno;
+            ViewBag.FechaAsignacion = fechaAsignacion;
+
             return View(lista);
         }
 
-        public IActionResult Create() => View();
+        public IActionResult Crear() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AsignacionTurno asignacion)
+        public async Task<IActionResult> Crear(AsignacionTurno asignacion)
         {
-            if (ModelState.IsValid)
-            {
-                var (exito, mensaje) = await _service.CrearAsync(asignacion);
-                if (exito) return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) return View(asignacion);
 
-                ModelState.AddModelError(string.Empty, mensaje);
-            }
-            return View(asignacion);
+            await _service.CrearAsync(asignacion);
+            TempData["Success"] = "Asignación creada correctamente.";
+            return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Editar(int id)
         {
-            var asignacion = await _service.ObtenerPorIdAsync(id);
+            var asignacion = await _service.BuscarPorIdAsync(id);
             if (asignacion == null) return NotFound();
             return View(asignacion);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, AsignacionTurno asignacion)
+        public async Task<IActionResult> Editar(AsignacionTurno asignacion)
         {
-            if (id != asignacion.IdAsignacionTurno) return BadRequest();
+            if (!ModelState.IsValid) return View(asignacion);
 
-            if (ModelState.IsValid)
-            {
-                var (exito, mensaje) = await _service.ActualizarAsync(asignacion);
-                if (exito) return RedirectToAction(nameof(Index));
-
-                ModelState.AddModelError(string.Empty, mensaje);
-            }
-            return View(asignacion);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var (exito, mensaje) = await _service.EliminarAsync(id);
-            if (!exito) TempData["Error"] = mensaje;
-
+            await _service.ActualizarAsync(asignacion);
+            TempData["Success"] = "Asignación actualizada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> FiltrarPorFecha(DateTime fecha)
+        public async Task<IActionResult> Eliminar(int id)
         {
-            var lista = await _service.BuscarPorFechaAsync(fecha);
-            return View("Index", lista);
+            var asignacion = await _service.BuscarPorIdAsync(id);
+            if (asignacion == null) return NotFound();
+            return View(asignacion);
         }
 
-        public async Task<IActionResult> FiltrarPorEmpleado(int idEmpleado)
+        [HttpPost, ActionName("ConfirmarEliminar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmarEliminar(int id)
         {
-            var lista = await _service.BuscarPorEmpleadoAsync(idEmpleado);
-            return View("Index", lista);
+            await _service.EliminarAsync(id);
+            TempData["Success"] = "Asignación eliminada correctamente.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

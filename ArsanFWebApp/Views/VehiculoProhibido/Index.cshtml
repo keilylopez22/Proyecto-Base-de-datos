@@ -1,29 +1,92 @@
-@model List<ArsanWebApp.Models.Residencial>
+@model IEnumerable<ArsanWebApp.Models.VehiculoProhibido>
 
-<h2>Residenciales</h2>
-<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+@{
+    ViewData["Title"] = "Vehículos Prohibidos";
+    var paginaActual = ViewBag.PaginaActual ?? 1;
+    var totalPaginas = ViewBag.TotalPaginas ?? 1;
+    var fecha = ViewBag.Fecha as DateTime?;
+}
 
-<table class="table table-striped">
-    <thead>
+<h2 class="mb-4">Vehículos Prohibidos</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="get" asp-action="Index" class="row g-3 mb-3">
+    <div class="col-md-3">
+        <label for="idBuscar" class="form-label">Buscar por ID</label>
+        <input type="number" name="idBuscar" class="form-control" placeholder="Ej: 1" />
+    </div>
+    <div class="col-md-3">
+        <label for="fecha" class="form-label">Buscar por Fecha</label>
+        <input type="date" name="fecha" value="@(fecha?.ToString("yyyy-MM-dd"))" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    <a asp-action="Crear" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nuevo Vehículo Prohibido
+    </a>
+</div>
+
+<table class="table table-bordered table-striped align-middle text-center">
+    <thead class="table-dark">
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Motivo</th>
+            <th>Id Vehículo</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var r in Model)
+        @if (Model.Any())
         {
-            <tr>
-                <td>@r.IdResidencial</td>
-                <td>@r.Nombre</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@r.IdResidencial" class="btn btn-sm btn-warning">Editar</a>
-                    <form asp-action="Delete" asp-route-id="@r.IdResidencial" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este residencial?')">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.IdVehiculoProhibido</td>
+                    <td>@(item.Fecha.HasValue ? item.Fecha.Value.ToString("dd/MM/yyyy") : "-")</td>
+                    <td>@item.Motivo</td>
+                    <td>@item.IdVehiculo</td>
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@item.IdVehiculoProhibido" class="btn btn-sm btn-warning">Editar</a>
+                        <form asp-action="Eliminar" asp-route-id="@item.IdVehiculoProhibido" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('¿Seguro que deseas eliminar este registro?');">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="5" class="text-muted">No hay registros para mostrar.</td></tr>
         }
     </tbody>
 </table>
+
+@if (totalPaginas > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= totalPaginas; i++)
+            {
+                <li class="page-item @(i == paginaActual ? "active" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pagina="@i"
+                       asp-route-fecha="@(fecha?.ToString("yyyy-MM-dd"))">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

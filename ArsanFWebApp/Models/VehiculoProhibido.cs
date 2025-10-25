@@ -6,4 +6,6 @@ public class VehiculoProhibido
     public DateOnly? Fecha { get; set; }
     public string? Motivo { get; set; }
     public int IdVehiculo { get; set; }
+    public string? Placa { get; set; }
+    public string? Marca { get; set; }
 }

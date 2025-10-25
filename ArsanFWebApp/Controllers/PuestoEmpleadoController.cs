@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using ArsanWebApp.Models;
 using ArsanWebApp.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ArsanWebApp.Controllers
 {
@@ -13,64 +13,68 @@ namespace ArsanWebApp.Controllers
             _service = service;
         }
 
-        public async Task<IActionResult> Index()
+        // GET: Index con búsqueda y paginación
+        public async Task<IActionResult> Index(string buscarNombre, int page = 1, int pageSize = 5)
         {
-            var puestos = await _service.ListarTodosAsync();
-            return View(puestos);
+            // Llamamos al SP con paginación
+            var (lista, totalCount) = await _service.ObtenerTodosAsync(page, pageSize, buscarNombre);
+
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.BuscarNombre = buscarNombre;
+
+            return View(lista);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        // GET: Create
+        public IActionResult Create() => View();
 
+        // POST: Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PuestoEmpleado puesto)
         {
-            if (ModelState.IsValid)
-            {
-                var (success, error) = await _service.InsertarAsync(puesto);
-                if (success)
-                    return RedirectToAction(nameof(Index));
-                
-                ModelState.AddModelError(string.Empty, error);
-            }
-            return View(puesto);
+            if (!ModelState.IsValid) return View(puesto);
+
+            await _service.CrearAsync(puesto);
+            return RedirectToAction(nameof(Index));
         }
 
+        // GET: Edit
         public async Task<IActionResult> Edit(int id)
         {
-            var puesto = await _service.ObtenerPorIdAsync(id);
-            if (puesto == null)
-                return NotFound();
+            var puesto = await _service.BuscarPorIdAsync(id);
+            if (puesto == null) return NotFound();
             return View(puesto);
         }
 
+        // POST: Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, PuestoEmpleado puesto)
+        public async Task<IActionResult> Edit(PuestoEmpleado puesto)
         {
-            if (id != puesto.IdPuestoEmpleado)
-                return BadRequest();
+            if (!ModelState.IsValid) return View(puesto);
 
-            if (ModelState.IsValid)
-            {
-                var (success, error) = await _service.ActualizarAsync(puesto);
-                if (success)
-                    return RedirectToAction(nameof(Index));
+            await _service.ActualizarAsync(puesto);
+            return RedirectToAction(nameof(Index));
+        }
 
-                ModelState.AddModelError(string.Empty, error);
-            }
+        // GET: Delete
+        public async Task<IActionResult> Delete(int id)
+        {
+            var puesto = await _service.BuscarPorIdAsync(id);
+            if (puesto == null) return NotFound();
             return View(puesto);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        // POST: Delete
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmDelete(int id)
         {
-            var (success, error) = await _service.EliminarAsync(id);
-            if (!success)
-                TempData["Error"] = error;
-
+            await _service.EliminarAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

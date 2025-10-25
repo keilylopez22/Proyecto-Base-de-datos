@@ -1,0 +1,23 @@
+@model ArsanWebApp.Models.DocumentoPersona
+
+<h2>Editar Documento</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="IdTipoDocumento" />
+    <input type="hidden" asp-for="IdPersona" />
+
+    <div class="form-group">
+        <label asp-for="NumeroDocumento"></label>
+        <input class="form-control" asp-for="NumeroDocumento" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Observaciones"></label>
+        <input class="form-control" asp-for="Observaciones" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Guardar</button>
+    <a class="btn btn-secondary mt-2" asp-action="Index">Cancelar</a>
+</form>

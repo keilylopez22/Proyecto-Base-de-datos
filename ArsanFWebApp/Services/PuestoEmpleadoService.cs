@@ -1,135 +1,162 @@
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
+using System.Data;
 
-namespace ArsanWebApp.Services
+namespace ArsanWebApp.Services;
+
+public class PuestoEmpleadoService
 {
-    public class PuestoEmpleadoService
+    private readonly string _connectionString;
+
+    public PuestoEmpleadoService(IConfiguration configuration)
     {
-        private readonly string _connectionString;
+        _connectionString = configuration.GetConnectionString("SqlServerConnection") 
+            ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
+    }
 
-        public PuestoEmpleadoService(IConfiguration configuration)
+    private static PuestoEmpleado MapPuestoEmpleado(SqlDataReader reader)
+    {
+        return new PuestoEmpleado
         {
-            _connectionString = configuration.GetConnectionString("SqlServerConnection")
-                ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
-        }
+            IdPuestoEmpleado = Convert.ToInt32(reader["IdPuestoEmpleado"]),
+            Nombre = reader["Nombre"] as string,
+            Descripcion = reader["Descripcion"] as string
+        };
+    }
 
-        public async Task<List<PuestoEmpleado>> ListarTodosAsync()
+    // Listado con paginación
+    public async Task<(List<PuestoEmpleado> Lista, int TotalCount)> ObtenerTodosAsync(int page = 1, int pageSize = 10, string nombreFilter = null)
+    {
+        var lista = new List<PuestoEmpleado>();
+        int totalCount = 0;
+
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("SP_SelectAllPuestoEmpleado", con)
         {
-            var lista = new List<PuestoEmpleado>();
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
+            CommandType = CommandType.StoredProcedure
+        };
 
-            using var cmd = new SqlCommand("SP_ListarTodosPuestosEmpleados", conn)
-            {
-                CommandType = System.Data.CommandType.StoredProcedure
-            };
+        cmd.Parameters.AddWithValue("@PageIndex", page);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd.Parameters.AddWithValue("@NombreFilter", string.IsNullOrEmpty(nombreFilter) ? (object)DBNull.Value : nombreFilter);
 
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                lista.Add(new PuestoEmpleado
-                {
-                    IdPuestoEmpleado = Convert.ToInt32(reader["IdPuestoEmpleado"]),
-                    Nombre = reader["Nombre"] as string ?? string.Empty,
-                    Descripcion = reader["Descripcion"] as string
-                });
-            }
+        using var reader = await cmd.ExecuteReaderAsync();
 
-            return lista;
-        }
+        while (await reader.ReadAsync())
+            lista.Add(MapPuestoEmpleado(reader));
 
-        public async Task<PuestoEmpleado?> ObtenerPorIdAsync(int id)
+        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            totalCount = Convert.ToInt32(reader["TotalCount"]);
+
+        return (lista, totalCount);
+    }
+
+    // Buscar por Id
+    public async Task<PuestoEmpleado?> BuscarPorIdAsync(int id)
+    {
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("SP_ObtenerPuestoEmpleadoPorId", con)
         {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@IdPuestoEmpleado", id);
 
-            using var cmd = new SqlCommand("SP_ObtenerPuestoEmpleadoPorId", conn)
-            {
-                CommandType = System.Data.CommandType.StoredProcedure
-            };
-            cmd.Parameters.AddWithValue("@IdPuestoEmpleado", id);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapPuestoEmpleado(reader);
 
-            using var reader = await cmd.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
-            {
-                return new PuestoEmpleado
-                {
-                    IdPuestoEmpleado = Convert.ToInt32(reader["IdPuestoEmpleado"]),
-                    Nombre = reader["Nombre"] as string ?? string.Empty,
-                    Descripcion = reader["Descripcion"] as string
-                };
-            }
+        return null;
+    }
 
-            return null;
-        }
+    // Buscar por nombre
+    public async Task<List<PuestoEmpleado>> BuscarPorNombreAsync(string nombre)
+    {
+        var lista = new List<PuestoEmpleado>();
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
 
-        public async Task<(bool Exito, string Mensaje)> InsertarAsync(PuestoEmpleado puesto)
+        using var cmd = new SqlCommand("SP_BuscarPuestoTrabajoPorNombre", con)
         {
-            try
-            {
-                using var conn = new SqlConnection(_connectionString);
-                await conn.OpenAsync();
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@Nombre", nombre);
 
-                using var cmd = new SqlCommand("SP_CrearPuestoEmpleado", conn)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-                cmd.Parameters.AddWithValue("@Nombre", puesto.Nombre);
-                cmd.Parameters.AddWithValue("@Descripcion", puesto.Descripcion ?? string.Empty);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            lista.Add(MapPuestoEmpleado(reader));
 
-                await cmd.ExecuteNonQueryAsync();
-                return (true, "Puesto insertado correctamente.");
-            }
-            catch (SqlException ex)
-            {
-                return (false, ex.Message);
-            }
-        }
+        return lista;
+    }
 
-        public async Task<(bool Exito, string Mensaje)> ActualizarAsync(PuestoEmpleado puesto)
+    // Buscar por descripción
+    public async Task<List<PuestoEmpleado>> BuscarPorDescripcionAsync(string descripcion)
+    {
+        var lista = new List<PuestoEmpleado>();
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("PS_BuscarPuestoEmpleadoPorDescripcion", con)
         {
-            try
-            {
-                using var conn = new SqlConnection(_connectionString);
-                await conn.OpenAsync();
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@Descripcion", descripcion);
 
-                using var cmd = new SqlCommand("SP_ActualizarPuestoEmpleado", conn)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-                cmd.Parameters.AddWithValue("@IdPuestoEmpleado", puesto.IdPuestoEmpleado);
-                cmd.Parameters.AddWithValue("@Nombre", puesto.Nombre);
-                cmd.Parameters.AddWithValue("@Descripcion", puesto.Descripcion ?? string.Empty);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            lista.Add(MapPuestoEmpleado(reader));
 
-                await cmd.ExecuteNonQueryAsync();
-                return (true, "Puesto actualizado correctamente.");
-            }
-            catch (SqlException ex)
-            {
-                return (false, ex.Message);
-            }
-        }
+        return lista;
+    }
 
-        public async Task<(bool Exito, string Mensaje)> EliminarAsync(int id)
+    // Crear
+    public async Task CrearAsync(PuestoEmpleado puesto)
+    {
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("SP_CrearPuestoEmpleado", con)
         {
-            try
-            {
-                using var conn = new SqlConnection(_connectionString);
-                await conn.OpenAsync();
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@Nombre", puesto.Nombre ?? "");
+        cmd.Parameters.AddWithValue("@Descripcion", puesto.Descripcion ?? "");
 
-                using var cmd = new SqlCommand("SP_EliminarPuestoEmpleado", conn)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-                cmd.Parameters.AddWithValue("@IdPuestoEmpleado", id);
+        await cmd.ExecuteNonQueryAsync();
+    }
 
-                await cmd.ExecuteNonQueryAsync();
-                return (true, "Puesto eliminado correctamente.");
-            }
-            catch (SqlException ex)
-            {
-                return (false, ex.Message);
-            }
-        }
+    // Actualizar
+    public async Task ActualizarAsync(PuestoEmpleado puesto)
+    {
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("SP_ActualizarPuestoEmpleado", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@IdPuestoEmpleado", puesto.IdPuestoEmpleado);
+        cmd.Parameters.AddWithValue("@Nombre", puesto.Nombre ?? "");
+        cmd.Parameters.AddWithValue("@Descripcion", puesto.Descripcion ?? "");
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    // Eliminar
+    public async Task EliminarAsync(int id)
+    {
+        using var con = new SqlConnection(_connectionString);
+        await con.OpenAsync();
+
+        using var cmd = new SqlCommand("SP_EliminarPuestoEmpleado", con)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@IdPuestoEmpleado", id);
+
+        await cmd.ExecuteNonQueryAsync();
     }
 }

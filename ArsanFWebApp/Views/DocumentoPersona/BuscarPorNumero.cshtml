@@ -1,0 +1,13 @@
+@{
+    ViewData["Title"] = "Buscar por Número de Documento";
+}
+
+<h2>Buscar por Número de Documento</h2>
+
+<form asp-action="BuscarPorNumero" method="post">
+    <div class="form-group">
+        <label>Número Documento</label>
+        <input name="numeroDocumento" class="form-control"/>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+</form>
