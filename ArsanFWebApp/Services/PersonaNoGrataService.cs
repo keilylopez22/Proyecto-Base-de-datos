@@ -23,11 +23,7 @@ public class PersonaNoGrataService
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         // Usamos el SP de búsqueda por ID como base, pero creamos uno genérico si no existe
-        using var cmd = new SqlCommand(@"
-            SELECT pn.idPersonaNoGrata, p.PrimerNombre, p.PrimerApellido, 
-                   pn.FechaInicio, pn.FechaFin, pn.Motivo, pn.IdPersona
-            FROM PersonaNoGrata pn
-            INNER JOIN Persona p ON pn.IdPersona = p.IdPersona", conn);
+        using var cmd = new SqlCommand("SP_SelectAllPersonasNoGratas", conn);
 
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -38,10 +34,13 @@ public class PersonaNoGrataService
 
                 FechaInicio = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaInicio"])),
                
-                FechaFin = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaFin"])),
+                FechaFin = reader["FechaFin"] == DBNull.Value
+                    ? (DateOnly?)null
+                    : DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaFin"])),
+                
                 Motivo = reader["Motivo"] as string,
                 IdPersona = Convert.ToInt32(reader["IdPersona"]),
-                NombreCompleto = $"{reader["PrimerNombre"]} {reader["PrimerApellido"]}"
+                NombreCompleto  = reader["Nombre"] as string
             });
         }
         return lista;

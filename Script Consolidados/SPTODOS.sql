@@ -5,7 +5,7 @@
 -- #############################################
 -- 1. TABLA: Residencial
 -- #############################################
-
+go
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarResidencial
     @Nombre VARCHAR(50)
@@ -1461,6 +1461,16 @@ GO
 -- #############################################
 -- 14. TABLA: PersonaNoGrata
 -- #############################################
+
+CREATE OR ALTER PROCEDURE SP_SelectAllPersonasNoGratas
+AS
+BEGIN
+    SELECT P.PrimerNombre + ' ' +  P.PrimerApellido AS Nombre ,PG.*
+    FROM PersonaNoGrata AS PG
+    INNER JOIN Persona AS P ON PG.IdPersona= P.IdPersona
+END;
+GO
+exec SP_SelectAllPersonasNoGratas
 
 -- ActrulaizarPersonaNoGrata
 
