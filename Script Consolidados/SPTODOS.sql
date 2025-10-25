@@ -1,10 +1,4 @@
--- #############################################
--- #       CRUD COMPLETO POR TABLA             #
--- #############################################
-
--- #############################################
 -- 1. TABLA: Residencial
--- #############################################
 go
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarResidencial
@@ -75,9 +69,7 @@ END;
 GO
 
 
--- #############################################
 -- 2. TABLA: Cluster
--- #############################################
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarCluster
@@ -174,9 +166,7 @@ END;
 GO
 
 
--- #############################################
 -- 3. TABLA: Persona
--- #############################################
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarPersona
@@ -310,9 +300,7 @@ END;
 GO
 
 
--- #############################################
 -- 4. TABLA: Propietario
--- #############################################
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarPropietario
@@ -419,9 +407,7 @@ BEGIN
 END;
 GO
 
--- #############################################
 -- 5. TABLA: TipoVivienda
--- #############################################
 
 -- INSERTAR
 Create Or Alter Procedure SP_InsertarTipoVivienda
@@ -512,9 +498,7 @@ END;
 GO
 
 
--- #############################################
 -- 6. TABLA: Vivienda
--- #############################################
 
 -- INSERTAR
 Create OR ALTER Procedure SP_CrearVivienda
@@ -653,9 +637,7 @@ End;
 GO
 
 
--- #############################################
 -- 7. TABLA: Residente
--- #############################################
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarResidente
@@ -821,9 +803,7 @@ END;
 GO
 
 
--- #############################################
 -- 8. TABLA: PuestoJuntaDirectiva
--- #############################################
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarPuestoJD
@@ -909,9 +889,7 @@ END;
 GO
 
 
--- #############################################
 -- 9. TABLA: JuntaDirectiva
--- #############################################
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarJuntaDirectiva
@@ -997,9 +975,8 @@ END;
 GO
 
 
--- #############################################
 -- 10. TABLA: MiembroJuntaDirectiva
--- #############################################
+
 
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarMiembroJD
@@ -1124,9 +1101,7 @@ END;
 GO
 
 GO
--- #############################################
 -- 11. TABLA: PuestoEmpleado
--- #############################################
 
 -- Buscar puesto empleado por descripcion
 CREATE OR ALTER PROCEDURE SP_BuscarPuestoEmpleadoPorDescripcion
@@ -1267,9 +1242,7 @@ BEGIN
 END;
 GO
 
--- #############################################
 -- 12. TABLA: Turno
--- #############################################
 
 -- Actualizar Turno
 CREATE OR ALTER PROCEDURE SP_ActualizarTurno
@@ -1384,9 +1357,7 @@ END
 
 GO
 
--- #############################################
 -- 13. TABLA: AsignacionTurno
--- #############################################
 GO
 -- Actualizacion de asugancion turno
 CREATE OR ALTER PROCEDURE SP_ActualizarAsignacionTurno
@@ -1556,9 +1527,7 @@ END;
 GO
 
 
--- #############################################
 -- 14. TABLA: PersonaNoGrata
--- #############################################
 
 CREATE OR ALTER PROCEDURE SP_SelectAllPersonasNoGratas
 AS
@@ -1697,9 +1666,7 @@ END
 
 GO
 
--- #############################################
 -- 15. TABLA: VehiculoProhibido
--- #############################################
 
 -- Actualizar vehiculo prohibido 
 CREATE OR ALTER PROCEDURE SP_ActualizarVehiculoProhibido
@@ -1842,9 +1809,7 @@ END
 
 GO
 
--- #############################################
 -- 16. TABLA: Empleado
--- #############################################
 
 
 CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
@@ -2069,9 +2034,7 @@ EXEC SP_SelectAllEmpleado
 	SELECT * FROM Empleado WHERE IdEmpleado = 1;
 GO
 
--- #############################################
 -- 17. TABLA: Garita
--- #############################################
 
 -- Actualizar Garita
 CREATE OR ALTER PROCEDURE SP_ActualizarGarita
@@ -2118,7 +2081,8 @@ BEGIN
 END;
 
 GO
-
+exec SP_ConsultarTodasGarita
+go
 -- Eliminar una garita 
 CREATE OR ALTER PROCEDURE SP_EliminarGarita
     @IdGarita INT
@@ -2165,9 +2129,7 @@ END;
 
 GO
 
--- #############################################
 -- 18. TABLA: Linea
--- #############################################
 
 -- Actualizar linea de carro
 CREATE OR ALTER PROCEDURE SP_ActualizarLinea
@@ -2263,9 +2225,7 @@ BEGIN
 END;
 
 GO
--- #############################################
 -- 19. TABLA: Marca
--- #############################################
 
 -- Actualizar marca de carroo
 CREATE OR ALTER PROCEDURE SP_ActualizarMarca
@@ -2349,9 +2309,7 @@ END;
 
 GO
 
--- #############################################
 -- 20. TABLA: RegistroAcceso
--- #############################################
 
 CREATE OR ALTER PROCEDURE SP_SelectAllRegistroAcceso
     @PageIndex INT = 1,
@@ -2529,9 +2487,7 @@ END;
 
 GO
 
--- #############################################
 -- 21. TABLA: TipoDocumento 
--- #############################################
 
 -- Actualizar Tipo documento
 CREATE OR ALTER PROCEDURE SP_ActualizarTipoDoc
@@ -2623,9 +2579,7 @@ END;
 
 GO
 
--- #############################################
 -- 22. TABLA: Vehiculo
--- #############################################
 CREATE OR ALTER PROCEDURE SP_SelectAllVehiculo
 @PageIndex  INT= 1,
 @PageSize  INT = 10,
@@ -2816,9 +2770,7 @@ END;
 
 GO
 
--- #############################################
 -- 23. TABLA: Visitante 
--- #############################################
 
 CREATE OR ALTER PROCEDURE SP_SelectAllVisitante
 @PageIndex INT = 1,
@@ -2965,9 +2917,7 @@ END;
 
 GO
 
--- #############################################
 -- 24. TABLA: TipoPago 
--- #############################################
 
 -- Creas tipo Pago
 Create  OR ALTER Procedure SP_InsertarTipoPago 
@@ -3052,9 +3002,7 @@ BEGIN
 END;
 GO
 
--- #############################################
 -- 25. TABLA: Pago 
--- #############################################
 
 --inserta  pago 
 Create  OR ALTER Procedure SP_InsertarPago 
@@ -3192,9 +3140,7 @@ BEGIN
 END;
 GO
 
--- #############################################
 -- 26. TABLA: TipoMulta
--- #############################################
 
 --inserta un tipo de multa 
 CREATE OR ALTER PROCEDURE SP_InsertarTipoMulta
@@ -3283,9 +3229,7 @@ BEGIN
 END;
 GO
 
--- #############################################
 -- 27. TABLA: Servicio
--- #############################################
 
 --inserta Servicio
 Create  OR ALTER Procedure SP_InsertarServicio
@@ -3368,9 +3312,7 @@ Begin
 END;
 GO
 
--- #############################################
 -- 28. TABLA: Recibo
--- #############################################
 
  --inserta un recibo
 Create  OR ALTER Procedure SP_InsertarRecibo
@@ -3521,9 +3463,7 @@ Begin
 End;
 GO
 
--- #############################################
 -- 29. TABLA: MultaVivienda
--- #############################################
 
 --inserta multa a viviendas 
 CREATE OR ALTER PROCEDURE SP_InsertarMultaVivienda
@@ -3678,9 +3618,7 @@ BEGIN
 END;
 GO
 
--- #############################################
 -- 30. TABLA: CobroServicio
--- #############################################
 
 --insertar cobro de serivicio por vivienda 
 Create  OR ALTER Procedure SP_InsertarCobroServicioVivienda
@@ -3839,9 +3777,9 @@ BEGIN
 END;
 GO
 
--- #############################################
+
 -- 31. TABLA: DetalleRecibo
--- #############################################
+
 
 --insertar  detalle recibo 
 CREATE OR ALTER PROCEDURE SP_InsertarDetalleRecibo
@@ -4076,9 +4014,7 @@ BEGIN
     WHERE v.NumeroVivienda = @NumeroVivienda
       AND v.IdCluster = @IdCluster
 END;
--- #############################################
 -- 32. TABLA: DocumentoPersona
--- #############################################
 
 GO
 CREATE OR ALTER PROCEDURE SP_ActualizarDocumentoPersona
@@ -4199,3 +4135,91 @@ BEGIN
 END
 
 GO
+
+-- PROCEDIMIENTO ALMACENADO PARA ACUMULACIÓN DE DEUDAS
+
+CREATE PROCEDURE sp_AcumularDeudasServiciosPendientes
+    @MesAnterior INT,
+    @AnioAnterior INT,
+    @MesActual INT,
+    @AnioActual INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @ID_SERVICIO_ACUMULADO INT = 99;    
+    
+    DECLARE @ServiciosARevisar TABLE (IdServicio INT);
+    INSERT INTO @ServiciosARevisar (IdServicio) VALUES (1), (2), (3), (5);
+    
+    DECLARE @FechaParaAcumular DATE = DATEFROMPARTS(@AnioActual, @MesActual, 1);
+    
+    DECLARE @DeudasPendientes TABLE (
+        idCobroServicio INT,
+        MontoPendiente DECIMAL(10, 2),
+        NumeroVivienda INT,
+        IdCluster INT
+    );
+
+    INSERT INTO @DeudasPendientes (
+        idCobroServicio, 
+        MontoPendiente, 
+        NumeroVivienda, 
+        IdCluster
+    )
+    SELECT 
+        C.idCobroServicio,
+        (C.Monto - C.MontoAplicado) AS MontoFaltante,
+        C.NumeroVivienda,
+        C.IdCluster
+    FROM 
+        CobroServicioVivienda C
+    INNER JOIN 
+        @ServiciosARevisar SR ON C.IdServicio = SR.IdServicio
+    WHERE 
+        YEAR(C.FechaCobro) = @AnioAnterior
+        AND MONTH(C.FechaCobro) = @MesAnterior
+        AND C.EstadoPago <> 'PAGADO'
+        AND (C.Monto - C.MontoAplicado) > 0.00;
+        
+    IF NOT EXISTS (SELECT 1 FROM @DeudasPendientes)
+    BEGIN
+        RETURN;
+    END
+
+    INSERT INTO CobroServicioVivienda (
+        FechaCobro, 
+        Monto, 
+        MontoAplicado, 
+        EstadoPago, 
+        IdServicio, 
+        NumeroVivienda, 
+        IdCluster
+    )
+    SELECT
+        @FechaParaAcumular,
+        SUM(T.MontoPendiente),
+        0.00,
+        'PENDIENTE',
+        @ID_SERVICIO_ACUMULADO,
+        T.NumeroVivienda,
+        T.IdCluster
+    FROM 
+        @DeudasPendientes T
+    GROUP BY
+        T.NumeroVivienda, T.IdCluster;
+
+    UPDATE C
+    SET C.EstadoPago = 'ACUMULADO'
+    FROM 
+        CobroServicioVivienda C
+    INNER JOIN 
+        @DeudasPendientes T ON C.idCobroServicio = T.idCobroServicio;
+END
+GO
+
+exec sp_AcumularDeudasServiciosPendientes
+    @MesAnterior = 9,
+    @AnioAnterior = 2024,
+    @MesActual =  10,
+    @AnioActual = 2025
