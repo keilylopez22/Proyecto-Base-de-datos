@@ -23,7 +23,7 @@ CREATE TABLE CobroServicioVivienda
   FechaCobro      date       ,
   Monto           decimal    ,
   MontoAplicado   decimal    ,
-  EstadoPago      varchar(50),
+  EstadoPago      varchar(10),
   IdServicio      int         NOT NULL,
   NumeroVivienda  INT         NOT NULL,
   IdCluster       INT         NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE Empleado
   IdEmpleado       int         NOT NULL IDENTITY(1,1),
   FechaAlta        date       ,
   FechaBaja        date       ,
-  Estado           varchar(30),
+  Estado           VARCHAR(10),
   IdPersona        int         NOT NULL,
   IdPuestoEmpleado int         NOT NULL,
   CONSTRAINT PK_Empleado PRIMARY KEY (IdEmpleado)
@@ -72,7 +72,7 @@ GO
 CREATE TABLE Linea
 (
   IdLinea     int         NOT NULL IDENTITY(1,1),
-  Descripcion varchar(30),
+  Descripcion VARCHAR(20),
   IdMarca     int         NOT NULL,
   CONSTRAINT PK_Linea PRIMARY KEY (IdLinea, IdMarca)
 )
@@ -81,7 +81,7 @@ GO
 CREATE TABLE Marca
 (
   IdMarca     int         NOT NULL IDENTITY(1,1),
-  Descripcion varchar(30),
+  Descripcion varchar(20),
   CONSTRAINT PK_Marca PRIMARY KEY (IdMarca)
 )
 GO
@@ -106,7 +106,7 @@ CREATE TABLE MultaVivienda
   Observaciones   varchar(50),
   FechaInfraccion date       ,
   FechaRegistro   date       ,
-  EstadoPago      varchar(50),
+  EstadoPago      varchar(10),
   IdTipoMulta     int         NOT NULL,
   NumeroVivienda  INT         NOT NULL,
   IdCluster       INT         NOT NULL,
@@ -120,22 +120,23 @@ CREATE TABLE Pago
   FechaPago  date       ,
   MontoTotal decimal    ,
   idTipoPago int         NOT NULL,
-  Referencia varchar(50),
+  Referencia varchar(20),
   CONSTRAINT PK_Pago PRIMARY KEY (IdPago)
 )
 GO
 
 CREATE TABLE Persona
 (
-  IdPersona       int         NOT NULL IDENTITY(1,1),
-  Cui             varchar(30) NOT NULL,
-  PrimerNombre    varchar(30) NOT NULL,
-  SegundoNombre   varchar(30),
-  PrimerApellido  varchar(30) NOT NULL,
-  SegundoApellido varchar(30),
-  Telefono        varchar(10),
-  Genero          char(1)    ,
-  FechaNacimiento date       ,
+  IdPersona       int          NOT NULL IDENTITY(1,1),
+  Cui             varchar(30)  NOT NULL,
+  PrimerNombre    varchar(30)  NOT NULL,
+  SegundoNombre   varchar(30) ,
+  PrimerApellido  varchar(30)  NOT NULL,
+  SegundoApellido varchar(30) ,
+  Telefono        varchar(10) ,
+  Genero          char(1)     ,
+  FechaNacimiento date        ,
+  EstadoCivil     varchar (15),
   CONSTRAINT PK_Persona PRIMARY KEY (IdPersona)
 )
 GO
@@ -167,8 +168,8 @@ GO
 CREATE TABLE PuestoEmpleado
 (
   IdPuestoEmpleado int         NOT NULL IDENTITY(1,1),
-  Nombre           varchar(30),
-  Descripcion      varchar(30),
+  Nombre           varchar(50),
+  Descripcion      varchar(50),
   CONSTRAINT PK_PuestoEmpleado PRIMARY KEY (IdPuestoEmpleado)
 )
 GO
@@ -184,9 +185,11 @@ GO
 
 CREATE TABLE Recibo
 (
-  IdRecibo     int  NOT NULL IDENTITY(1,1),
-  FechaEmision date,
-  IdPago       int  NOT NULL,
+  IdRecibo       int  NOT NULL IDENTITY(1,1),
+  FechaEmision   date,
+  IdPago         int  NOT NULL,
+  NumeroVivienda INT  NOT NULL,
+  IdCluster      INT  NOT NULL,
   CONSTRAINT PK_Recibo PRIMARY KEY (IdRecibo)
 )
 GO
@@ -277,8 +280,8 @@ CREATE TABLE Turno
 (
   IdTurno     int         NOT NULL IDENTITY(1,1),
   Descripcion varchar(30),
-  HoraInicio  varchar(10),
-  HoraFin     varchar(10),
+  HoraInicio  datetime   ,
+  HoraFin     datetime   ,
   CONSTRAINT PK_Turno PRIMARY KEY (IdTurno)
 )
 GO
@@ -286,8 +289,8 @@ GO
 CREATE TABLE Vehiculo
 (
   IdVehiculo     int         NOT NULL IDENTITY(1,1),
-  A�o            int        ,
-  Placa          varchar(50),
+  Año            int        ,
+  Placa          varchar(20),
   NumeroVivienda INT         NOT NULL,
   IdCluster      INT         NOT NULL,
   IdLinea        int         NOT NULL,
@@ -312,12 +315,12 @@ GO
 
 CREATE TABLE Visitante
 (
-  IdVisitante     int         NOT NULL IDENTITY(1,1),
-  NombreCompleto  varchar(50) NOT NULL,
-  NumeroDocumento varchar(50) NOT NULL,
-  Telefono        int        ,
-  MotivoVisita    varchar(50),
-  IdTipoDocumento Int         NOT NULL,
+  IdVisitante     int          NOT NULL IDENTITY(1,1),
+  NombreCompleto  varchar(100) NOT NULL,
+  NumeroDocumento varchar(20)  NOT NULL,
+  Telefono        int         ,
+  MotivoVisita    varchar(50) ,
+  IdTipoDocumento Int          NOT NULL,
   CONSTRAINT PK_Visitante PRIMARY KEY (IdVisitante)
 )
 GO
@@ -546,4 +549,10 @@ ALTER TABLE DetalleRecibo
   ADD CONSTRAINT FK_MultaVivienda_TO_DetalleRecibo
     FOREIGN KEY (IdMultaVivienda)
     REFERENCES MultaVivienda (IdMultaVivienda)
+GO
+
+ALTER TABLE Recibo
+  ADD CONSTRAINT FK_Vivienda_TO_Recibo
+    FOREIGN KEY (NumeroVivienda, IdCluster)
+    REFERENCES Vivienda (NumeroVivienda, IdCluster)
 GO
