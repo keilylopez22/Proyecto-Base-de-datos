@@ -1,0 +1,36 @@
+@model IEnumerable<ArsanWebApp.Models.PuestoEmpleado>
+
+<h2>Puestos de Empleados</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nuevo Puesto</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var puesto in Model)
+        {
+            <tr>
+                <td>@puesto.Nombre</td>
+                <td>@puesto.Descripcion</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@puesto.IdPuestoEmpleado" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@puesto.IdPuestoEmpleado" class="btn btn-sm btn-danger"
+                       onclick="return confirm('¿Seguro que deseas eliminar este puesto?');">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1044,7 +1044,16 @@ BEGIN
    FROM PuestoEmpleado
    WHERE Descripcion = @Descripcion
 END
-
+GO 
+CREATE OR ALTER PROCEDURE SP_ListarTodosPuestosEmpleados
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdPuestoEmpleado, Nombre, Descripcion
+    FROM PuestoEmpleado
+    ORDER BY Nombre;
+END
+GO
 GO
 
 -- Actualizar puesto empleado
@@ -1279,6 +1288,26 @@ IdTurno = @IdTurno
 WHERE IdAsignacionTurno = @IdAsignacionTurno
 END
 GO
+CREATE OR ALTER PROCEDURE SP_ListarTodosAsignacionesTurno
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        st.IdAsignacionTurno,
+        st.IdEmpleado,
+        st.IdTurno,
+        st.FechaAsignacion,
+        t.Descripcion AS TurnoDescripcion,
+        p.PrimerNombre + ' ' + p.PrimerApellido AS NombreEmpleado
+    FROM AsignacionTurno st
+    INNER JOIN Turno t ON st.IdTurno = t.IdTurno
+    INNER JOIN Empleado e ON st.IdEmpleado = e.IdEmpleado
+    INNER JOIN Persona p ON e.IdEmpleado = p.IdPersona
+    ORDER BY st.FechaAsignacion, st.IdTurno;
+END
+GO
+
 
 -- Buscar asiganacion turno por fecha
 GO
@@ -2563,7 +2592,7 @@ GO
 CREATE OR ALTER PROCEDURE SP_SelectAllPago
 @PageIndex INT = 1,
 @PageSize INT = 10,
-@FechaPagoFilter DATE,
+@FechaPagoFilter DATE = null,
 @MontoTotalFilter DECIMAL(18,2) = NULL, 
 @NombreTipoPagoFilter varchar(50) = NULL
 AS
@@ -3437,16 +3466,23 @@ GO
 
 --busca detalle recibo por el id, muestra la persona que pago 
 CREATE OR ALTER PROCEDURE SP_BuscarDetalleReciboPorID
-@IdDetalleRecibo INT 
+@IdRecibo INT 
 AS
 BEGIN
-	SELECT dr.IdRecibo,csv.MontoAplicado,v.NumeroVivienda,v.IdCluster, per.PrimerNombre, per.SegundoNombre, per.PrimerApellido, per.SegundoApellido
+	SELECT dr.IdDetalleRecibo, dr.IdRecibo,
+	csv.IdServicio, csv.MontoAplicado,
+	s.Nombre,
+	v.NumeroVivienda,v.IdCluster,
+	CONCAT(per.PrimerNombre,' ' ,per.SegundoNombre,' ', per.PrimerApellido,' ', per.SegundoApellido) AS NombreCompleto,
+	c.Descripcion AS NombreCluster 
 	From DetalleRecibo AS dr
 	INNER JOIN CobroServicioVivienda AS csv ON dr.idCobroServicio = csv.idCobroServicio
+	INNER JOIN Servicio		AS s On csv.IdServicio = s.IdServicio
 	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda 
 	INNER JOIN Residente AS r ON  v.NumeroVivienda = r.NumeroVivienda
 	INNER JOIN Persona AS per ON r.IdPersona = per.IdPersona
-	WHERE IdDetalleRecibo = @IdDetalleRecibo
+	INNER JOIN Cluster AS c ON v.IdCluster = c.IdCluster
+	WHERE IdRecibo = @IdRecibo
 END;
 GO
 --actualiza el detalle del recibo 

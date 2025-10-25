@@ -1,0 +1,59 @@
+@model ArsanWebApp.Models.Recibo
+@{
+    ViewData["Title"] = "Crear Recibo";
+}
+
+<div class="container mt-4">
+    <h2>Crear Nuevo Recibo</h2>
+    <form asp-action="Create" method="post" class="mt-3">
+
+        <div class="mb-3">
+            <label class="form-label">Fecha de Emisión</label>
+            <input asp-for="FechaEmision" class="form-control" type="date" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">ID Pago</label>
+            <input asp-for="IdPago" class="form-control" type="number" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Número de Vivienda</label>
+            <input asp-for="NumeroVivienda" id="NumeroVivienda" class="form-control" type="number" required />
+        </div>
+
+
+        <div class="mb-3">
+            <label class="form-label">Cluster</label>
+            <select id="IdCluster" name="IdCluster" class="form-control">
+                <option value="">--Seleccione--</option>
+                @foreach(var c in ViewBag.Clusters)
+                {
+                    <option value="@c.IdCluster">@c.Descripcion</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Propietario</label>
+            <input id="NombrePropietario" type="text" class="form-control" readonly />
+        </div>
+        <button type="submit" class="btn btn-primary">Crear</button>
+     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form> 
+
+<script>
+    $(document).ready(function(){
+        function actualizarPropietario() {
+            var numero = $("#NumeroVivienda").val();
+            var cluster = $("#IdCluster").val();
+            if(numero && cluster){
+                $.get('@Url.Action("ObtenerPropietario", "Recibo")', { numeroVivienda: numero, idCluster: cluster }, function(data){
+                    $("#NombrePropietario").val(data.nombreCompleto);
+                });
+            }
+        }
+
+        $("#NumeroVivienda, #IdCluster").change(actualizarPropietario);
+    });
+</script>

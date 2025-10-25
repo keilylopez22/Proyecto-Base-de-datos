@@ -1,0 +1,27 @@
+@model ArsanWebApp.Models.Recibo
+
+<h2>Detalle del Recibo</h2>
+
+<p>Recibo ID: @Model.IdRecibo</p>
+<p>Fecha: @Model.FechaEmision</p>
+
+<h3>Detalles</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Servicio/Multa</th>
+            <th>Monto</th>
+            <th>Propietario</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var detalle in Model.Detalles)
+        {
+            <tr>
+                <td>@(detalle.NombreServicio ?? detalle.NombreMulta)</td>
+                <td>@(detalle.MontoServicio ?? detalle.MontoAplicado)</td>
+                <td>@detalle.NombrePropietario</td>
+            </tr>
+        }
+    </tbody>
+</table>
