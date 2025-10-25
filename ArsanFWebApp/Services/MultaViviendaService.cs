@@ -33,7 +33,6 @@ public class MultaViviendaService
 
         using var reader = await cmd.ExecuteReaderAsync();
 
-        // Leer resultados paginados
         while (await reader.ReadAsync())
         {
             lista.Add(new MultaVivienda
@@ -52,7 +51,6 @@ public class MultaViviendaService
             });
         }
 
-        // Leer totalCount del siguiente resultado
         if (await reader.NextResultAsync() && await reader.ReadAsync())
         {
             totalCount = Convert.ToInt32(reader["TotalCount"]);

@@ -150,7 +150,7 @@ public class PersonaService
 
 
 
-        private static Persona MapPersona(SqlDataReader reader)
+    private static Persona MapPersona(SqlDataReader reader)
     {
         return new Persona
         {
@@ -166,5 +166,6 @@ public class PersonaService
             EstadoCivil = reader["EstadoCivil"] as string
         };
     }
+
 
 }
