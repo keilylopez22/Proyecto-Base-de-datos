@@ -8,13 +8,13 @@ namespace ArsanWebApp.Controllers
     public class PagoController : Controller
     {
         private readonly PagoService _pagoService;
+       
 
         public PagoController(PagoService pagoService)
         {
             _pagoService = pagoService;
         }
-
-        // Index con filtros y paginación
+       
         public IActionResult Index(DateTime? fechaPagoFilter, decimal? montoFilter, string nombreTipoPagoFilter, int pageIndex = 1, int pageSize = 10)
         {
             var (pagos, totalCount) = _pagoService.GetPagos(fechaPagoFilter, montoFilter, nombreTipoPagoFilter, pageIndex, pageSize);
@@ -30,7 +30,7 @@ namespace ArsanWebApp.Controllers
             return View(pagos);
         }
 
-        // Crear (GET)
+      
         public IActionResult Create()
         {
             var tiposPago = _pagoService.GetAllTipoPago();
@@ -38,7 +38,7 @@ namespace ArsanWebApp.Controllers
             return View();
         }
 
-        // Crear (POST)
+    
         [HttpPost]
         public IActionResult Create(Pago pago)
         {
@@ -48,13 +48,11 @@ namespace ArsanWebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // En caso de error, volvemos a cargar el select
             var tiposPago = _pagoService.GetAllTipoPago();
             ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre", pago.IdTipoPago);
             return View(pago);
         }
 
-        // Editar (GET)
         public IActionResult Edit(int id)
         {
             var pago = _pagoService.GetPagoById(id);
@@ -66,7 +64,6 @@ namespace ArsanWebApp.Controllers
             return View(pago);
         }
 
-        // Editar (POST)
         [HttpPost]
         public IActionResult Edit(Pago pago)
         {
@@ -81,7 +78,6 @@ namespace ArsanWebApp.Controllers
             return View(pago);
         }
 
-        // Eliminar
         public IActionResult Delete(int id)
         {
             _pagoService.EliminarPago(id);
