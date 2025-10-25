@@ -1,29 +1,149 @@
-@model List<ArsanWebApp.Models.Residencial>
+@model List<ArsanWebApp.Models.CobroServicioVivienda>
 
-<h2>Residenciales</h2>
-<p><a asp-action="Create" class="btn btn-primary">Crear Nuevo</a></p>
+@{
+    ViewData["Title"] = "Cobros de Servicios por Vivienda";
 
-<table class="table table-striped">
-    <thead>
+    string fechaFilter = ViewBag.FechaFilter ?? "";
+    string servicioFilter = ViewBag.SelectedServicio ?? "";
+    int? clusterFilter = ViewBag.SelectedCluster == 0 ? null : (int?)ViewBag.SelectedCluster;
+
+    var servicios = ViewBag.Servicios as List<ArsanWebApp.Models.Servicio> ?? new List<ArsanWebApp.Models.Servicio>();
+    var clusters = ViewBag.Clusters as List<ArsanWebApp.Models.Cluster> ?? new List<ArsanWebApp.Models.Cluster>();
+}
+@{
+    ViewBag.Title = "Cobros de servicios por  Vivienda";
+    int totalCount = ViewBag.TotalCount ?? 0;
+    int pageIndex = ViewBag.PageIndex ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+}
+
+<h2>@ViewData["Title"]</h2>
+<form method="get" class="mb-3">
+    <div class="row">
+        
+       
+        <div class="col-md-2">
+            <select name="pageSize" class="form-control" onchange="this.form.submit()">
+                <option value="5" selected="@(ViewBag.PageSize == 2)">2 por página</option>
+                <option value="10" selected="@(ViewBag.PageSize == 10)">10 por página</option>
+                <option value="20" selected="@(ViewBag.PageSize == 20)">20 por página</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">Nuevo Cobro</a>
+</div>
+
+<form method="get" asp-action="Index" class="mb-3">
+    <div class="row g-2">
+
+        <div class="col">
+            <input type="date" name="fechaFilter" value="@fechaFilter" class="form-control" />
+        </div>
+
+        <div class="col">
+            <select name="servicioFilter" class="form-control">
+                <option value="">-- Todos los servicios --</option>
+                @foreach (var s in servicios)
+                {
+                    if (s.Nombre == servicioFilter)
+                    {
+                        <option value="@s.Nombre" selected="selected">@s.Nombre</option>
+                    }
+                    else
+                    {
+                        <option value="@s.Nombre">@s.Nombre</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <select name="clusterFilter" class="form-control">
+                <option value="">-- Todos los clusters --</option>
+                @foreach (var c in clusters)
+                {
+                    if (c.IdCluster == (clusterFilter ?? 0))
+                    {
+                        <option value="@c.IdCluster" selected="selected">@c.Descripcion</option>
+                    }
+                    else
+                    {
+                        <option value="@c.IdCluster">@c.Descripcion</option>
+                    }
+                }
+            </select>
+        </div>
+
+       
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
         <tr>
-            <th>ID</th>
-            <th>Nombre</th>
+            <th>Id</th>
+            <th>Servicio</th>
+            <th>Vivienda</th>
+            <th>Cluster</th>
+            <th>Fecha</th>
+            <th>Monto</th>
+            <th>Monto Aplicado</th>
+            <th>Estado</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var r in Model)
+        @if (Model != null && Model.Any())
         {
-            <tr>
-                <td>@r.IdResidencial</td>
-                <td>@r.Nombre</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@r.IdResidencial" class="btn btn-sm btn-warning">Editar</a>
-                    <form asp-action="Delete" asp-route-id="@r.IdResidencial" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este residencial?')">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.IdCobroServicio</td>
+                    <td>@item.NombreServicio</td>
+                    <td>@item.NumeroVivienda</td>
+                    <td>@item.NombreCluster</td>
+                    <td>@item.FechaCobro?.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Monto?.ToString("N2")</td>
+                    <td>@item.MontoAplicado?.ToString("N2")</td>
+                    <td>@item.EstadoPago</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.IdCobroServicio" class="btn btn-primary btn-sm">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.IdCobroServicio" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="9" class="text-center">No hay registros para mostrar.</td></tr>
         }
     </tbody>
+    
 </table>
+
+<div>
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize, fechaCobroFilter = ViewBag.FechaCobroFilter, ServicioFilter = ViewBag.ServicioFilter, numeroViviendaFilter = ViewBag.NumeroViviendaFilter, clusterFilter = ViewBag.ClusterFilter })">Anterior</a>
+        </li>
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(pageIndex == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { pageIndex = i, pageSize, fechaCobroFilter = ViewBag.FechaCobroFilter, ServicioFilter = ViewBag.ServicioFilter, numeroViviendaFilter = ViewBag.NumeroViviendaFilter, clusterFilter = ViewBag.ClusterFilter })">@i</a>
+            </li>
+        }
+        <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, fechaCobroFilter = ViewBag.FechaCobroFilter, ServicioFilter = ViewBag.ServicioFilter, numeroViviendaFilter = ViewBag.NumeroViviendaFilter, clusterFilter = ViewBag.ClusterFilter })">Siguiente</a>
+        </li>
+    </ul>
+</nav>

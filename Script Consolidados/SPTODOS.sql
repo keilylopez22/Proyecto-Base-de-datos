@@ -2552,12 +2552,45 @@ Create  OR ALTER Procedure SP_InsertarPago
 @MontoTotal decimal,
 @idTipoPago int, 
 @Referencia VARCHAR (20)
+
 As
 Begin 
 	Insert Into Pago (FechaPago , MontoTotal , idTipoPago, Referencia)
 	Values (@FechaPago, @MontoTotal, @idTipoPago, @Referencia )
 	SELECT SCOPE_IDENTITY() AS IdPago;
 End;
+GO
+CREATE OR ALTER PROCEDURE SP_SelectAllPago
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@FechaPagoFilter DATE,
+@MontoTotalFilter DECIMAL(18,2) = NULL, 
+@NombreTipoPagoFilter varchar(50) = NULL
+AS
+BEGIN
+
+    DECLARE @offset INT = (@PageIndex -1) * @pageSize;
+    SELECT 
+		p.IdPago, p.FechaPago,p.MontoTotal,p.idTipoPago,p.Referencia, tp.Nombre as NombreTipoPago
+    FROM Pago AS p
+	INNER JOIN TipoPago AS tp ON p.idTipoPago = tp.idTipoPago
+    WHERE
+        (@FechaPagoFilter IS NULL OR cast( p.FechaPago as date) = @FechaPagoFilter )
+		AND (@MontoTotalFilter IS NULL OR p.MontoTotal = @MontoTotalFilter)
+		AND (@NombreTipoPagoFilter IS NULL OR tp.Nombre LIKE '%' + @NombreTipoPagoFilter + '%')
+    ORDER BY p.FechaPago desc 
+    OFFSET @offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    From Pago AS p
+	INNER JOIN TipoPago AS tp ON p.idTipoPago = tp.idTipoPago
+    WHERE
+        (@FechaPagoFilter IS NULL OR cast( p.FechaPago as date) = @FechaPagoFilter )
+		AND (@MontoTotalFilter IS NULL OR p.MontoTotal = @MontoTotalFilter)
+		AND (@NombreTipoPagoFilter IS NULL OR tp.Nombre LIKE '%' + @NombreTipoPagoFilter + '%')
+
+END;
 GO
 --actualizar pagos  
 CREATE OR ALTER PROCEDURE SP_ActualizarPagos
@@ -2842,18 +2875,64 @@ Begin
 	SELECT SCOPE_IDENTITY() AS IdRecibo
 End;
 GO
+
+CREATE OR ALTER PROCEDURE SP_SelectAllRecibo
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@FechaEmisionFilter DATE = NULL,
+@IdPagoFilter INT= NULL, 
+@NumeroViviendaFilter INT = NULL,
+@ClusterFilter INT = NULL
+AS
+BEGIN
+
+    DECLARE @offset INT = (@PageIndex -1) * @pageSize;
+    SELECT 
+		r.IdRecibo, r.FechaEmision,r.IdPago,r.NumeroVivienda,r.IdCluster, 
+		Concat(p.PrimerNombre,' ',p.SegundoNombre,' ', p.PrimerApellido, ' ', p.SegundoApellido ) AS NombreCompleto,
+		c.Descripcion AS NombreCluster
+    FROM Recibo AS r
+	INNER JOIN Vivienda AS v ON r.NumeroVivienda = v.NumeroVivienda and r.IdCluster= v.IdCluster
+	INNER JOIN Residente AS re ON v.NumeroVivienda = re.NumeroVivienda and v.IdCluster = re.IdCluster
+	INNER JOIN Persona AS p ON re.IdPersona = p.IdPersona
+	INNER JOIN Cluster AS c ON r.IdCluster = c.IdCluster
+	WHERE
+        (@FechaEmisionFilter IS NULL OR cast( r.FechaEmision as date) = @FechaEmisionFilter )
+		AND (@IdPagoFilter IS NULL OR r.IdPago = @IdPagoFilter)
+		AND (@NumeroViviendaFilter IS NULL OR r.NumeroVivienda =  @NumeroViviendaFilter )
+		AND (@ClusterFilter IS NULL OR r.IdCluster = @ClusterFilter )
+    ORDER BY r.FechaEmision desc 
+    OFFSET @offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    From Recibo AS r
+	INNER JOIN Vivienda AS v ON r.NumeroVivienda = v.NumeroVivienda and r.IdCluster= v.IdCluster
+	INNER JOIN Residente AS re ON v.NumeroVivienda = re.NumeroVivienda and v.IdCluster = re.IdCluster
+	INNER JOIN Persona AS p ON re.IdPersona = p.IdPersona
+	INNER JOIN Cluster AS c ON r.IdCluster = c.IdCluster
+    WHERE
+        (@FechaEmisionFilter IS NULL OR cast( r.FechaEmision as date) = @FechaEmisionFilter )
+		AND (@IdPagoFilter IS NULL OR r.IdPago = @IdPagoFilter)
+		AND (@NumeroViviendaFilter IS NULL OR r.NumeroVivienda =  @NumeroViviendaFilter )
+		AND (@ClusterFilter IS NULL OR r.IdCluster = @ClusterFilter )
+
+END;
+go
 -- buscar recibos por numero de pago 
 CREATE OR ALTER PROCEDURE SP_BuscarReciboPorPago
     @IdPago INT
 AS
 BEGIN
     SELECT 
-        IdRecibo,
-        FechaEmision,
-		IdPago,
-		NumeroVivienda,
-		IdCluster
-    FROM Recibo
+	    r.IdRecibo, r.FechaEmision,r.IdPago,r.NumeroVivienda,r.IdCluster, 
+		Concat(p.PrimerNombre,' ',p.SegundoNombre,' ', p.PrimerApellido, ' ', p.SegundoApellido ) AS NombreCompleto,
+		c.Descripcion AS NombreCluster
+    FROM Recibo AS r
+	INNER JOIN Vivienda AS v ON r.NumeroVivienda = v.NumeroVivienda and r.IdCluster= v.IdCluster
+	INNER JOIN Residente AS re ON v.NumeroVivienda = re.NumeroVivienda and v.IdCluster = re.IdCluster
+	INNER JOIN Persona AS p ON re.IdPersona = p.IdPersona
+	INNER JOIN Cluster AS c ON r.IdCluster = c.IdCluster
     WHERE IdPago = @IdPago
 END;
 GO
@@ -2879,8 +2958,15 @@ Create OR Alter Procedure SP_BuscarReciboPorFecha
 @FechaEmision date 
 AS
 Begin 
-	Select *
-	from Recibo
+	Select 
+		r.IdRecibo, r.FechaEmision,r.IdPago,r.NumeroVivienda,r.IdCluster, 
+		Concat(p.PrimerNombre,' ',p.SegundoNombre,' ', p.PrimerApellido, ' ', p.SegundoApellido ) AS NombreCompleto,
+		c.Descripcion AS NombreCluster
+    FROM Recibo AS r
+	INNER JOIN Vivienda AS v ON r.NumeroVivienda = v.NumeroVivienda and r.IdCluster= v.IdCluster
+	INNER JOIN Residente AS re ON v.NumeroVivienda = re.NumeroVivienda and v.IdCluster = re.IdCluster
+	INNER JOIN Persona AS p ON re.IdPersona = p.IdPersona
+	INNER JOIN Cluster AS c ON r.IdCluster = c.IdCluster
 	Where  FechaEmision = @FechaEmision 
 
 END;
@@ -3089,8 +3175,8 @@ GO
 --insertar cobro de serivicio por vivienda 
 Create  OR ALTER Procedure SP_InsertarCobroServicioVivienda
 @FechaCobro Date,
-@Monto DECIMAL,
-@MontoAplicado DECIMAL,
+@Monto DECIMAL(10,2) ,
+@MontoAplicado DECIMAL(10,2),
 @EstadoPago VARCHAR(10),
 @IdServicio      int,
 @NumeroVivienda  INT,
@@ -3106,6 +3192,45 @@ Begin
 	Values (@FechaCobro, @Monto, @MontoAplicado,@EstadoPago,@IdServicio, @NumeroVivienda, @IdCluster);
 	SELECT SCOPE_IDENTITY() AS IdCobroServicio
 End;
+GO
+CREATE OR ALTER PROCEDURE SP_SelectAllCobroServicioVivienda
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@FechaCobroFilter DATE = NULL,
+@ServicioFilter VARCHAR (50) = NULL, 
+@NumeroViviendaFilter INT = NULL,
+@ClusterFilter INT = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+    DECLARE @offset INT = (@PageIndex -1) * @pageSize;
+    SELECT csv.idCobroServicio, csv.FechaCobro, csv.Monto, csv.MontoAplicado, csv.EstadoPago,csv.IdServicio, s.Nombre AS NombreServicio,v.NumeroVivienda, csv.IdCluster,c.Descripcion AS NombreCluster
+    FROM CobroServicioVivienda AS csv
+    INNER JOIN Servicio AS s ON csv.IdServicio = s.IdServicio
+	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda 
+	INNER JOIN Cluster AS c  ON csv.IdCluster = c.IdCluster 
+    WHERE
+        (@FechaCobroFilter IS NULL OR CAST( csv.FechaCobro AS DATE)= @FechaCobroFilter)
+		AND (@ServicioFilter IS NULL OR s.Nombre LIKE '%' + @ServicioFilter + '%')
+		AND (@NumeroViviendaFilter IS NULL OR v.NumeroVivienda  = @NumeroViviendaFilter)
+		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )
+    ORDER BY csv.idCobroServicio
+    OFFSET @offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    From CobroServicioVivienda AS csv
+	INNER JOIN Servicio AS s ON csv.IdServicio = s.IdServicio
+	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda 
+	INNER JOIN Cluster AS c  ON csv.IdCluster = c.IdCluster 
+    WHERE
+        (@FechaCobroFilter IS NULL OR CAST(  csv.FechaCobro AS DATE) = @FechaCobroFilter )
+		AND (@ServicioFilter IS NULL OR s.Nombre LIKE '%' + @ServicioFilter + '%')
+		AND (@NumeroViviendaFilter IS NULL OR v.NumeroVivienda  = @NumeroViviendaFilter)
+		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )
+
+END;
+GO
 GO
 --actualiza  cobro servicio vivienda 
 CREATE OR ALTER PROCEDURE SP_ActualizarCobroServicioVivienda
@@ -3220,6 +3345,48 @@ BEGIN
 	SELECT SCOPE_IDENTITY () AS IdDetalleRecibo
 END;
 GO
+CREATE OR ALTER PROCEDURE SP_SelectAllDetalleRecibo
+@PageIndex INT = 1,
+@PageSize INT = 10,
+@IdReciboFilter INT = NULL,
+@IdCobroServicioFilter INT = NULL,
+@IdMultaViviendaFilter INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @offset INT = (@PageIndex -1) * @PageSize;
+
+    SELECT 
+        dr.IdDetalleRecibo,dr.IdRecibo,dr.idCobroServicio,dr.IdMultaVivienda,
+        ISNULL(csv.MontoAplicado, 0) AS MontoAplicado, tm.Nombre AS NombreMulta,
+        per.PrimerNombre, per.SegundoNombre,per.PrimerApellido,per.SegundoApellido,
+        v.NumeroVivienda,v.IdCluster
+    FROM DetalleRecibo AS dr
+    LEFT JOIN CobroServicioVivienda AS csv ON dr.idCobroServicio = csv.idCobroServicio
+    LEFT JOIN MultaVivienda AS mv ON dr.IdMultaVivienda = mv.IdMultaVivienda
+    LEFT JOIN TipoMulta AS tm ON mv.IdTipoMulta = tm.IdTipoMulta
+    LEFT JOIN Vivienda AS v ON (csv.NumeroVivienda = v.NumeroVivienda OR mv.NumeroVivienda = v.NumeroVivienda)
+    LEFT JOIN Residente AS r ON v.NumeroVivienda = r.NumeroVivienda
+    LEFT JOIN Persona AS per ON r.IdPersona = per.IdPersona
+    WHERE
+        (@IdReciboFilter IS NULL OR dr.IdRecibo = @IdReciboFilter)
+        AND (@IdCobroServicioFilter IS NULL OR dr.idCobroServicio = @IdCobroServicioFilter)
+        AND (@IdMultaViviendaFilter IS NULL OR dr.IdMultaVivienda = @IdMultaViviendaFilter)
+    ORDER BY dr.IdDetalleRecibo
+    OFFSET @offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT COUNT(*) AS TotalCount
+    FROM DetalleRecibo AS dr
+    WHERE
+        (@IdReciboFilter IS NULL OR dr.IdRecibo = @IdReciboFilter)
+        AND (@IdCobroServicioFilter IS NULL OR dr.idCobroServicio = @IdCobroServicioFilter)
+        AND (@IdMultaViviendaFilter IS NULL OR dr.IdMultaVivienda = @IdMultaViviendaFilter)
+END;
+GO
+exec SP_SelectAllDetalleRecibo
+
+go
 --busca detalle recibo por Multa
 CREATE OR ALTER PROCEDURE SP_BuscarDetalleReciboPorMulta
 @IdMultaVivienda int 
@@ -3349,3 +3516,47 @@ BEGIN
              PrimerNombre LIKE '%' + @NombreFilter + '%' OR
              PrimerApellido LIKE '%' + @NombreFilter + '%');
 END;
+GO 
+CREATE OR ALTER PROCEDURE SP_DetalleReciboCompleto
+    @IdRecibo INT
+AS
+BEGIN
+    SELECT 
+        r.IdRecibo,
+        r.FechaEmision,
+        r.NumeroVivienda,
+        r.IdCluster,
+        CONCAT(p.PrimerNombre, ' ', p.SegundoNombre, ' ', p.PrimerApellido, ' ', p.SegundoApellido) AS NombrePropietario,
+        dr.IdDetalleRecibo,
+        dr.IdMultaVivienda,
+        dr.idCobroServicio,
+        ISNULL(csv.MontoAplicado, 0) AS MontoServicio,
+        s.Nombre AS NombreServicio,
+        tm.Nombre AS NombreMulta
+    FROM DetalleRecibo AS dr
+    INNER JOIN Recibo AS r ON dr.IdRecibo = r.IdRecibo
+    INNER JOIN CobroServicioVivienda AS csv ON dr.idCobroServicio = csv.idCobroServicio
+    LEFT JOIN Servicio AS s ON csv.IdServicio = s.IdServicio
+    LEFT JOIN MultaVivienda AS mv ON dr.IdMultaVivienda = mv.IdMultaVivienda
+    LEFT JOIN TipoMulta AS tm ON mv.IdTipoMulta = tm.IdTipoMulta
+    INNER JOIN Vivienda AS v ON r.NumeroVivienda = v.NumeroVivienda AND r.IdCluster = v.IdCluster
+    INNER JOIN Residente AS re ON v.NumeroVivienda = re.NumeroVivienda AND v.IdCluster = re.IdCluster
+    INNER JOIN Persona AS p ON re.IdPersona = p.IdPersona
+    WHERE r.IdRecibo = @IdRecibo
+    ORDER BY dr.IdDetalleRecibo;
+END;
+GO
+CREATE OR ALTER PROCEDURE SP_ObtenerPropietarioPorViviendaYCluster
+    @NumeroVivienda INT,
+    @IdCluster INT
+AS
+BEGIN
+    SELECT TOP 1
+        CONCAT(p.PrimerNombre, ' ', p.SegundoNombre, ' ', p.PrimerApellido, ' ', p.SegundoApellido) AS NombreCompleto
+    FROM Vivienda v
+    INNER JOIN Residente r ON v.NumeroVivienda = r.NumeroVivienda AND v.IdCluster = r.IdCluster
+    INNER JOIN Persona p ON r.IdPersona = p.IdPersona
+    WHERE v.NumeroVivienda = @NumeroVivienda
+      AND v.IdCluster = @IdCluster
+END;
+GO
