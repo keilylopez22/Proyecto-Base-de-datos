@@ -1543,7 +1543,7 @@ GO
 exec SP_SelectAllPersonasNoGratas
 
 -- ActrulaizarPersonaNoGrata
-
+GO
 CREATE OR ALTER PROCEDURE SP_ActualizarPersonaNoGrata
 @IdPeronaNoGrata INT,
 @FechaInicio DATE = NULL,
@@ -1771,7 +1771,7 @@ GO
 
 CREATE OR ALTER PROCEDURE SP_SelectAllVehiculoProhibido
     @PageIndex INT = 1,
-    @PageSize INT = 5,
+    @PageSize INT = 10,
     @PlacaFilter VARCHAR(20) = NULL,
     @MotivoFilter VARCHAR(50) = NULL,
     @FechaFilter DATE = NULL
@@ -1792,7 +1792,7 @@ BEGIN
     FROM VehiculoProhibido AS VP
     INNER JOIN Vehiculo AS V ON VP.IdVehiculo = V.IdVehiculo
 	INNER JOIN Marca m ON V.IdMarca = m.IdMarca
-	INNER JOIN Linea l ON m.IdMarca = l.IdMarca
+	INNER JOIN Linea l ON v.IdLinea = l.IdLinea
     WHERE
         (@PlacaFilter IS NULL OR V.Placa LIKE '%' + @PlacaFilter + '%')
         AND (@MotivoFilter IS NULL OR VP.Motivo LIKE '%' + @MotivoFilter + '%')
@@ -1804,11 +1804,14 @@ BEGIN
     SELECT COUNT(*) AS TotalCount
     FROM VehiculoProhibido AS VP
     INNER JOIN Vehiculo AS V ON VP.IdVehiculo = V.IdVehiculo
+	INNER JOIN Marca m ON V.IdMarca = m.IdMarca
+	INNER JOIN Linea l ON v.IdLinea = l.IdLinea
     WHERE
         (@PlacaFilter IS NULL OR V.Placa LIKE '%' + @PlacaFilter + '%')
         AND (@MotivoFilter IS NULL OR VP.Motivo LIKE '%' + @MotivoFilter + '%')
         AND (@FechaFilter IS NULL OR VP.Fecha = @FechaFilter);
 END
+
 GO
 
 -- #############################################
@@ -2081,7 +2084,9 @@ GO
 CREATE OR ALTER PROCEDURE SP_ConsultarTodasGarita
 AS
 BEGIN
-    SELECT * FROM Garita
+    SELECT  g.* , r.Nombre AS Residencial FROM Garita AS g
+	INNER JOIN Cluster c ON g.IdCluster = c.IdCluster
+	INNER JOIN Residencial r ON c.IdResidencial = r.IdResidencial
 END;
 
 GO
