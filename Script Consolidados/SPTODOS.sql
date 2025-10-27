@@ -4163,97 +4163,7 @@ BEGIN
 END
 
 GO
-
--- PROCEDIMIENTO ALMACENADO PARA ACUMULACIÓN DE DEUDAS
-
-CREATE PROCEDURE sp_AcumularDeudasServiciosPendientes
-    @MesAnterior INT,
-    @AnioAnterior INT,
-    @MesActual INT,
-    @AnioActual INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    DECLARE @ID_SERVICIO_ACUMULADO INT = 99;    
-    
-    DECLARE @ServiciosARevisar TABLE (IdServicio INT);
-    INSERT INTO @ServiciosARevisar (IdServicio) VALUES (1), (2), (3), (5);
-    
-    DECLARE @FechaParaAcumular DATE = DATEFROMPARTS(@AnioActual, @MesActual, 1);
-    
-    DECLARE @DeudasPendientes TABLE (
-        idCobroServicio INT,
-        MontoPendiente DECIMAL(10, 2),
-        NumeroVivienda INT,
-        IdCluster INT
-    );
-
-    INSERT INTO @DeudasPendientes (
-        idCobroServicio, 
-        MontoPendiente, 
-        NumeroVivienda, 
-        IdCluster
-    )
-    SELECT 
-        C.idCobroServicio,
-        (C.Monto - C.MontoAplicado) AS MontoFaltante,
-        C.NumeroVivienda,
-        C.IdCluster
-    FROM 
-        CobroServicioVivienda C
-    INNER JOIN 
-        @ServiciosARevisar SR ON C.IdServicio = SR.IdServicio
-    WHERE 
-        YEAR(C.FechaCobro) = @AnioAnterior
-        AND MONTH(C.FechaCobro) = @MesAnterior
-        AND C.EstadoPago <> 'PAGADO'
-        AND (C.Monto - C.MontoAplicado) > 0.00;
-        
-    IF NOT EXISTS (SELECT 1 FROM @DeudasPendientes)
-    BEGIN
-        RETURN;
-    END
-
-    INSERT INTO CobroServicioVivienda (
-        FechaCobro, 
-        Monto, 
-        MontoAplicado, 
-        EstadoPago, 
-        IdServicio, 
-        NumeroVivienda, 
-        IdCluster
-    )
-    SELECT
-        @FechaParaAcumular,
-        SUM(T.MontoPendiente),
-        0.00,
-        'PENDIENTE',
-        @ID_SERVICIO_ACUMULADO,
-        T.NumeroVivienda,
-        T.IdCluster
-    FROM 
-        @DeudasPendientes T
-    GROUP BY
-        T.NumeroVivienda, T.IdCluster;
-
-    UPDATE C
-    SET C.EstadoPago = 'ACUMULADO'
-    FROM 
-        CobroServicioVivienda C
-    INNER JOIN 
-        @DeudasPendientes T ON C.idCobroServicio = T.idCobroServicio;
-END
-GO
-
-exec sp_AcumularDeudasServiciosPendientes
-    @MesAnterior = 9,
-    @AnioAnterior = 2024,
-    @MesActual =  10,
-    @AnioActual = 2025
-
-go
-    ----Tabla de DetallePago
+----Tabla de DetallePago
 CREATE PROCEDURE SP_InsertarDetallePago
     @Monto decimal,
     @idTipoPago int,
@@ -4371,3 +4281,5 @@ BEGIN
     
 END;   
 GO
+
+   
