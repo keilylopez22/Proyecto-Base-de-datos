@@ -4344,6 +4344,46 @@ GO
 
 -- para ver el estado de cuenta 
 
+CREATE PROCEDURE SP_EstadoDeCuenta 
+	@NumeroVivienda INT,
+	@Cluster INT 
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @offset INT = (@PageIndex - 1) * @PageSize;
+    SELECT 
+        DP.IdDetallePago,
+        DP.Monto,
+        DP.idTipoPago,
+        DP.IdPago,
+        DP.Referencia
+    FROM 
+        DetallePago AS DP
+    WHERE
+        (@ReferenciaFilter IS NULL OR DP.Referencia LIKE '%' + @ReferenciaFilter + '%')
+        AND (@MontoFilter IS NULL OR DP.Monto = @MontoFilter)
+        AND (@IdPagoFilter IS NULL OR DP.IdPago = @IdPagoFilter)
+        AND (@idTipoPagoFilter IS NULL OR DP.idTipoPago = @idTipoPagoFilter)
+    ORDER BY 
+        DP.IdDetallePago 
+    OFFSET @offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+    SELECT 
+        COUNT(*) AS TotalCount
+    FROM 
+        DetallePago AS DP
+    WHERE
+        (@ReferenciaFilter IS NULL OR DP.Referencia LIKE '%' + @ReferenciaFilter + '%')
+        AND (@MontoFilter IS NULL OR DP.Monto = @MontoFilter)
+        AND (@IdPagoFilter IS NULL OR DP.IdPago = @IdPagoFilter)
+        AND (@idTipoPagoFilter IS NULL OR DP.idTipoPago = @idTipoPagoFilter);
+
+END;
+GO
+
+-- para ver el estado de cuenta 
+
 --CREATE PROCEDURE SP_EstadoDeCuenta 
 	--@NumeroVivienda INT,
 	--@Cluster INT 
