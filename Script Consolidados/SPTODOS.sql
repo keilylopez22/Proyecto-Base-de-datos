@@ -3907,3 +3907,241 @@ BEGIN
       AND v.IdCluster = @IdCluster
 END;
 GO
+CREATE OR ALTER PROCEDURE SP_ActualizarDocumentoPersona
+@IdTipoDocumento INT,
+@IdPersona INT,
+@NumeroDocumento INT,
+@Observaciones VARCHAR(50)
+AS
+BEGIN
+SET NOCOUNT ON
+
+IF NOT EXISTS (SELECT 1 FROM DocumentoPersona WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona)
+BEGIN
+RAISERROR('No existe un documento con esos datos para actualizar.', 16, 1)
+RETURN
+END
+
+UPDATE DocumentoPersona
+SET NumeroDocumento = @NumeroDocumento,
+Observaciones = @Observaciones
+WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona
+END
+
+GO
+CREATE OR ALTER PROCEDURE SP_BuscarDocumentoPersonaPorId
+@IdTipoDocumento INT,
+@IdPersona INT
+AS
+BEGIN
+
+SELECT dp.NumeroDocumento, dp.Observaciones, td.Nombre AS TipoDocumento, CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS Persona FROM DocumentoPersona dp
+INNER JOIN TipoDocumento td ON dp.IdTipoDocumento = td.IdTipoDocumento
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona
+WHERE dp.IdTipoDocumento = @IdTipoDocumento AND dp.IdPersona = @IdPersona;
+END;
+
+GO
+CREATE OR ALTER PROCEDURE SP_BuscarDocumentoPorNumero
+@NumeroDocumento INT
+AS
+BEGIN
+SELECT dp.NumeroDocumento, dp.Observaciones, td.Nombre AS TipoDocumento, CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS Persona FROM DocumentoPersona dp
+INNER JOIN TipoDocumento td ON dp.IdTipoDocumento = td.IdTipoDocumento
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona 
+WHERE dp.NumeroDocumento = @NumeroDocumento;
+END
+
+GO
+CREATE OR ALTER PROCEDURE SP_BuscarDocumentoPorTipo
+@IdTipoDocumento INT
+AS
+BEGIN
+
+SELECT dp.NumeroDocumento, dp.Observaciones, CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS Persona FROM DocumentoPersona dp
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona
+WHERE dp.IdTipoDocumento = @IdTipoDocumento
+END
+
+EXEC SP_BuscarDocumentoPorTipo
+@IdTipoDocumento = 1
+
+GO
+CREATE OR ALTER PROCEDURE SP_EliminarDocumentoPersona
+@IdTipoDocumento INT,
+@IdPersona INT
+AS
+BEGIN
+SET NOCOUNT ON
+
+IF NOT EXISTS (SELECT 1 FROM DocumentoPersona WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona)
+BEGIN
+RAISERROR('El documento no existe o ya fue eliminado.', 16, 1)
+RETURN
+END
+
+DELETE FROM DocumentoPersona WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona
+END
+
+GO
+CREATE OR ALTER PROCEDURE SP_InsertarDocumentoPersona
+    @NumeroDocumento INT,
+    @IdTipoDocumento INT,
+    @IdPersona INT,
+    @Observaciones VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM Persona WHERE IdPersona = @IdPersona)
+    BEGIN
+        RAISERROR('La persona no existe en la tabla Persona.', 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM TipoDocumento WHERE IdTipoDocumento = @IdTipoDocumento)
+    BEGIN
+        RAISERROR('Este tipo de documento no existe.', 16, 1);
+        RETURN;
+    END
+
+
+    IF EXISTS (SELECT 1 FROM DocumentoPersona 
+               WHERE IdTipoDocumento = @IdTipoDocumento AND IdPersona = @IdPersona)
+    BEGIN
+        RAISERROR('Ya existe un documento para esta persona y tipo.', 16, 1);
+        RETURN;
+    END
+
+    IF EXISTS (SELECT 1 FROM DocumentoPersona
+               WHERE NumeroDocumento = @NumeroDocumento AND IdTipoDocumento = @IdTipoDocumento)
+    BEGIN
+        RAISERROR('Ya existe un documento con ese número para este tipo.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO DocumentoPersona (NumeroDocumento, IdTipoDocumento, IdPersona, Observaciones)
+    VALUES (@NumeroDocumento, @IdTipoDocumento, @IdPersona, @Observaciones);
+END
+
+GO
+----Tabla de DetallePago
+CREATE PROCEDURE SP_InsertarDetallePago
+    @Monto decimal,
+    @idTipoPago int,
+    @IdPago int,
+    @Referencia varchar(50) = NULL  
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO DetallePago
+        (Monto, idTipoPago, IdPago, Referencia)
+    VALUES
+        (@Monto, @idTipoPago, @IdPago, @Referencia);
+END
+GO
+
+CREATE PROCEDURE SP_ActualizarDetallePago
+    @IdDetallePago int, 
+    @Monto decimal,
+    @idTipoPago int,
+    @IdPago int,
+    @Referencia varchar(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE DetallePago
+    SET
+        Monto = @Monto,
+        idTipoPago = @idTipoPago,
+        IdPago = @IdPago,
+        Referencia = @Referencia
+    WHERE
+        IdDetallePago = @IdDetallePago; 
+END
+GO
+CREATE PROCEDURE SP_BuscarDetallePago_PorID
+    @IdDetallePago int
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM 
+        DetallePago
+    WHERE 
+        IdDetallePago = @IdDetallePago;
+END
+GO
+CREATE PROCEDURE SP_BuscarDetallePagoPorMontoYTipoPago
+    @MontoMinimo decimal,
+    @idTipoPago int
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        IdDetallePago, Monto, Referencia
+    FROM 
+        DetallePago
+    WHERE 
+        Monto > @MontoMinimo 
+        AND idTipoPago = @idTipoPago
+    ORDER BY 
+        Monto DESC; 
+END
+GO
+CREATE PROCEDURE SP_BuscarDetallePagoPorReferencia
+    @Referencia varchar(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT *
+    FROM 
+        DetallePago
+    WHERE 
+        Referencia LIKE '%'+ @Referencia + '%';
+END
+GO
+
+
+
+CREATE PROCEDURE SP_EliminarDetallePago
+    @IdDetallePago int 
+AS
+BEGIN
+    SET NOCOUNT ON;
+        DELETE FROM DetallePago
+        WHERE IdDetallePago = @IdDetallePago;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            PRINT 'No se encontró ningún registro con el IdDetallePago especificado.';
+        END
+        ELSE
+        BEGIN
+            PRINT 'Registro eliminado exitosamente.';
+        END
+END
+GO
+
+
+-- para ver el estado de cuenta 
+
+CREATE PROCEDURE SP_EstadoDeCuenta 
+	@NumeroVivienda INT,
+	@Cluster INT 
+AS
+BEGIN
+    SET NOCOUNT ON;
+	Select csv.idCobroServicio, csv.FechaCobro, csv.Monto, csv.MontoAplicado, csv.EstadoPago, csv.IdServicio, csv.NumeroVivienda, csv.IdCluster,
+			s.Nombre
+	FROM CobroServicioVivienda AS csv
+    
+END;   
+GO
+
+   
