@@ -29,142 +29,121 @@ namespace ArsanWebApp.Services
                 IdEmpleado = HasColumn(dr, "IdEmpleado") ? Convert.ToInt32(dr["IdEmpleado"]) : 0,
                 FechaAlta = HasColumn(dr, "FechaAlta") && dr["FechaAlta"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(dr["FechaAlta"])) : null,
                 FechaBaja = HasColumn(dr, "FechaBaja") && dr["FechaBaja"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(dr["FechaBaja"])) : null,
+                
                 Estado = HasColumn(dr, "Estado") ? dr["Estado"]?.ToString() : null,
                 IdPersona = HasColumn(dr, "IdPersona") ? Convert.ToInt32(dr["IdPersona"]) : 0,
                 IdPuestoEmpleado = HasColumn(dr, "IdPuestoEmpleado") ? Convert.ToInt32(dr["IdPuestoEmpleado"]) : 0,
+
                 NombreCompleto = HasColumn(dr, "NombreCompleto") ? dr["NombreCompleto"]?.ToString() : null
             };
         }
 
-        // Obtener filtrado y paginado
         public async Task<(List<Empleado> Items, int TotalCount)> ObtenerFiltradoPaginadoAsync(
             string? primerNombre, string? primerApellido, int? idPuesto, int? idEmpleado, int pagina = 1, int pageSize = 10)
         {
             var items = new List<Empleado>();
+            int total = 0;
+
             using var con = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("SP_SelectAllEmpleado", con)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            cmd.Parameters.AddWithValue("@PageIndex", pagina);
+            cmd.Parameters.AddWithValue("@PageSize", pageSize);
+            
+            cmd.Parameters.AddWithValue("@IdEmpleadoFilter", (object?)idEmpleado ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@PrimerNombreFilter", string.IsNullOrWhiteSpace(primerNombre) ? (object)DBNull.Value : primerNombre);
+            cmd.Parameters.AddWithValue("@PrimerApellidoFilter", string.IsNullOrWhiteSpace(primerApellido) ? (object)DBNull.Value : primerApellido);
+            cmd.Parameters.AddWithValue("@IdPuestoFilter", (object?)idPuesto ?? DBNull.Value);
+
             await con.OpenAsync();
 
-            var whereClauses = new List<string>();
-            if (idEmpleado.HasValue) whereClauses.Add("e.IdEmpleado = @IdEmpleado");
-            if (!string.IsNullOrWhiteSpace(primerNombre)) whereClauses.Add("p.PrimerNombre LIKE @PrimerNombre + '%'");
-            if (!string.IsNullOrWhiteSpace(primerApellido)) whereClauses.Add("p.PrimerApellido LIKE @PrimerApellido + '%'");
-            if (idPuesto.HasValue) whereClauses.Add("e.IdPuestoEmpleado = @IdPuesto");
-
-            var whereSql = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
-
-            // Contar total
-            var countSql = $@"SELECT COUNT(*) FROM Empleado e INNER JOIN Persona p ON e.IdPersona = p.IdPersona {whereSql};";
-            using var countCmd = new SqlCommand(countSql, con);
-            if (idEmpleado.HasValue) countCmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado.Value);
-            if (!string.IsNullOrWhiteSpace(primerNombre)) countCmd.Parameters.AddWithValue("@PrimerNombre", primerNombre);
-            if (!string.IsNullOrWhiteSpace(primerApellido)) countCmd.Parameters.AddWithValue("@PrimerApellido", primerApellido);
-            if (idPuesto.HasValue) countCmd.Parameters.AddWithValue("@IdPuesto", idPuesto.Value);
-
-            var total = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
-
-            // Datos con paginación
-            var offset = (pagina - 1) * pageSize;
-            var sql = $@"
-                SELECT e.IdEmpleado, e.FechaAlta, e.FechaBaja, e.Estado, e.IdPersona, e.IdPuestoEmpleado,
-                       p.PrimerNombre + ' ' + p.PrimerApellido AS NombreCompleto
-                FROM Empleado e
-                INNER JOIN Persona p ON e.IdPersona = p.IdPersona
-                {whereSql}
-                ORDER BY e.IdEmpleado
-                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
-
-            using var cmd = new SqlCommand(sql, con);
-            if (idEmpleado.HasValue) cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado.Value);
-            if (!string.IsNullOrWhiteSpace(primerNombre)) cmd.Parameters.AddWithValue("@PrimerNombre", primerNombre);
-            if (!string.IsNullOrWhiteSpace(primerApellido)) cmd.Parameters.AddWithValue("@PrimerApellido", primerApellido);
-            if (idPuesto.HasValue) cmd.Parameters.AddWithValue("@IdPuesto", idPuesto.Value);
-            cmd.Parameters.AddWithValue("@Offset", offset);
-            cmd.Parameters.AddWithValue("@PageSize", pageSize);
-
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                items.Add(MapEmpleado(reader));
-
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                    items.Add(MapEmpleado(reader));
+                if (await reader.NextResultAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        total = reader["TotalCount"] != DBNull.Value ? Convert.ToInt32(reader["TotalCount"]) : 0;
+                    }
+                }
+            }
             return (items, total);
         }
-
-        // Buscar por ID
         public Empleado? BuscarPorId(int idEmpleado)
         {
             using var con = new SqlConnection(_connectionString);
-            con.Open();
-
-            string sql = @"
-                SELECT e.IdEmpleado, e.FechaAlta, e.FechaBaja, e.Estado, e.IdPersona, e.IdPuestoEmpleado,
-                       p.PrimerNombre + ' ' + p.PrimerApellido AS NombreCompleto
-                FROM Empleado e
-                INNER JOIN Persona p ON e.IdPersona = p.IdPersona
-                WHERE e.IdEmpleado = @IdEmpleado";
-
-            using var cmd = new SqlCommand(sql, con);
+            using var cmd = new SqlCommand("SP_BuscarEmpleadoPorId", con)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
             cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
 
+            con.Open();
             using var dr = cmd.ExecuteReader();
-            if (dr.Read()) return MapEmpleado(dr);
+            if (dr.Read()) 
+            {
+                return MapEmpleado(dr); 
+            }
             return null;
         }
 
-        // Insertar
         public void Insertar(Empleado empleado)
         {
             using var con = new SqlConnection(_connectionString);
-            con.Open();
-
-            string sql = @"
-                INSERT INTO Empleado (FechaAlta, FechaBaja, Estado, IdPersona, IdPuestoEmpleado)
-                VALUES (@FechaAlta, @FechaBaja, @Estado, @IdPersona, @IdPuestoEmpleado);";
-
-            using var cmd = new SqlCommand(sql, con);
+            using var cmd = new SqlCommand("SP_InsertarEmpleado", con)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            
             cmd.Parameters.AddWithValue("@FechaAlta", empleado.FechaAlta.HasValue ? empleado.FechaAlta.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@FechaBaja", empleado.FechaBaja.HasValue ? empleado.FechaBaja.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@Estado", empleado.Estado ?? "");
+            cmd.Parameters.AddWithValue("@Estado", empleado.Estado ?? "ACTIVO"); 
             cmd.Parameters.AddWithValue("@IdPersona", empleado.IdPersona);
             cmd.Parameters.AddWithValue("@IdPuestoEmpleado", empleado.IdPuestoEmpleado);
 
+            con.Open();
             cmd.ExecuteNonQuery();
         }
-
-        // Actualizar
         public void Actualizar(Empleado empleado)
         {
             using var con = new SqlConnection(_connectionString);
-            con.Open();
-
-            string sql = @"
-                UPDATE Empleado
-                SET FechaAlta=@FechaAlta, FechaBaja=@FechaBaja, Estado=@Estado,
-                    IdPersona=@IdPersona, IdPuestoEmpleado=@IdPuestoEmpleado
-                WHERE IdEmpleado=@IdEmpleado";
-
-            using var cmd = new SqlCommand(sql, con);
+            using var cmd = new SqlCommand("SP_ActualizarEmpleados", con)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            
             cmd.Parameters.AddWithValue("@IdEmpleado", empleado.IdEmpleado);
-            cmd.Parameters.AddWithValue("@FechaAlta", empleado.FechaAlta.HasValue ? empleado.FechaAlta.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@FechaBaja", empleado.FechaBaja.HasValue ? empleado.FechaBaja.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@Estado", empleado.Estado ?? "");
-            cmd.Parameters.AddWithValue("@IdPersona", empleado.IdPersona);
-            cmd.Parameters.AddWithValue("@IdPuestoEmpleado", empleado.IdPuestoEmpleado);
+            cmd.Parameters.AddWithValue("@FechaAlta", empleado.FechaAlta.HasValue 
+                                   ? empleado.FechaAlta.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@FechaBaja", empleado.FechaBaja.HasValue 
+                                   ? empleado.FechaBaja.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@Estado", string.IsNullOrWhiteSpace(empleado.Estado) 
+                                   ? (object)DBNull.Value : empleado.Estado);
+            cmd.Parameters.AddWithValue("@IdPersona", empleado.IdPersona); 
+            cmd.Parameters.AddWithValue("@IdPuestoEmpleado", empleado.IdPuestoEmpleado != 0 
+                                   ? empleado.IdPuestoEmpleado : (object)DBNull.Value);
 
+            con.Open();
             cmd.ExecuteNonQuery();
         }
-
-        // Eliminar
         public void Eliminar(int idEmpleado)
         {
             using var con = new SqlConnection(_connectionString);
-            con.Open();
-
-            string sql = "DELETE FROM Empleado WHERE IdEmpleado=@IdEmpleado";
-            using var cmd = new SqlCommand(sql, con);
+            using var cmd = new SqlCommand("SP_EliminarEmpleado", con)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
             cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
+
+            con.Open();
             cmd.ExecuteNonQuery();
         }
 
-        // Validar si puesto está ocupado
         public async Task<bool> EstaPuestoOcupadoAsync(int idPuestoEmpleado, int? excluirIdEmpleado = null)
         {
             using var con = new SqlConnection(_connectionString);
