@@ -2226,7 +2226,6 @@ END;
 
 GO
 -- 19. TABLA: Marca
-
 -- Actualizar marca de carroo
 CREATE OR ALTER PROCEDURE SP_ActualizarMarca
     @IdMarca INT,
@@ -2523,13 +2522,6 @@ END;
 
 GO
 
--- Consultar todos los tipo doc
-CREATE OR ALTER PROCEDURE SP_ConsultarTodosTipoDoc
-AS
-BEGIN
-    SELECT * FROM TipoDocumento
-END;
-
 GO
 
 -- Eliminar tipo documento
@@ -2581,47 +2573,48 @@ GO
 
 -- 22. TABLA: Vehiculo
 CREATE OR ALTER PROCEDURE SP_SelectAllVehiculo
-@PageIndex  INT= 1,
-@PageSize  INT = 10,
-@AnioFilter INT= NULL,
-@MarcaFilter VARCHAR(20) = NULL,
-@LineaFilter VARCHAR(20) = NULL
-As
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @AnioFilter INT = NULL,
+    @MarcaFilter VARCHAR(50) = NULL,
+    @LineaFilter VARCHAR(50) = NULL,
+    @PlacaFilter VARCHAR(50) = NULL
+AS
 BEGIN
-
     DECLARE @Offset INT = (@PageIndex - 1) * @PageSize
-    SELECT V.Año, V.Placa ,M.Descripcion AS Marca ,L.Descripcion AS Linea
+    
+    SELECT 
+        V.IdVehiculo,
+        V.Año, 
+        V.Placa,
+        V.NumeroVivienda,
+        V.IdCluster,
+        V.IdLinea,
+        V.IdMarca,
+        L.Descripcion AS Linea,
+        M.Descripcion AS Marca,
+        C.Descripcion AS ClusterDescripcion
     FROM Vehiculo AS V
-    INNER JOIN MARCA AS M ON  V.IdMarca = M.IdMarca
-    INNER JOIN Linea AS L ON V.IdLinea = L.IdLinea
-    WHERE
-    (@AnioFilter IS NULL OR 
-    V.Año = @AnioFilter)AND
-    (@MarcaFilter IS NULL OR
-    M.Descripcion LIKE '' + @MarcaFilter + '')AND
-    (@LineaFilter IS NULL OR
-    L.Descripcion  LIKE '' + @LineaFilter + '')
+    INNER JOIN Marca AS M ON V.IdMarca = M.IdMarca
+    INNER JOIN Linea AS L ON V.IdLinea = L.IdLinea AND V.IdMarca = L.IdMarca
+    INNER JOIN Cluster AS C ON V.IdCluster = C.IdCluster
+    WHERE (@AnioFilter IS NULL OR V.Año = @AnioFilter)
+      AND (@MarcaFilter IS NULL OR M.Descripcion LIKE '%' + @MarcaFilter + '%')
+      AND (@LineaFilter IS NULL OR L.Descripcion LIKE '%' + @LineaFilter + '%')
+      AND (@PlacaFilter IS NULL OR V.Placa LIKE '%' + @PlacaFilter + '%')  -- AGREGAR ESTE FILTRO
     ORDER BY V.IdVehiculo
     OFFSET @Offset ROWS
     FETCH NEXT @PageSize ROWS ONLY;
 
-    SELECT COUNT (*)
+    SELECT COUNT(*) AS TotalCount
     FROM Vehiculo AS V
-    INNER JOIN MARCA AS M ON  V.IdMarca = M.IdMarca
-    INNER JOIN Linea AS L ON V.IdLinea = L.IdLinea
-    WHERE
-    (@AnioFilter IS NULL OR 
-    V.Año = @AnioFilter)AND
-    (@MarcaFilter IS NULL OR
-    M.Descripcion LIKE '' + @MarcaFilter + '')AND
-    (@LineaFilter IS NULL OR
-    L.Descripcion  LIKE '' + @LineaFilter + '')
-
-   
+    INNER JOIN Marca AS M ON V.IdMarca = M.IdMarca
+    INNER JOIN Linea AS L ON V.IdLinea = L.IdLinea AND V.IdMarca = L.IdMarca
+    WHERE (@AnioFilter IS NULL OR V.Año = @AnioFilter)
+      AND (@MarcaFilter IS NULL OR M.Descripcion LIKE '%' + @MarcaFilter + '%')
+      AND (@LineaFilter IS NULL OR L.Descripcion LIKE '%' + @LineaFilter + '%')
+      AND (@PlacaFilter IS NULL OR V.Placa LIKE '%' + @PlacaFilter + '%');  -- AGREGAR ESTE FILTRO
 END;
-EXEC SP_SelectAllVehiculo
-
-
 
 GO
 -- Actualizar vehiculo
@@ -2773,35 +2766,32 @@ GO
 -- 23. TABLA: Visitante 
 
 CREATE OR ALTER PROCEDURE SP_SelectAllVisitante
-@PageIndex INT = 1,
-@PageSize INT = 10,
-@NumeroDocumentoFilter VARCHAR(20) = NULL,
-@NombreVisitanteFilter VARCHAR(100) = NULL
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @NumeroDocumentoFilter VARCHAR(50) = NULL,
+    @NombreVisitanteFilter VARCHAR(100) = NULL,
+    @IdTipoDocumentoFilter INT = NULL 
 AS
 BEGIN
-    DECLARE @Offset INT  =(@PageIndex - 1) * @PageSize
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize
+    
     SELECT V.*, T.Nombre AS NombreDocumento
     FROM Visitante AS V 
     INNER JOIN TipoDocumento AS T ON V.IdTipoDocumento = T.IdTipoDocumento
-    WHERE
-    (@NumeroDocumentoFilter IS NULL OR
-    V.NumeroDocumento LIKE '' + @NumeroDocumentoFilter + '')AND
-    (@NombreVisitanteFilter IS NULL OR
-    V.NombreCompleto LIKE '' +@NombreVisitanteFilter + '')
+    WHERE (@NumeroDocumentoFilter IS NULL OR V.NumeroDocumento LIKE '%' + @NumeroDocumentoFilter + '%')
+      AND (@NombreVisitanteFilter IS NULL OR V.NombreCompleto LIKE '%' + @NombreVisitanteFilter + '%')
+      AND (@IdTipoDocumentoFilter IS NULL OR V.IdTipoDocumento = @IdTipoDocumentoFilter)
     ORDER BY V.IdVisitante
     OFFSET @Offset ROWS
     FETCH NEXT @PageSize ROWS ONLY;
 
-    SELECT COUNT (*) AS TotalCount
+    SELECT COUNT(*) AS TotalCount
     FROM Visitante AS V
-    WHERE
-    (@NumeroDocumentoFilter IS NULL OR
-    V.NumeroDocumento LIKE '' + @NumeroDocumentoFilter + '')AND
-    (@NombreVisitanteFilter IS NULL OR
-    V.NombreCompleto LIKE '' +@NombreVisitanteFilter + '')
-    
-
+    WHERE (@NumeroDocumentoFilter IS NULL OR V.NumeroDocumento LIKE '%' + @NumeroDocumentoFilter + '%')
+      AND (@NombreVisitanteFilter IS NULL OR V.NombreCompleto LIKE '%' + @NombreVisitanteFilter + '%')
+      AND (@IdTipoDocumentoFilter IS NULL OR V.IdTipoDocumento = @IdTipoDocumentoFilter);
 END;
+GO
 exec SP_SelectAllVisitante
 go
 --Actualizar vehiculo

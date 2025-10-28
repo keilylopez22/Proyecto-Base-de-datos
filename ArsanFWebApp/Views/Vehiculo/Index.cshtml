@@ -2,15 +2,26 @@
 
 <h2>Vehículos Registrados</h2>
 
-<!-- Barra de búsqueda -->
-<form asp-action="Search" method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="placa" class="form-control" placeholder="Buscar por placa..." value="@ViewBag.SearchTerm">
-        <button type="submit" class="btn btn-outline-secondary">Buscar</button>
-        @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
-        {
-            <a asp-action="Index" class="btn btn-outline-danger">Limpiar</a>
-        }
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-2">
+        <input type="number" class="form-control" name="anioFilter" 
+               value="@ViewBag.AnioFilter" placeholder="Año">
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" name="marcaFilter" 
+               value="@ViewBag.MarcaFilter" placeholder="Marca">
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" name="lineaFilter" 
+               value="@ViewBag.LineaFilter" placeholder="Línea">
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" name="placaFilter" 
+               value="@ViewBag.PlacaFilter" placeholder="Placa">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Limpiar</a>
     </div>
 </form>
 
@@ -77,3 +88,65 @@ else
         }
     </div>
 }
+@* Paginación *@
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @* Botón Anterior *@
+            <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+                <a class="page-link" 
+                   href="@Url.Action("Index", new { 
+                       pagina = ViewBag.PaginaActual - 1, 
+                       tamanoPagina = ViewBag.TamanoPagina,
+                       anioFilter = ViewBag.AnioFilter,
+                       marcaFilter = ViewBag.MarcaFilter,
+                       lineaFilter = ViewBag.LineaFilter,
+                       placaFilter = ViewBag.PlacaFilter
+                   })">
+                    Anterior
+                </a>
+            </li>
+
+            @* Números de página *@
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link" 
+                       href="@Url.Action("Index", new { 
+                           pagina = i, 
+                           tamanoPagina = ViewBag.TamanoPagina,
+                           anioFilter = ViewBag.AnioFilter,
+                           marcaFilter = ViewBag.MarcaFilter,
+                           lineaFilter = ViewBag.LineaFilter,
+                           placaFilter = ViewBag.PlacaFilter
+                       })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @* Botón Siguiente *@
+            <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+                <a class="page-link" 
+                   href="@Url.Action("Index", new { 
+                       pagina = ViewBag.PaginaActual + 1, 
+                       tamanoPagina = ViewBag.TamanoPagina,
+                       anioFilter = ViewBag.AnioFilter,
+                       marcaFilter = ViewBag.MarcaFilter,
+                       lineaFilter = ViewBag.LineaFilter,
+                       placaFilter = ViewBag.PlacaFilter
+                   })">
+                    Siguiente
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+@* Información de paginación *@
+<div class="text-muted">
+    Mostrando @((ViewBag.PaginaActual - 1) * ViewBag.TamanoPagina + 1) 
+    a @Math.Min(ViewBag.PaginaActual * ViewBag.TamanoPagina, ViewBag.TotalRegistros) 
+    de @ViewBag.TotalRegistros registros
+</div>

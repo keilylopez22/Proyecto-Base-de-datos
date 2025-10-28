@@ -52,6 +52,60 @@ public class VehiculoService
     return lista;
     }
 
+    // Agregar este método para paginación
+public async Task<(List<Vehiculo> vehiculos, int totalCount)> ObtenerTodosPaginadoAsync(
+    int pagina = 1, 
+    int tamanoPagina = 10, 
+    int? anioFilter = null, 
+    string? marcaFilter = null, 
+    string? lineaFilter = null,
+    string? placaFilter = null)
+{
+    var lista = new List<Vehiculo>();
+    int totalCount = 0;
+
+    using var conn = new SqlConnection(_connectionString);
+    await conn.OpenAsync();
+    
+    using var cmd = new SqlCommand("SP_SelectAllVehiculo", conn);
+    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+    cmd.Parameters.AddWithValue("@PageIndex", pagina);
+    cmd.Parameters.AddWithValue("@PageSize", tamanoPagina);
+    cmd.Parameters.AddWithValue("@AnioFilter", anioFilter ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@MarcaFilter", marcaFilter ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@LineaFilter", lineaFilter ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@PlacaFilter", placaFilter ?? (object)DBNull.Value);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    
+    // Leer primera tabla (datos)
+    while (await reader.ReadAsync())
+    {
+        lista.Add(new Vehiculo
+        {
+            IdVehiculo = Convert.ToInt32(reader["IdVehiculo"]),
+            Año = Convert.ToInt32(reader["Año"]),
+            Placa = reader["Placa"] as string ?? string.Empty,
+            NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
+            IdCluster = Convert.ToInt32(reader["IdCluster"]),
+            IdLinea = Convert.ToInt32(reader["IdLinea"]),
+            IdMarca = Convert.ToInt32(reader["IdMarca"]),
+            Linea = reader["Linea"] as string ?? string.Empty,
+            Marca = reader["Marca"] as string ?? string.Empty,
+            Vivienda = reader["NumeroVivienda"].ToString() ?? string.Empty,
+            Cluster = reader["ClusterDescripcion"] as string ?? string.Empty
+        });
+    }
+
+    // Leer segunda tabla (total count)
+    if (await reader.NextResultAsync() && await reader.ReadAsync())
+    {
+        totalCount = Convert.ToInt32(reader["TotalCount"]);
+    }
+
+    return (lista, totalCount);
+}
+
 
     // BUSCAR POR ID
     public async Task<Vehiculo?> BuscarPorIdAsync(int id)
