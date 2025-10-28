@@ -18,9 +18,9 @@ namespace ArsanWebApp.Services
             var lista = new List<DetalleRecibo>();
 
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SP_BuscarDetalleReciboPorID", conn);
+            using var cmd = new SqlCommand("SP_SelectAllDetalleRecibo", conn);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@IdRecibo", idRecibo);
+            cmd.Parameters.AddWithValue("@IdReciboFilter", idRecibo);
 
             conn.Open();
             using var reader = cmd.ExecuteReader();
@@ -35,7 +35,7 @@ namespace ArsanWebApp.Services
                 {
                     IdDetalleRecibo = Convert.ToInt32(reader["IdDetalleRecibo"]),
                     IdRecibo = Convert.ToInt32(reader["IdRecibo"]),
-                    NombreServicio = reader["Nombre"]?.ToString(),
+                    NombreServicio = reader["Concepto"]?.ToString(),
                     MontoServicio = reader["MontoAplicado"] != DBNull.Value ? Convert.ToDecimal(reader["MontoAplicado"]) : (decimal?)null,
                     NumeroVivienda = numeroVivienda,
                     NombrePropietario = reader["NombreCompleto"]?.ToString(),

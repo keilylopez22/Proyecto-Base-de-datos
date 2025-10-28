@@ -28,7 +28,7 @@ namespace ArsanWebApp.Services
                 cmd.Parameters.AddWithValue("@PageSize", pageSize);
                 cmd.Parameters.AddWithValue("@FechaPagoFilter", (object)fechaPagoFilter ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@MontoTotalFilter", (object)montoFilter ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@NombreTipoPagoFilter", (object)nombreTipoPagoFilter ?? DBNull.Value);
+                //cmd.Parameters.AddWithValue("@NombreTipoPagoFilter", (object)nombreTipoPagoFilter ?? DBNull.Value);
 
                 con.Open();
                 using (var reader = cmd.ExecuteReader())
@@ -40,9 +40,9 @@ namespace ArsanWebApp.Services
                             IdPago = Convert.ToInt32(reader["IdPago"]),
                             FechaPago = reader["FechaPago"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaPago"])) : null,
                             MontoTotal = reader["MontoTotal"] != DBNull.Value ? Convert.ToDecimal(reader["MontoTotal"]) : (decimal?)null,
-                            IdTipoPago = Convert.ToInt32(reader["idTipoPago"]),
-                            Referencia = reader["Referencia"]?.ToString(),
-                            NombreTipoPago = reader["NombreTipoPago"]?.ToString()
+                            //IdTipoPago = Convert.ToInt32(reader["idTipoPago"]),
+                            //Referencia = reader["Referencia"]?.ToString(),
+                            //NombreTipoPago = reader["NombreTipoPago"]?.ToString()
                         });
                     }
 
@@ -64,8 +64,8 @@ namespace ArsanWebApp.Services
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@FechaPago", pago.FechaPago?.ToDateTime(TimeOnly.MinValue));
                 cmd.Parameters.AddWithValue("@MontoTotal", pago.MontoTotal ?? 0);
-                cmd.Parameters.AddWithValue("@idTipoPago", pago.IdTipoPago);
-                cmd.Parameters.AddWithValue("@Referencia", pago.Referencia ?? "");
+                //cmd.Parameters.AddWithValue("@idTipoPago", pago.IdTipoPago);
+                //cmd.Parameters.AddWithValue("@Referencia", pago.Referencia ?? "");
 
                 con.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar());
@@ -91,8 +91,8 @@ namespace ArsanWebApp.Services
                             IdPago = Convert.ToInt32(reader["IdPago"]),
                             FechaPago = reader["FechaPago"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaPago"])) : null,
                             MontoTotal = reader["MontoTotal"] != DBNull.Value ? Convert.ToDecimal(reader["MontoTotal"]) : (decimal?)null,
-                            IdTipoPago = Convert.ToInt32(reader["idTipoPago"]),
-                            Referencia = reader["Referencia"]?.ToString()
+                            //IdTipoPago = Convert.ToInt32(reader["idTipoPago"]),
+                            //Referencia = reader["Referencia"]?.ToString()
                         };
                     }
                 }
@@ -109,8 +109,8 @@ namespace ArsanWebApp.Services
                 cmd.Parameters.AddWithValue("@IdPago", pago.IdPago);
                 cmd.Parameters.AddWithValue("@FechaPago", pago.FechaPago?.ToDateTime(TimeOnly.MinValue));
                 cmd.Parameters.AddWithValue("@MontoTotal", pago.MontoTotal ?? 0);
-                cmd.Parameters.AddWithValue("@idTipoPago", pago.IdTipoPago);
-                cmd.Parameters.AddWithValue("@Referencia", pago.Referencia ?? "");
+                //cmd.Parameters.AddWithValue("@idTipoPago", pago.IdTipoPago);
+                //cmd.Parameters.AddWithValue("@Referencia", pago.Referencia ?? "");
 
                 con.Open();
                 cmd.ExecuteNonQuery();

@@ -5,23 +5,104 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label asp-for="FechaPago" class="form-label"></label>
-        <input asp-for="FechaPago" type="date" class="form-control" />
+<form asp-action="Create" method="post" id="pagoForm">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="FechaPago" class="form-label">Fecha de Pago</label>
+            <input asp-for="FechaPago" type="date" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Detalles del Pago</label>
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="agregarDetalle()">+ Agregar Detalle</button>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="MontoTotal" class="form-label"></label>
-        <input asp-for="MontoTotal" type="number" step="0.01" class="form-control" />
+
+    <div id="detallesContainer">
+        <!-- Los detalles se agregarán aquí dinámicamente -->
     </div>
-    <div class="mb-3">
-        <label asp-for="IdTipoPago" class="form-label"></label>
-        <select asp-for="IdTipoPago" class="form-control" asp-items="ViewBag.TiposPago"></select>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Referencia" class="form-label"></label>
-        <input asp-for="Referencia" type="text" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Crear</button>
-     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+
+    <button type="submit" class="btn btn-primary">Crear Pago</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
+
+<!-- Plantilla para un nuevo detalle -->
+<script id="detalleTemplate" type="text/template">
+    <div class="detalle-item border p-3 mb-3 bg-light">
+        <input type="hidden" name="Detalles[{0}].IdDetallePago" value="0" />
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label">Monto</label>
+                <input name="Detalles[{0}].Monto" type="number" step="0.01" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tipo de Pago</label>
+                <select name="Detalles[{0}].IdTipoPago" class="form-control" required>
+                    <option value="">-- Seleccione --</option>
+                    @foreach (var tp in ViewBag.TipoPagos as List<ArsanWebApp.Models.TipoPago>)
+                    {
+                        <option value="@tp.IdTipoPago">@tp.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Referencia (opcional)</label>
+                <input name="Detalles[{0}].Referencia" class="form-control" maxlength="50" />
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-sm btn-danger" onclick="eliminarDetalle(this)">✕</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let detalleIndex = 0;s
+
+            // Función accesible globalmente
+            window.agregarDetalle = function() {
+                const container = document.getElementById('detallesContainer');
+                if (!container) return;
+
+                // Obtener lista de tipos de pago desde ViewBag (convertido a JSON)
+                const tipoPagos = @Html.Raw(Json.Serialize(ViewBag.TipoPagos ?? new List<ArsanWebApp.Models.TipoPago>()));
+
+                let optionsHtml = '<option value="">-- Seleccione --</option>';
+                tipoPagos.forEach(tp => {
+                    optionsHtml += `<option value="${tp.idTipoPago}">${tp.nombre}</option>`;
+                });
+
+                const html = `
+                    <div class="detalle-item border p-3 mb-3 bg-light">
+                        <input type="hidden" name="Detalles[${detalleIndex}].IdDetallePago" value="0" />
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Monto</label>
+                                <input name="Detalles[${detalleIndex}].Monto" type="number" step="0.01" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tipo de Pago</label>
+                                <select name="Detalles[${detalleIndex}].IdTipoPago" class="form-control" required>
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Referencia (opcional)</label>
+                                <input name="Detalles[${detalleIndex}].Referencia" class="form-control" maxlength="50" />
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.detalle-item').remove()">✕</button>
+                            </div>
+                        </div>
+                    </div>`;
+
+                container.insertAdjacentHTML('beforeend', html);
+                detalleIndex++;
+            };
+
+            // Agregar primer detalle al cargar
+            agregarDetalle();
+        });
+    </script>
+}

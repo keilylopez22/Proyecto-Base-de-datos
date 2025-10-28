@@ -8,13 +8,17 @@ namespace ArsanWebApp.Controllers
     public class PagoController : Controller
     {
         private readonly PagoService _pagoService;
-       
+        private readonly TipoPagoService _tipoPagoService;
+        private readonly DetallePagoService _detallePagoService;
 
-        public PagoController(PagoService pagoService)
+
+        public PagoController(PagoService pagoService, DetallePagoService detallePagoService, TipoPagoService tipoPagoService)
         {
             _pagoService = pagoService;
+            _detallePagoService = detallePagoService;
+            _tipoPagoService = tipoPagoService;
         }
-       
+
         public IActionResult Index(DateTime? fechaPagoFilter, decimal? montoFilter, string nombreTipoPagoFilter, int pageIndex = 1, int pageSize = 10)
         {
             var (pagos, totalCount) = _pagoService.GetPagos(fechaPagoFilter, montoFilter, nombreTipoPagoFilter, pageIndex, pageSize);
@@ -30,26 +34,40 @@ namespace ArsanWebApp.Controllers
             return View(pagos);
         }
 
-      
-        public IActionResult Create()
+
+        // En PagoController.cs
+
+        public async Task<IActionResult> Create()
         {
-            var tiposPago = _pagoService.GetAllTipoPago();
-            ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre");
-            return View();
+            ViewBag.TipoPagos = await _tipoPagoService.ObtenerTodosAsync(); // Asegúrate de tener este servicio
+            return View(new Pago());
         }
 
-    
         [HttpPost]
-        public IActionResult Create(Pago pago)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Pago pago)
         {
+            if (pago.Detalles == null || !pago.Detalles.Any())
+            {
+                ModelState.AddModelError("", "Debe agregar al menos un detalle de pago.");
+            }
+
             if (ModelState.IsValid)
             {
-                _pagoService.CrearPago(pago);
+                // 1. Guardar el pago principal (sin MontoTotal, ya que se calcula de los detalles)
+                var idPago = _pagoService.CrearPago(pago); // Tu SP debe devolver IdPago
+
+                // 2. Guardar cada detalle con el IdPago asignado
+                foreach (var detalle in pago.Detalles)
+                {
+                    detalle.IdPago = idPago;
+                    await _detallePagoService.InsertarAsync(detalle); // Debes crear este servicio y SP
+                }
+
                 return RedirectToAction(nameof(Index));
             }
 
-            var tiposPago = _pagoService.GetAllTipoPago();
-            ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre", pago.IdTipoPago);
+            ViewBag.TipoPagos = await _tipoPagoService.ObtenerTodosAsync();
             return View(pago);
         }
 
@@ -59,7 +77,7 @@ namespace ArsanWebApp.Controllers
             if (pago == null) return NotFound();
 
             var tiposPago = _pagoService.GetAllTipoPago();
-            ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre", pago.IdTipoPago);
+            //ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre", pago.IdTipoPago);
 
             return View(pago);
         }
@@ -74,7 +92,7 @@ namespace ArsanWebApp.Controllers
             }
 
             var tiposPago = _pagoService.GetAllTipoPago();
-            ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre", pago.IdTipoPago);
+            //ViewBag.TiposPago = new SelectList(tiposPago, "IdTipoPago", "Nombre", pago.IdTipoPago);
             return View(pago);
         }
 

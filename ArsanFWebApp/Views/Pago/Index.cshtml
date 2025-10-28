@@ -10,8 +10,8 @@
 <h2>@ViewData["Title"]</h2>
 <form method="get" class="mb-3">
     <div class="row">
-        
-       
+
+
         <div class="col-md-2">
             <select name="pageSize" class="form-control" onchange="this.form.submit()">
                 <option value="5" selected="@(ViewBag.PageSize == 2)">5 por página</option>
@@ -35,10 +35,8 @@
             <input type="date" name="fechaPagoFilter" value="@ViewData["FechaPagoFilter"]" class="form-control" />
         </div>
         <div class="col">
-            <input type="number" step="0.01" name="montoFilter" value="@ViewData["MontoFilter"]" placeholder="Monto" class="form-control" />
-        </div>
-        <div class="col">
-            <input type="text" name="nombreTipoPagoFilter" value="@ViewData["NombreTipoPagoFilter"]" placeholder="Tipo de pago" class="form-control" />
+            <input type="number" step="0.01" name="montoFilter" value="@ViewData["MontoFilter"]" placeholder="Monto"
+                class="form-control" />
         </div>
         <div class="col">
             <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -52,8 +50,8 @@
             <th>Id</th>
             <th>Fecha</th>
             <th>Monto</th>
-            <th>Tipo de Pago</th>
-            <th>Referencia</th>
+            <!--<th>Tipo de Pago</th>
+            <th>Referencia</th>-->
             <th>Acciones</th>
         </tr>
     </thead>
@@ -66,18 +64,21 @@
                     <td>@item.IdPago</td>
                     <td>@item.FechaPago?.ToString("yyyy-MM-dd")</td>
                     <td>@item.MontoTotal?.ToString("N2")</td>
-                    <td>@item.NombreTipoPago</td>
-                    <td>@item.Referencia</td>
+
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.IdPago" class="btn btn-primary btn-sm">Editar</a>
                         <a asp-action="Delete" asp-route-id="@item.IdPago" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a href="@Url.Action("Index", "Recibo", new { IdPagoFilter = item.IdPago })"
+                            class="btn btn-info btn-sm">Ver Recibos</a>
                     </td>
                 </tr>
             }
         }
         else
         {
-            <tr><td colspan="6" class="text-center">No hay registros</td></tr>
+            <tr>
+                <td colspan="6" class="text-center">No hay registros</td>
+            </tr>
         }
     </tbody>
 </table>
@@ -85,16 +86,19 @@
 <nav>
     <ul class="pagination">
         <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize, FechaPagoFilter = ViewBag.FechaPagoFilter, MontoTotalFilter = ViewBag.MontoTotalFilter, NombreTipoPagoFilte = ViewBag.NombreTipoPagoFilte})">Anterior</a>
+            <a class="page-link"
+                href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize, FechaPagoFilter = ViewBag.FechaPagoFilter, MontoTotalFilter = ViewBag.MontoTotalFilter })">Anterior</a>
         </li>
         @for (int i = 1; i <= totalPages; i++)
         {
             <li class="page-item @(pageIndex == i ? "active" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { pageIndex = i, pageSize, FechaPagoFilter = ViewBag.FechaPagoFilter, MontoTotalFilter = ViewBag.MontoTotalFilter, NombreTipoPagoFilte = ViewBag.NombreTipoPagoFilte})">@i</a>
+                <a class="page-link"
+                    href="@Url.Action("Index", new { pageIndex = i, pageSize, FechaPagoFilter = ViewBag.FechaPagoFilter, MontoTotalFilter = ViewBag.MontoTotalFilter })">@i</a>
             </li>
         }
         <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, FechaPagoFilter = ViewBag.FechaPagoFilter, MontoTotalFilter = ViewBag.MontoTotalFilter, NombreTipoPagoFilte = ViewBag.NombreTipoPagoFilte})">Siguiente</a>
+            <a class="page-link"
+                href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, FechaPagoFilter = ViewBag.FechaPagoFilter, MontoTotalFilter = ViewBag.MontoTotalFilter })">Siguiente</a>
         </li>
     </ul>
 </nav>

@@ -31,16 +31,19 @@
 </form>
 <form method="get" class="row g-3 mb-3">
     <div class="col-md-3">
-        <input type="text" name="FechaEmisionFilter" value="@ViewBag.FechaEmisionFilter" class="form-control" placeholder="Fecha Emision (yyyy-mm-dd)">
+        <input type="text" name="FechaEmisionFilter" value="@ViewBag.FechaEmisionFilter" class="form-control"
+            placeholder="Fecha Emision (yyyy-mm-dd)">
     </div>
     <div class="col-md-3">
         <input type="text" name="IdPagoFilter" value="@ViewBag.IdPagoFilter" class="form-control" placeholder="Id Pago">
     </div>
     <div class="col-md-2">
-        <input type="number" name="numeroViviendaFilter" value="@ViewBag.NumeroViviendaFilter" class="form-control" placeholder="Número vivienda">
+        <input type="number" name="numeroViviendaFilter" value="@ViewBag.NumeroViviendaFilter" class="form-control"
+            placeholder="Número vivienda">
     </div>
     <div class="col-md-2">
-        <input type="number" name="clusterFilter" value="@ViewBag.ClusterFilter" class="form-control" placeholder="Cluster">
+        <input type="number" name="clusterFilter" value="@ViewBag.ClusterFilter" class="form-control"
+            placeholder="Cluster">
     </div>
     <div class="col-md-2">
         <button type="submit" class="btn btn-primary w-100">Filtrar</button>
@@ -59,6 +62,7 @@
             <th>N° Vivienda</th>
             <th>Cluster</th>
             <th>Propietario</th>
+            <th>Monto Total</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -72,9 +76,12 @@
                 <td>@item.NumeroVivienda</td>
                 <td>@item.NombreCluster</td>
                 <td>@item.NombreCompleto</td>
+                <td>@item.MontoTotal.ToString("C")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.IdRecibo" class="btn btn-sm btn-warning">Editar</a>
                     <a asp-action="Delete" asp-route-id="@item.IdRecibo" class="btn btn-sm btn-danger">Eliminar</a>
+                    <a href="@Url.Action("Index", "DetalleRecibo", new { idRecibo = item.IdRecibo })"
+                        class="btn btn-sm btn-info">Ver Detalle</a>
                 </td>
             </tr>
         }
@@ -84,16 +91,19 @@
 <nav>
     <ul class="pagination">
         <li class="page-item @(pageIndex == 1 ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize , FechaEmision = ViewBag.FechaEmision,IdPago = ViewBag.IdPago,NumeroVivienda = ViewBag.NumeroVivienda,Cluster = ViewBag.Cluster})">Anterior</a>
+            <a class="page-link"
+                href="@Url.Action("Index", new { pageIndex = pageIndex - 1, pageSize, FechaEmision = ViewBag.FechaEmision, IdPago = ViewBag.IdPago, NumeroVivienda = ViewBag.NumeroVivienda, Cluster = ViewBag.Cluster })">Anterior</a>
         </li>
         @for (int i = 1; i <= totalPages; i++)
         {
             <li class="page-item @(pageIndex == i ? "active" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { pageIndex = i, pageSize , FechaEmision = ViewBag.FechaEmision,IdPago = ViewBag.IdPago,NumeroVivienda = ViewBag.NumeroVivienda,Cluster = ViewBag.Cluster})">@i</a>
+                <a class="page-link"
+                    href="@Url.Action("Index", new { pageIndex = i, pageSize, FechaEmision = ViewBag.FechaEmision, IdPago = ViewBag.IdPago, NumeroVivienda = ViewBag.NumeroVivienda, Cluster = ViewBag.Cluster })">@i</a>
             </li>
         }
         <li class="page-item @(pageIndex == totalPages ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, FechaEmision = ViewBag.FechaEmision, IdPago = ViewBag.IdPago,NumeroVivienda = ViewBag.NumeroVivienda, Cluster = ViewBag.Cluster})">Siguiente</a>
+            <a class="page-link"
+                href="@Url.Action("Index", new { pageIndex = pageIndex + 1, pageSize, FechaEmision = ViewBag.FechaEmision, IdPago = ViewBag.IdPago, NumeroVivienda = ViewBag.NumeroVivienda, Cluster = ViewBag.Cluster })">Siguiente</a>
         </li>
     </ul>
 </nav>

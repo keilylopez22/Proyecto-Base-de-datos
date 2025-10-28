@@ -46,7 +46,8 @@ namespace ArsanWebApp.Services
                         NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
                         IdCluster = Convert.ToInt32(reader["IdCluster"]),
                         NombreCompleto = reader["NombreCompleto"] != DBNull.Value ? reader["NombreCompleto"].ToString() : "",
-                        NombreCluster = reader["NombreCluster"] != DBNull.Value ? reader["NombreCluster"].ToString() : ""
+                        NombreCluster = reader["NombreCluster"] != DBNull.Value ? reader["NombreCluster"].ToString() : "",
+                        MontoTotal = reader["MontoTotal"] != DBNull.Value ? Convert.ToDecimal(reader["MontoTotal"]) : 0m
                     });
                 }
                 TotalCount = reader.NextResult() && reader.Read() ? Convert.ToInt32(reader["TotalCount"]) : 0;
@@ -78,7 +79,9 @@ namespace ArsanWebApp.Services
                     NumeroVivienda = Convert.ToInt32(reader["NumeroVivienda"]),
                     IdCluster = Convert.ToInt32(reader["IdCluster"]),
                     NombreCompleto = reader["NombreCompleto"] != DBNull.Value ? reader["NombreCompleto"].ToString() : "",
-                    NombreCluster = reader["NombreCluster"] != DBNull.Value ? reader["NombreCluster"].ToString() : ""
+                    NombreCluster = reader["NombreCluster"] != DBNull.Value ? reader["NombreCluster"].ToString() : "",
+                    MontoTotal = reader["MontoTotal"] != DBNull.Value ? Convert.ToDecimal(reader["MontoTotal"]) : 0m
+
                 };
             }
 

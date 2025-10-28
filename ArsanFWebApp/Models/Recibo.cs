@@ -10,4 +10,6 @@ public class Recibo
     public string NombreCompleto { get; set; }
     public string NombreCluster { get; set; }
     public List<DetalleRecibo>? Detalles { get; set; } = new List<DetalleRecibo>();
+
+    public decimal MontoTotal {get; set; }
 }
