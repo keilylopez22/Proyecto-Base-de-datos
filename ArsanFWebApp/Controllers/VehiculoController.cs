@@ -17,11 +17,28 @@ public class VehiculoController : Controller
     }
 
     // GET: Listar todos
-    public async Task<IActionResult> Index()
-    {
-        var vehiculos = await _service.ObtenerTodosAsync();
-        return View(vehiculos);
-    }
+    public async Task<IActionResult> Index(int pagina = 1, int tamanoPagina = 10, 
+    int? anioFilter = null, string? marcaFilter = null, 
+    string? lineaFilter = null, string? placaFilter = null)
+{
+    var (vehiculos, totalCount) = await _service.ObtenerTodosPaginadoAsync(
+        pagina, tamanoPagina, anioFilter, marcaFilter, lineaFilter, placaFilter);
+
+    // Calcular información de paginación
+    var totalPaginas = (int)Math.Ceiling(totalCount / (double)tamanoPagina);
+    
+    ViewBag.PaginaActual = pagina;
+    ViewBag.TamanoPagina = tamanoPagina;
+    ViewBag.TotalRegistros = totalCount;
+    ViewBag.TotalPaginas = totalPaginas;
+    ViewBag.AnioFilter = anioFilter;
+    ViewBag.MarcaFilter = marcaFilter;
+    ViewBag.LineaFilter = lineaFilter;
+    ViewBag.PlacaFilter = placaFilter;
+
+    return View(vehiculos);
+}
+
 
     // GET: Formulario crear
     public async Task<IActionResult> Create()
@@ -90,24 +107,6 @@ public class VehiculoController : Controller
         var (exito, mensaje) = await _service.EliminarAsync(id);
         TempData[exito ? "Success" : "Error"] = mensaje;
         return RedirectToAction(nameof(Index));
-    }
-
-    // GET: Buscar por placa
-    public async Task<IActionResult> Search(string placa)
-    {
-        if (string.IsNullOrEmpty(placa))
-            return RedirectToAction(nameof(Index));
-
-        var vehiculo = await _service.BuscarPorPlacaAsync(placa);
-        if (vehiculo == null)
-        {
-            TempData["Error"] = "No se encontró ningún vehículo con esa placa.";
-            return RedirectToAction(nameof(Index));
-        }
-        
-        var vehiculos = new List<Vehiculo> { vehiculo };
-        ViewBag.SearchTerm = placa;
-        return View("Index", vehiculos);
     }
 
     // GET: Detalles

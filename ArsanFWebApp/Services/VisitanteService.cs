@@ -41,7 +41,7 @@ public class VisitanteService
                 IdVisitante = Convert.ToInt32(reader["IdVisitante"]),
                 NombreCompleto = reader["NombreCompleto"] as string ?? string.Empty,
                 NumeroDocumento = reader["NumeroDocumento"] as string ?? string.Empty,
-                Telefono = reader["Telefono"] != DBNull.Value ? Convert.ToInt32(reader["Telefono"]) : (int?)null,
+                Telefono = reader["Telefono"] != DBNull.Value ? reader["Telefono"].ToString() : string.Empty,
                 MotivoVisita = reader["MotivoVisita"] as string ?? string.Empty,
                 IdTipoDocumento = Convert.ToInt32(reader["IdTipoDocumento"]),
                 TipoDocumento = reader["TipoDocumento"] as string ?? string.Empty
@@ -49,6 +49,51 @@ public class VisitanteService
         }
         return lista;
     }
+
+    public async Task<(List<Visitante> visitantes, int totalCount)> ObtenerTodosPaginadoAsync(
+    int pagina = 1, 
+    int tamanoPagina = 10, 
+    string? numeroDocumentoFilter = null, 
+    string? nombreVisitanteFilter = null,
+    int? idTipoDocumentoFilter = null)
+{
+    var lista = new List<Visitante>();
+    int totalCount = 0;
+
+    using var conn = new SqlConnection(_connectionString);
+    await conn.OpenAsync();
+    
+    using var cmd = new SqlCommand("SP_SelectAllVisitante", conn);
+    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+    cmd.Parameters.AddWithValue("@PageIndex", pagina);
+    cmd.Parameters.AddWithValue("@PageSize", tamanoPagina);
+    cmd.Parameters.AddWithValue("@NumeroDocumentoFilter", numeroDocumentoFilter ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@NombreVisitanteFilter", nombreVisitanteFilter ?? (object)DBNull.Value);
+    cmd.Parameters.AddWithValue("@IdTipoDocumentoFilter", idTipoDocumentoFilter ?? (object)DBNull.Value);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    
+    while (await reader.ReadAsync())
+    {
+        lista.Add(new Visitante
+        {
+            IdVisitante = Convert.ToInt32(reader["IdVisitante"]),
+            NombreCompleto = reader["NombreCompleto"] as string ?? string.Empty,
+            NumeroDocumento = reader["NumeroDocumento"] as string ?? string.Empty,
+            Telefono = reader["Telefono"] != DBNull.Value ? reader["Telefono"].ToString() : string.Empty,
+            MotivoVisita = reader["MotivoVisita"] as string ?? string.Empty,
+            IdTipoDocumento = Convert.ToInt32(reader["IdTipoDocumento"]),
+            NombreDocumento = reader["NombreDocumento"] as string ?? string.Empty
+        });
+    }
+
+    if (await reader.NextResultAsync() && await reader.ReadAsync())
+    {
+        totalCount = Convert.ToInt32(reader["TotalCount"]);
+    }
+
+    return (lista, totalCount);
+}
 
     // BUSCAR POR ID
     public async Task<Visitante?> BuscarPorIdAsync(int id)
@@ -67,7 +112,7 @@ public class VisitanteService
                 IdVisitante = Convert.ToInt32(reader["IdVisitante"]),
                 NombreCompleto = reader["NombreCompleto"] as string ?? string.Empty,
                 NumeroDocumento = reader["NumeroDocumento"] as string ?? string.Empty,
-                Telefono = reader["Telefono"] != DBNull.Value ? Convert.ToInt32(reader["Telefono"]) : (int?)null,
+                Telefono = reader["Telefono"] != DBNull.Value ? reader["Telefono"].ToString() : string.Empty,
                 MotivoVisita = reader["MotivoVisita"] as string ?? string.Empty,
                 IdTipoDocumento = Convert.ToInt32(reader["IdTipoDocumento"])
             };
@@ -92,7 +137,7 @@ public class VisitanteService
                 IdVisitante = Convert.ToInt32(reader["IdVisitante"]),
                 NombreCompleto = reader["NombreCompleto"] as string ?? string.Empty,
                 NumeroDocumento = reader["NumeroDocumento"] as string ?? string.Empty,
-                Telefono = reader["Telefono"] != DBNull.Value ? Convert.ToInt32(reader["Telefono"]) : (int?)null,
+                Telefono = reader["Telefono"] != DBNull.Value ? reader["Telefono"].ToString() : string.Empty,
                 MotivoVisita = reader["MotivoVisita"] as string ?? string.Empty,
                 IdTipoDocumento = Convert.ToInt32(reader["IdTipoDocumento"])
             };
@@ -118,7 +163,7 @@ public class VisitanteService
                 IdVisitante = Convert.ToInt32(reader["IdVisitante"]),
                 NombreCompleto = reader["NombreCompleto"] as string ?? string.Empty,
                 NumeroDocumento = reader["NumeroDocumento"] as string ?? string.Empty,
-                Telefono = reader["Telefono"] != DBNull.Value ? Convert.ToInt32(reader["Telefono"]) : (int?)null,
+                Telefono = reader["Telefono"] != DBNull.Value ? reader["Telefono"].ToString() : string.Empty,
                 MotivoVisita = reader["MotivoVisita"] as string ?? string.Empty,
                 IdTipoDocumento = Convert.ToInt32(reader["IdTipoDocumento"])
             });
@@ -157,7 +202,7 @@ public class VisitanteService
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@NombreCompleto", visitante.NombreCompleto);
             cmd.Parameters.AddWithValue("@NumeroDocumento", visitante.NumeroDocumento);
-            cmd.Parameters.AddWithValue("@Telefono", visitante.Telefono);
+            cmd.Parameters.AddWithValue("@Telefono", visitante.Telefono ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@MotivoVisita", visitante.MotivoVisita);
             cmd.Parameters.AddWithValue("@IdTipoDocumento", visitante.IdTipoDocumento);
 
@@ -183,7 +228,7 @@ public class VisitanteService
             cmd.Parameters.AddWithValue("@IdVisitante", visitante.IdVisitante);
             cmd.Parameters.AddWithValue("@NombreCompleto", visitante.NombreCompleto);
             cmd.Parameters.AddWithValue("@NumeroDocumento", visitante.NumeroDocumento);
-            cmd.Parameters.AddWithValue("@Telefono", visitante.Telefono);
+            cmd.Parameters.AddWithValue("@Telefono", visitante.Telefono ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@MotivoVisita", visitante.MotivoVisita);
             cmd.Parameters.AddWithValue("@IdTipoDocumento", visitante.IdTipoDocumento);
 

@@ -1,24 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
 using ArsanWebApp.Models;
 using ArsanWebApp.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc; 
+using Microsoft.Extensions.Logging;
 
 namespace ArsanWebApp.Controllers;
 
 public class VisitanteController : Controller
 {
     private readonly VisitanteService _service;
+    private readonly ILogger<VisitanteController> _logger;
 
-    public VisitanteController(VisitanteService service)
+    public VisitanteController(VisitanteService service, ILogger<VisitanteController> logger)
     {
         _service = service;
+        _logger = logger;
     }
 
     // GET: Listar todos
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int pagina = 1, int tamanoPagina = 10, 
+    string? numeroDocumentoFilter = null, string? nombreVisitanteFilter = null,
+    int? idTipoDocumentoFilter = null)
+{
+    var (visitantes, totalCount) = await _service.ObtenerTodosPaginadoAsync(
+        pagina, tamanoPagina, numeroDocumentoFilter, nombreVisitanteFilter, idTipoDocumentoFilter);
+
+    // Calcular información de paginación
+    var totalPaginas = (int)Math.Ceiling(totalCount / (double)tamanoPagina);
+    
+    ViewBag.PaginaActual = pagina;
+    ViewBag.TamanoPagina = tamanoPagina;
+    ViewBag.TotalRegistros = totalCount;
+    ViewBag.TotalPaginas = totalPaginas;
+    ViewBag.NumeroDocumentoFilter = numeroDocumentoFilter;
+    ViewBag.NombreVisitanteFilter = nombreVisitanteFilter;
+    ViewBag.IdTipoDocumentoFilter = idTipoDocumentoFilter;
+
+    // Cargar tipos de documento para el dropdown de filtro
+    await CargarTiposDocumentoAsync();
+
+    return View(visitantes);
+}
+
+private async Task CargarTiposDocumentoAsync()
+{
+    try
     {
-        var visitantes = await _service.ObtenerTodosAsync();
-        return View(visitantes);
+        var tiposDocumento = await _service.ObtenerTiposDocumentoAsync(); // Asumiendo que tienes este método
+        ViewBag.TiposDocumento = new SelectList(tiposDocumento, "IdTipoDocumento", "Nombre");
     }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error al cargar tipos de documento");
+        ViewBag.TiposDocumento = new SelectList(new List<SelectListItem>());
+    }
+}
 
     // GET: Formulario crear
     public async Task<IActionResult> Create()
