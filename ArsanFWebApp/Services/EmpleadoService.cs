@@ -144,20 +144,5 @@ namespace ArsanWebApp.Services
             cmd.ExecuteNonQuery();
         }
 
-        public async Task<bool> EstaPuestoOcupadoAsync(int idPuestoEmpleado, int? excluirIdEmpleado = null)
-        {
-            using var con = new SqlConnection(_connectionString);
-            await con.OpenAsync();
-
-            var sql = "SELECT COUNT(1) FROM Empleado WHERE IdPuestoEmpleado = @IdPuesto" +
-                      (excluirIdEmpleado.HasValue ? " AND IdEmpleado <> @IdEmpleado" : "");
-
-            using var cmd = new SqlCommand(sql, con);
-            cmd.Parameters.AddWithValue("@IdPuesto", idPuestoEmpleado);
-            if (excluirIdEmpleado.HasValue) cmd.Parameters.AddWithValue("@IdEmpleado", excluirIdEmpleado.Value);
-
-            var count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
-            return count > 0;
-        }
     }
 }
