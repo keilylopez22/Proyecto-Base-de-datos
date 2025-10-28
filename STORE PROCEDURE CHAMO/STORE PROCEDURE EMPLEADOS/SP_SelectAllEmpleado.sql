@@ -1,8 +1,10 @@
 CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
     @PageIndex INT = 1,
     @PageSize INT = 10,
-    @NombreFilter VARCHAR(50) = NULL,
-    @PuestoFilter VARCHAR(50) = NULL
+    @IdEmpleadoFilter INT = NULL,
+    @PrimerNombreFilter VARCHAR(50) = NULL,
+    @PrimerApellidoFilter VARCHAR(50) = NULL,
+    @IdPuestoFilter INT = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -20,11 +22,10 @@ BEGIN
     FROM Empleado AS E
     INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
     INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
-    WHERE
-        (@NombreFilter IS NULL 
-            OR P.PrimerNombre LIKE '%' + @NombreFilter + '%'
-            OR P.PrimerApellido LIKE '%' + @NombreFilter + '%')
-        AND (@PuestoFilter IS NULL OR PE.Nombre LIKE '%' + @PuestoFilter + '%')
+    WHERE (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter)
+        AND (@PrimerNombreFilter IS NULL OR P.PrimerNombre LIKE @PrimerNombreFilter + '%')
+        AND (@PrimerApellidoFilter IS NULL OR P.PrimerApellido LIKE @PrimerApellidoFilter + '%')
+        AND (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter)
     ORDER BY E.IdEmpleado
     OFFSET @Offset ROWS
     FETCH NEXT @PageSize ROWS ONLY;
@@ -35,17 +36,9 @@ BEGIN
     INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
     INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
     WHERE
-        (@NombreFilter IS NULL 
-            OR P.PrimerNombre LIKE '%' + @NombreFilter + '%'
-            OR P.PrimerApellido LIKE '%' + @NombreFilter + '%')
-        AND (@PuestoFilter IS NULL OR PE.Nombre LIKE '%' + @PuestoFilter + '%');
+        (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter)
+        AND (@PrimerNombreFilter IS NULL OR P.PrimerNombre LIKE @PrimerNombreFilter + '%')
+        AND (@PrimerApellidoFilter IS NULL OR P.PrimerApellido LIKE @PrimerApellidoFilter + '%')
+        AND (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter)
 END;
 
-
-EXEC SP_SelectAllEmpleado 
-    @PageIndex = 1,
-    @PageSize = 10,
-    @NombreFilter = 'Cristian',
-    @PuestoFilter = 'Guardia';
-
-	SELECT * FROM Empleado WHERE IdEmpleado = 1;
