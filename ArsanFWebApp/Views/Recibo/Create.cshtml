@@ -3,66 +3,133 @@
     ViewData["Title"] = "Crear Recibo";
 }
 
+<h2>Crear Nuevo Recibo</h2>
 
-    <h2>Crear Nuevo Recibo</h2>
-    <form asp-action="Create" method="post" class="mt-3">
-        <div class="row">
-
-            <div class="col-md-3">
-                <label class="form-label">Fecha de Emisión</label>
-                <input asp-for="FechaEmision" class="form-control" type="date" required />
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label">ID Pago</label>
+<form asp-action="Create" method="post" class="mt-3" id="reciboForm">
+    <div class="row">
+        <div class="col-md-3">
+            <label class="form-label">Fecha de Emisión</label>
+            <input asp-for="FechaEmision" class="form-control" type="date" required />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">ID Pago</label>
+            @if (Model.IdPago > 0)
+            {
+                <input asp-for="IdPago" class="form-control" readonly />
+            }
+            else
+            {
                 <input asp-for="IdPago" class="form-control" type="number" required />
-            </div>
-
+            }
         </div>
-        
-        <div class="row mt-3">
-            <div class="col-md-4">
-                <label class="form-label">Número de Vivienda</label>
-                <input asp-for="NumeroVivienda" id="NumeroVivienda" class="form-control" type="number" required />
-            </div>
+    </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Cluster</label>
-                <select id="IdCluster" name="IdCluster" class="form-control">
-                    <option value="">--Seleccione--</option>
-                    @foreach (var c in ViewBag.Clusters)
-                    {
-                        <option value="@c.IdCluster">@c.Descripcion</option>
-                    }
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Propietario</label>
-                <input id="NombrePropietario" type="text" class="form-control" readonly />
-            </div>
-            
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label class="form-label">Número de Vivienda</label>
+            <input asp-for="NumeroVivienda" id="NumeroVivienda" class="form-control" type="number" required />
         </div>
-
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Crear</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        <div class="col-md-4">
+            <label class="form-label">Cluster</label>
+            <select id="IdCluster" name="IdCluster" class="form-control" required>
+                <option value="">--Seleccione--</option>
+                @foreach (var c in ViewBag.Clusters)
+                {
+                    <option value="@c.IdCluster">@c.Descripcion</option>
+                }
+            </select>
         </div>
-    </form>
+    </div>
 
+    <!-- Tabla de cobros y multas pendientes -->
+    <div class="mt-4" id="tablaCobrosContainer">
+        <h4>Cobros y Multas Pendientes</h4>
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Seleccionar</th>
+                    <th>Tipo</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody id="tablaCobrosBody">
+                <!-- Se llenará con AJAX -->
+            </tbody>
+        </table>
+    </div>
 
+    <!-- Campos ocultos para los detalles seleccionados -->
+    <div id="camposDetalle"></div>
+    <input type="hidden" asp-for="IdPago" />
+    <input type="hidden" asp-for="NumeroVivienda" />
+    <input type="hidden" asp-for="IdCluster" />
+    <input type="hidden" asp-for="FechaEmision" />
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Crear Recibo</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
     <script>
         $(document).ready(function () {
-            function actualizarPropietario() {
+            function cargarCobrosYPendientes() {
                 var numero = $("#NumeroVivienda").val();
                 var cluster = $("#IdCluster").val();
                 if (numero && cluster) {
-                    $.get('@Url.Action("ObtenerPropietario", "Recibo")', { numeroVivienda: numero, idCluster: cluster }, function (data) {
-                        $("#NombrePropietario").val(data.nombreCompleto);
+                    $.get('@Url.Action("ObtenerCobrosYPendientes", "Recibo")', {
+                        numeroVivienda: numero,
+                        idCluster: cluster
+                    }, function (data) {
+                        var tbody = $("#tablaCobrosBody");
+                        tbody.empty();
+                        $("#camposDetalle").empty();
+
+                        if (data.length === 0) {
+                            tbody.append('<tr><td colspan="4" class="text-center">No hay cobros ni multas pendientes.</td></tr>');
+                            return;
+                        }
+
+                        data.forEach(function (item, index) {
+                            var tipo = item.idCobroServicio ? 'Servicio' : 'Multa';
+                            var concepto = item.nombreServicio || item.nombreMulta || 'Sin concepto';
+                            var monto = item.monto;
+
+                            tbody.append(`
+                                    <tr>
+                                        <td><input type="checkbox" name="detallesSeleccionados[${index}]" value="true" /></td>
+                                        <td>${tipo}</td>
+                                        <td>${concepto}</td>
+                                        <td>${monto.toFixed(2)}</td>
+                                    </tr>
+                                `);
+
+                            // Campos ocultos para enviar los IDs reales
+                            $("#camposDetalle").append(`
+                                    <input type="hidden" name="Detalles[${index}].IdCobroServicio" value="${item.idCobroServicio || ''}" />
+                                    <input type="hidden" name="Detalles[${index}].IdMultaVivienda" value="${item.idMultaVivienda || ''}" />
+                                `);
+                        });
                     });
+                } else {
+                    $("#tablaCobrosBody").empty();
+                    $("#camposDetalle").empty();
                 }
             }
 
-            $("#NumeroVivienda, #IdCluster").change(actualizarPropietario);
+            $("#NumeroVivienda, #IdCluster").on('input change', cargarCobrosYPendientes);
+
+            // Al enviar, deshabilitar los no seleccionados
+            $("#reciboForm").on('submit', function () {
+                $('input[name^="Detalles["]').each(function () {
+                    var name = $(this).attr('name');
+                    var index = name.match(/\[(\d+)\]/)[1];
+                    var isChecked = $(`input[name="detallesSeleccionados[${index}]"]`).is(':checked');
+                    $(this).prop('disabled', !isChecked);
+                });
+            });
         });
     </script>
+}

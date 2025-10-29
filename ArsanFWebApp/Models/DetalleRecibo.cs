@@ -15,4 +15,10 @@ public class DetalleRecibo
     public decimal? MontoAplicado { get; set; }
     public string? NombreCluster { get; set; }
 
+
+
+   
+
+     
+
 }

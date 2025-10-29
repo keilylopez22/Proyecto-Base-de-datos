@@ -27,9 +27,9 @@ namespace ArsanWebApp.Services
             while (reader.Read())
             {
                 // Manejo seguro para int
-                int numeroVivienda = reader["NumeroVivienda"] != DBNull.Value 
-                                    ? Convert.ToInt32(reader["NumeroVivienda"]) 
-                                    : 0; 
+                int numeroVivienda = reader["NumeroVivienda"] != DBNull.Value
+                                    ? Convert.ToInt32(reader["NumeroVivienda"])
+                                    : 0;
 
                 lista.Add(new DetalleRecibo
                 {
@@ -44,6 +44,21 @@ namespace ArsanWebApp.Services
             }
 
             return lista;
+        }
+
+
+        public async Task<int> InsertarAsync(DetalleRecibo detalle)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new SqlCommand("SP_InsertarDetalleRecibo", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdRecibo", detalle.IdRecibo);
+            cmd.Parameters.AddWithValue("@idCobroServicio", (object?)detalle.IdCobroServicio ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdMultaVivienda", (object?)detalle.IdMultaVivienda ?? DBNull.Value);
+
+            var result = await cmd.ExecuteScalarAsync();
+            return Convert.ToInt32(result);
         }
 
     }

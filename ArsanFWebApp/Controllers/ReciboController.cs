@@ -18,7 +18,7 @@ namespace ArsanWebApp.Controllers
             _clusterService = clusterService;
         }
 
-        public async Task < IActionResult> Index(int PageIndex = 1, int PageSize = 10 , DateTime? FechaEmisionFilter = null, int? IdPagoFilter= null,
+        public async Task<IActionResult> Index(int PageIndex = 1, int PageSize = 10, DateTime? FechaEmisionFilter = null, int? IdPagoFilter = null,
             int? NumeroViviendaFilter = null, int? ClusterFilter = null)
         {
 
@@ -54,21 +54,80 @@ namespace ArsanWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> ObtenerCobrosYPendientes(int numeroVivienda, int idCluster)
         {
-            var clusters = await _clusterService.ListarAsync(); 
+            var cobros = await _reciboService.ObtenerCobrosPendientesAsync(numeroVivienda, idCluster);
+            var multas = await _reciboService.ObtenerMultasPendientesAsync(numeroVivienda, idCluster);
+
+            var resultado = cobros.Cast<dynamic>()
+                .Concat(multas.Cast<dynamic>())
+                .ToList();
+
+            return Json(resultado);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create(int? idPago = null)
+        {
+            if (idPago.HasValue)
+            {
+                // Precargar el IdPago en el modelo
+                var recibo = new Recibo { IdPago = idPago.Value };
+                ViewBag.Clusters = await _clusterService.ListarAsync();
+                return View(recibo);
+            }
+            else
+            {
+                // O redirigir, o mostrar error, o dejar el campo editable
+                ViewBag.Clusters = await _clusterService.ListarAsync();
+                return View(new Recibo());
+            }
+            /*var clusters = await _clusterService.ListarAsync();
             ViewBag.Clusters = clusters.Select(c => new { c.IdCluster, c.Descripcion }).ToList();
-            return View();
+            return View();*/
         }
 
         [HttpPost]
-        public IActionResult Create(Recibo model)
+        public async Task<IActionResult> Create(Recibo model)
         {
+            Console.WriteLine("Model received in Create POST:");
+            Console.WriteLine($"IdPago: {model.IdPago}, FechaEmision: {model.FechaEmision}, NumeroVivienda: {model.NumeroVivienda}, IdCluster: {model.IdCluster}");
+
+            if (!ModelState.IsValid)
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    var errors = ModelState[key].Errors;
+                    if (errors.Count > 0)
+                    {
+                        Console.WriteLine($"Error en {key}: {errors[0].ErrorMessage}");
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
-                _reciboService.Insertar(model);
+                Console.WriteLine("ModelState is valid. Proceeding to insert.");
+                // 1. Crear el recibo
+                var idRecibo = await _reciboService.InsertarAsync(model);
+
+                // 2. Crear los detalles seleccionados
+                if (model.Detalles != null)
+                {
+                    foreach (var detalle in model.Detalles.Where(d =>
+                        d.IdCobroServicio.HasValue || d.IdMultaVivienda.HasValue))
+                    {
+                        await _detalleService.InsertarAsync(new DetalleRecibo
+                        {
+                            IdRecibo = idRecibo,
+                            IdCobroServicio = detalle.IdCobroServicio,
+                            IdMultaVivienda = detalle.IdMultaVivienda
+                        });
+                    }
+                }
+
                 return RedirectToAction("Index");
             }
+            ViewBag.Clusters = await _clusterService.ListarAsync();
             return View(model);
         }
 
@@ -94,8 +153,8 @@ namespace ArsanWebApp.Controllers
         [HttpGet]
         public IActionResult ObtenerPropietario(int numeroVivienda, int idCluster)
         {
-              var nombrePropietario = _reciboService.ObtenerPropietario(numeroVivienda, idCluster);
-              return Json(new { nombreCompleto = nombrePropietario ?? "" });
+            var nombrePropietario = _reciboService.ObtenerPropietario(numeroVivienda, idCluster);
+            return Json(new { nombreCompleto = nombrePropietario ?? "" });
         }
 
     }

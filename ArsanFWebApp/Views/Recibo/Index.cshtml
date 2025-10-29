@@ -50,7 +50,20 @@
     </div>
 </form>
 <div class="mb-3 text-end">
-    <a asp-action="Create" class="btn btn-primary">Nuevo Recibo</a>
+    @if (!string.IsNullOrEmpty(ViewBag.IdPagoFilter?.ToString()) && ViewBag.IdPagoFilter > 0)
+    {
+        <a asp-action="Create" 
+           asp-route-idPago="@ViewBag.IdPagoFilter" 
+           class="btn btn-primary">
+            Nuevo Recibo
+        </a>
+    }
+    else
+    {
+        <button class="btn btn-secondary" disabled>
+            Nuevo Recibo (requiere seleccionar un Pago)
+        </button>
+    }
 </div>
 
 <table class="table table-bordered table-hover">

@@ -56,6 +56,59 @@ namespace ArsanWebApp.Services
             return (lista, TotalCount);
         }
 
+        public async Task<List<dynamic>> ObtenerCobrosPendientesAsync(int numeroVivienda, int idCluster)
+        {
+            var lista = new List<dynamic>();
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new SqlCommand("SP_SelectAllCobroServicioVivienda", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@NumeroViviendaFilter", numeroVivienda);
+            cmd.Parameters.AddWithValue("@ClusterFilter", idCluster);
+            cmd.Parameters.AddWithValue("@EstadoPago", "PENDIENTE");
+            cmd.Parameters.AddWithValue("@PageIndex", 1);
+            cmd.Parameters.AddWithValue("@PageSize", 1000);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                lista.Add(new
+                {
+                    idCobroServicio = Convert.ToInt32(reader["idCobroServicio"]),
+                    monto = Convert.ToDecimal(reader["Monto"]),
+                    nombreServicio = reader["NombreServicio"] as string
+                });
+            }
+            return lista;
+        }
+
+        public async Task<List<dynamic>> ObtenerMultasPendientesAsync(int numeroVivienda, int idCluster)
+        {
+            var lista = new List<dynamic>();
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new SqlCommand("SP_SelectAllMultaVivienda", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@NumeroViviendaFilter", numeroVivienda);
+            cmd.Parameters.AddWithValue("@ClusterFilter", idCluster);
+            cmd.Parameters.AddWithValue("@EstadoFilter", "PENDIENTE");
+            cmd.Parameters.AddWithValue("@PageIndex", 1);
+            cmd.Parameters.AddWithValue("@PageSize", 1000);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                lista.Add(new
+                {
+                    idMultaVivienda = Convert.ToInt32(reader["IdMultaVivienda"]),
+                    monto = Convert.ToDecimal(reader["Monto"]),
+                    nombreMulta = reader["NombreTipoMulta"] as string
+                });
+            }
+            return lista;
+        }
+
+
         public Recibo ObtenerPorId(int id)
         {
             Recibo recibo = null;
@@ -116,6 +169,22 @@ namespace ArsanWebApp.Services
                 cn.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }
+        }
+
+
+        public async Task<int> InsertarAsync(Recibo recibo)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new SqlCommand("SP_InsertarRecibo", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@FechaEmision", recibo.FechaEmision?.ToDateTime(TimeOnly.MinValue));
+            cmd.Parameters.AddWithValue("@IdPago", recibo.IdPago);
+            cmd.Parameters.AddWithValue("@NumeroVivienda", recibo.NumeroVivienda);
+            cmd.Parameters.AddWithValue("@IdCluster", recibo.IdCluster);
+
+            var result = await cmd.ExecuteScalarAsync();
+            return Convert.ToInt32(result);
         }
 
         public void Actualizar(Recibo r)
