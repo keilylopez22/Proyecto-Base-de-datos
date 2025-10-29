@@ -3497,13 +3497,19 @@ BEGIN
 
 END;
 GO
+
 CREATE OR ALTER PROCEDURE SP_SelectAllMultaVivienda
 @PageIndex INT = 1,
 @PageSize INT = 10,
 @MultaViviendaFilter VARCHAR(30) = NULL,
 @TipoMultaFilter VARCHAR (50) = NULL, 
 @NumeroViviendaFilter INT = NULL,
-@ClusterFilter INT = NULL
+@ClusterFilter INT = NULL,
+@FechaInfraccionDesdeFilter DATE = NULL,
+@FechaInfraccionHastaFilter DATE = NULL,
+@FechaRegistroDesdeFilter DATE = NULL,
+@FechaRegistroHastaFilter DATE = NULL,
+@EstadoFilter VARCHAR(10) = NULL
 AS
 BEGIN
 
@@ -3514,7 +3520,7 @@ BEGIN
     INNER JOIN TipoMulta AS tm 
         ON mv.IdTipoMulta = tm.IdTipoMulta
 	INNER JOIN Vivienda AS v 
-		ON mv.NumeroVivienda = v.NumeroVivienda 
+		ON mv.NumeroVivienda = v.NumeroVivienda AND mv.IdCluster = V.IdCluster
 	INNER JOIN Cluster AS c 
 	    ON mv.IdCluster = c.IdCluster 
     WHERE
@@ -3522,6 +3528,12 @@ BEGIN
 		AND (@TipoMultaFilter IS NULL OR tm.Nombre LIKE '%' + @TipoMultaFilter + '%')
 		AND (@NumeroViviendaFilter IS NULL OR v.NumeroVivienda  = @NumeroViviendaFilter)
 		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )
+        AND(@FechaInfraccionDesdeFilter IS NULL OR CAST(mv.FechaInfraccion AS DATE) >= @FechaInfraccionDesdeFilter)
+        AND(@FechaInfraccionHastaFilter IS NULL OR CAST(mv.FechaInfraccion AS DATE) <= @FechaInfraccionHastaFilter)
+        AND(@FechaRegistroDesdeFilter  IS NULL OR CAST(mv.FechaRegistro AS DATE) >=@FechaRegistroDesdeFilter)
+        AND(@FechaRegistroHastaFilter  IS NULL OR CAST(mv.FechaRegistro AS DATE) <=@FechaRegistroHastaFilter)
+        AND(@EstadoFilter IS NULL OR
+         mv.EstadoPago LIKE + '%' + @EstadoFilter + '%')
     ORDER BY mv.Monto
     OFFSET @offset ROWS
     FETCH NEXT @PageSize ROWS ONLY;
@@ -3531,7 +3543,7 @@ BEGIN
 	INNER JOIN TipoMulta AS tm 
         ON mv.IdTipoMulta = tm.IdTipoMulta
 	INNER JOIN Vivienda AS v 
-		ON mv.NumeroVivienda = v.NumeroVivienda 
+		ON mv.NumeroVivienda = v.NumeroVivienda AND mv.IdCluster = V.IdCluster
 	INNER JOIN Cluster AS c 
 	    ON mv.IdCluster = c.IdCluster 
     WHERE
@@ -3539,6 +3551,12 @@ BEGIN
 		AND (@TipoMultaFilter IS NULL OR tm.Nombre LIKE '%' + @TipoMultaFilter + '%')
 		AND (@NumeroViviendaFilter IS NULL OR v.NumeroVivienda =  @NumeroViviendaFilter )
 		AND (@ClusterFilter IS NULL OR c.IdCluster =  @ClusterFilter )
+        AND(@FechaInfraccionDesdeFilter IS NULL OR CAST(mv.FechaInfraccion AS DATE) >= @FechaInfraccionDesdeFilter)
+        AND(@FechaInfraccionHastaFilter IS NULL OR CAST(mv.FechaInfraccion AS DATE) <= @FechaInfraccionHastaFilter)
+        AND(@FechaRegistroDesdeFilter  IS NULL OR CAST(mv.FechaRegistro AS DATE) >=@FechaRegistroDesdeFilter)
+        AND(@FechaRegistroHastaFilter  IS NULL OR CAST(mv.FechaRegistro AS DATE) <=@FechaRegistroHastaFilter)
+        AND(@EstadoFilter IS NULL OR
+         mv.EstadoPago LIKE + '%' + @EstadoFilter + '%')
 
 END;
 GO
@@ -3655,13 +3673,17 @@ Begin
 	SELECT SCOPE_IDENTITY() AS IdCobroServicio
 End;
 GO
+
 CREATE OR ALTER PROCEDURE SP_SelectAllCobroServicioVivienda
 @PageIndex INT = 1,
 @PageSize INT = 10,
-@FechaCobroFilter DATE = NULL,
+@FechaCobroDesdeFilter DATE = NULL,
+@FechaCobroHastaFilter DATE = NULL,
 @ServicioFilter VARCHAR (50) = NULL, 
 @NumeroViviendaFilter INT = NULL,
-@ClusterFilter INT = NULL
+@ClusterFilter INT = NULL,
+@EstadoPago VARCHAR(10) = NULL
+
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -3669,13 +3691,18 @@ BEGIN
     SELECT csv.idCobroServicio, csv.FechaCobro, csv.Monto, csv.MontoAplicado, csv.EstadoPago,csv.IdServicio, s.Nombre AS NombreServicio,v.NumeroVivienda, csv.IdCluster,c.Descripcion AS NombreCluster
     FROM CobroServicioVivienda AS csv
     INNER JOIN Servicio AS s ON csv.IdServicio = s.IdServicio
-	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda 
+	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda AND csv.IdCluster = v.IdCluster
 	INNER JOIN Cluster AS c  ON csv.IdCluster = c.IdCluster 
     WHERE
-        (@FechaCobroFilter IS NULL OR CAST( csv.FechaCobro AS DATE)= @FechaCobroFilter)
+        (@FechaCobroDesdeFilter IS NULL OR CAST( csv.FechaCobro AS DATE)>= @FechaCobroDesdeFilter)
+        AND(@FechaCobroHastaFilter IS NULL OR CAST( csv.FechaCobro AS DATE)<= @FechaCobroHastaFilter)
 		AND (@ServicioFilter IS NULL OR s.Nombre LIKE '%' + @ServicioFilter + '%')
 		AND (@NumeroViviendaFilter IS NULL OR v.NumeroVivienda  = @NumeroViviendaFilter)
-		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )
+		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )AND
+        (@EstadoPago IS NULL OR 
+       csv.EstadoPago LIKE + ''  + @EstadoPago + '')
+       
+
     ORDER BY csv.idCobroServicio
     OFFSET @offset ROWS
     FETCH NEXT @PageSize ROWS ONLY;
@@ -3683,16 +3710,18 @@ BEGIN
     SELECT COUNT(*) AS TotalCount
     From CobroServicioVivienda AS csv
 	INNER JOIN Servicio AS s ON csv.IdServicio = s.IdServicio
-	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda 
+	INNER JOIN Vivienda AS v ON csv.NumeroVivienda = v.NumeroVivienda AND csv.IdCluster = v.IdCluster
 	INNER JOIN Cluster AS c  ON csv.IdCluster = c.IdCluster 
     WHERE
-        (@FechaCobroFilter IS NULL OR CAST(  csv.FechaCobro AS DATE) = @FechaCobroFilter )
+       (@FechaCobroDesdeFilter IS NULL OR CAST( csv.FechaCobro AS DATE)>= @FechaCobroDesdeFilter)
+        AND(@FechaCobroHastaFilter IS NULL OR CAST( csv.FechaCobro AS DATE)<= @FechaCobroHastaFilter)
 		AND (@ServicioFilter IS NULL OR s.Nombre LIKE '%' + @ServicioFilter + '%')
 		AND (@NumeroViviendaFilter IS NULL OR v.NumeroVivienda  = @NumeroViviendaFilter)
-		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )
+		AND (@ClusterFilter IS NULL OR c.IdCluster = @ClusterFilter )AND
+        (@EstadoPago IS NULL OR 
+       csv.EstadoPago LIKE + ''  + @EstadoPago + '')
 
 END;
-GO
 GO
 --actualiza  cobro servicio vivienda 
 CREATE OR ALTER PROCEDURE SP_ActualizarCobroServicioVivienda

@@ -12,5 +12,3 @@ ALTER TABLE Vivienda
     FOREIGN KEY (IdPropietario)
     REFERENCES Propietario (IdPropietario)
 GO
-
-
