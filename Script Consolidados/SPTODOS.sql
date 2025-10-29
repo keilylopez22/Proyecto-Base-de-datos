@@ -4308,6 +4308,23 @@ BEGIN
 END;
 GO
 
+--para verificar si existe el propietario por persona id 
+CREATE OR ALTER PROCEDURE SP_ExistePropietarioPorPersonaId
+    @IdPersona INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (SELECT 1 FROM Propietario WHERE IdPersona = @IdPersona)
+    BEGIN
+        SELECT 1;
+    END
+    ELSE
+    BEGIN
+        SELECT 0;
+    END
+END;
+GO
+
 -- para ver el estado de cuenta 
 
 CREATE PROCEDURE SP_EstadoDeCuenta 
