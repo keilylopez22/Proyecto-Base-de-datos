@@ -2995,7 +2995,7 @@ BEGIN
         RAISERROR('El tipo pago solicitado no existe.', 16,1, 16, 1);
         RETURN;
     END
-    IF EXISTS (SELECT 1 FROM Pago WHERE idTipoPago = @idTipoPago)
+    IF EXISTS (SELECT 1 FROM DetallePago WHERE idTipoPago = @idTipoPago)
     BEGIN
         RAISERROR('No se puede eliminar este tipo de pago, debido a que esta asociado a otra tabla.', 16, 1);
         RETURN;
@@ -3352,8 +3352,8 @@ BEGIN
         ISNULL(SUM(COALESCE(cs.Monto, 0) + COALESCE(mv.Monto, 0)), 0) AS MontoTotal
     FROM Recibo r
     INNER JOIN Vivienda v ON r.NumeroVivienda = v.NumeroVivienda AND r.IdCluster = v.IdCluster
-    INNER JOIN Residente re ON v.NumeroVivienda = re.NumeroVivienda AND v.IdCluster = re.IdCluster
-    INNER JOIN Persona p ON re.IdPersona = p.IdPersona
+    LEFT JOIN Residente re ON v.NumeroVivienda = re.NumeroVivienda AND v.IdCluster = re.IdCluster
+    LEFT JOIN Persona p ON re.IdPersona = p.IdPersona
     INNER JOIN Cluster c ON r.IdCluster = c.IdCluster
     LEFT JOIN DetalleRecibo dr ON r.IdRecibo = dr.IdRecibo
     LEFT JOIN CobroServicioVivienda cs ON dr.idCobroServicio = cs.idCobroServicio
@@ -3374,8 +3374,8 @@ BEGIN
     SELECT COUNT(*) AS TotalCount
     FROM Recibo r
     INNER JOIN Vivienda v ON r.NumeroVivienda = v.NumeroVivienda AND r.IdCluster = v.IdCluster
-    INNER JOIN Residente re ON v.NumeroVivienda = re.NumeroVivienda AND v.IdCluster = re.IdCluster
-    INNER JOIN Persona p ON re.IdPersona = p.IdPersona
+    LEFT JOIN Residente re ON v.NumeroVivienda = re.NumeroVivienda AND v.IdCluster = re.IdCluster
+    LEFT JOIN Persona p ON re.IdPersona = p.IdPersona
     INNER JOIN Cluster c ON r.IdCluster = c.IdCluster
     WHERE
         (@FechaEmisionFilter IS NULL OR CAST(r.FechaEmision AS DATE) = @FechaEmisionFilter)
@@ -3384,6 +3384,7 @@ BEGIN
         AND (@ClusterFilter IS NULL OR r.IdCluster = @ClusterFilter);
 END;
 
+EXEC SP_SelectAllRecibo
 go
 -- buscar recibos por numero de pago 
 CREATE OR ALTER PROCEDURE SP_BuscarReciboPorPago
@@ -4195,95 +4196,9 @@ GO
 
 -- PROCEDIMIENTO ALMACENADO PARA ACUMULACIÓN DE DEUDAS
 
-CREATE PROCEDURE sp_AcumularDeudasServiciosPendientes
-    @MesAnterior INT,
-    @AnioAnterior INT,
-    @MesActual INT,
-    @AnioActual INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    DECLARE @ID_SERVICIO_ACUMULADO INT = 99;    
-    
-    DECLARE @ServiciosARevisar TABLE (IdServicio INT);
-    INSERT INTO @ServiciosARevisar (IdServicio) VALUES (1), (2), (3), (5);
-    
-    DECLARE @FechaParaAcumular DATE = DATEFROMPARTS(@AnioActual, @MesActual, 1);
-    
-    DECLARE @DeudasPendientes TABLE (
-        idCobroServicio INT,
-        MontoPendiente DECIMAL(10, 2),
-        NumeroVivienda INT,
-        IdCluster INT
-    );
-
-    INSERT INTO @DeudasPendientes (
-        idCobroServicio, 
-        MontoPendiente, 
-        NumeroVivienda, 
-        IdCluster
-    )
-    SELECT 
-        C.idCobroServicio,
-        (C.Monto - C.MontoAplicado) AS MontoFaltante,
-        C.NumeroVivienda,
-        C.IdCluster
-    FROM 
-        CobroServicioVivienda C
-    INNER JOIN 
-        @ServiciosARevisar SR ON C.IdServicio = SR.IdServicio
-    WHERE 
-        YEAR(C.FechaCobro) = @AnioAnterior
-        AND MONTH(C.FechaCobro) = @MesAnterior
-        AND C.EstadoPago <> 'PAGADO'
-        AND (C.Monto - C.MontoAplicado) > 0.00;
-        
-    IF NOT EXISTS (SELECT 1 FROM @DeudasPendientes)
-    BEGIN
-        RETURN;
-    END
-
-    INSERT INTO CobroServicioVivienda (
-        FechaCobro, 
-        Monto, 
-        MontoAplicado, 
-        EstadoPago, 
-        IdServicio, 
-        NumeroVivienda, 
-        IdCluster
-    )
-    SELECT
-        @FechaParaAcumular,
-        SUM(T.MontoPendiente),
-        0.00,
-        'PENDIENTE',
-        @ID_SERVICIO_ACUMULADO,
-        T.NumeroVivienda,
-        T.IdCluster
-    FROM 
-        @DeudasPendientes T
-    GROUP BY
-        T.NumeroVivienda, T.IdCluster;
-
-    UPDATE C
-    SET C.EstadoPago = 'ACUMULADO'
-    FROM 
-        CobroServicioVivienda C
-    INNER JOIN 
-        @DeudasPendientes T ON C.idCobroServicio = T.idCobroServicio;
-END
-GO
-
-exec sp_AcumularDeudasServiciosPendientes
-    @MesAnterior = 9,
-    @AnioAnterior = 2024,
-    @MesActual =  10,
-    @AnioActual = 2025
-
 go
     ----Tabla de DetallePago
-CREATE PROCEDURE SP_InsertarDetallePago
+CREATE OR ALTER PROCEDURE SP_InsertarDetallePago
     @Monto decimal,
     @idTipoPago int,
     @IdPago int,
@@ -4299,7 +4214,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE SP_ActualizarDetallePago
+CREATE OR ALTER  PROCEDURE SP_ActualizarDetallePago
     @IdDetallePago int, 
     @Monto decimal,
     @idTipoPago int,
@@ -4319,7 +4234,7 @@ BEGIN
         IdDetallePago = @IdDetallePago; 
 END
 GO
-CREATE PROCEDURE SP_BuscarDetallePago_PorID
+CREATE  OR ALTER PROCEDURE SP_BuscarDetallePago_PorID
     @IdDetallePago int
 AS
 BEGIN
@@ -4332,7 +4247,7 @@ BEGIN
         IdDetallePago = @IdDetallePago;
 END
 GO
-CREATE PROCEDURE SP_BuscarDetallePagoPorMontoYTipoPago
+CREATE  OR ALTER PROCEDURE SP_BuscarDetallePagoPorMontoYTipoPago
     @MontoMinimo decimal,
     @idTipoPago int
 AS
@@ -4350,7 +4265,7 @@ BEGIN
         Monto DESC; 
 END
 GO
-CREATE PROCEDURE SP_BuscarDetallePagoPorReferencia
+CREATE OR ALTER  PROCEDURE SP_BuscarDetallePagoPorReferencia
     @Referencia varchar(50)
 AS
 BEGIN
@@ -4366,7 +4281,7 @@ GO
 
 
 
-CREATE PROCEDURE SP_EliminarDetallePago
+CREATE OR ALTER  PROCEDURE SP_EliminarDetallePago
     @IdDetallePago int 
 AS
 BEGIN
@@ -4388,15 +4303,15 @@ GO
 
 -- para ver el estado de cuenta 
 
-CREATE PROCEDURE SP_EstadoDeCuenta 
-	@NumeroVivienda INT,
-	@Cluster INT 
-AS
-BEGIN
-    SET NOCOUNT ON;
-	Select csv.idCobroServicio, csv.FechaCobro, csv.Monto, csv.MontoAplicado, csv.EstadoPago, csv.IdServicio, csv.NumeroVivienda, csv.IdCluster,
-			s.Nombre
-	FROM CobroServicioVivienda AS csv
+--CREATE PROCEDURE SP_EstadoDeCuenta 
+	--@NumeroVivienda INT,
+	--@Cluster INT 
+--AS
+--BEGIN
+    --SET NOCOUNT ON;
+	--Select csv.idCobroServicio, csv.FechaCobro, csv.Monto, csv.MontoAplicado, csv.EstadoPago, csv.IdServicio, csv.NumeroVivienda, csv.IdCluster,
+		--	s.Nombre
+	--FROM CobroServicioVivienda AS csv
     
-END;   
-GO
+--END;   
+--GO
