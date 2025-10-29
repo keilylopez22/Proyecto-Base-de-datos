@@ -46,6 +46,7 @@
                 <td>@p.Telefono</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@p.IdPersona" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="AsignarPropietario" asp-route-id="@p.IdPersona" class="btn btn-sm btn-info">Asignar como propietario</a>
                     <form asp-action="Delete" asp-route-id="@p.IdPersona" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar?')">
                         <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                     </form>
