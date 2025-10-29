@@ -30,33 +30,54 @@ namespace ArsanWebApp.Services
                 FechaAlta = HasColumn(dr, "FechaAlta") && dr["FechaAlta"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(dr["FechaAlta"])) : null,
                 FechaBaja = HasColumn(dr, "FechaBaja") && dr["FechaBaja"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(dr["FechaBaja"])) : null,
                 
-                Estado = HasColumn(dr, "Estado") ? dr["Estado"]?.ToString() : null,
-                IdPersona = HasColumn(dr, "IdPersona") ? Convert.ToInt32(dr["IdPersona"]) : 0,
-                IdPuestoEmpleado = HasColumn(dr, "IdPuestoEmpleado") ? Convert.ToInt32(dr["IdPuestoEmpleado"]) : 0,
+               Estado = HasColumn(dr, "Estado") ? dr["Estado"]?.ToString() : null,
+    // Verifica que existan
+    IdPersona = HasColumn(dr, "IdPersona") ? Convert.ToInt32(dr["IdPersona"]) : 0,
+    IdPuestoEmpleado = HasColumn(dr, "IdPuestoEmpleado") ? Convert.ToInt32(dr["IdPuestoEmpleado"]) : 0,
 
                 NombreCompleto = HasColumn(dr, "NombreCompleto") ? dr["NombreCompleto"]?.ToString() : null
             };
         }
 
+        // --- Método Paginado Corregido (Sincronizado con SP) ---
         public async Task<(List<Empleado> Items, int TotalCount)> ObtenerFiltradoPaginadoAsync(
             string? primerNombre, string? primerApellido, int? idPuesto, int? idEmpleado, int pagina = 1, int pageSize = 10)
         {
             var items = new List<Empleado>();
             int total = 0;
 
+            // 1. Lógica para CONCATENAR NOMBRES (para @NombreEmpleadoFilter)
+            string nombreCompletoFilter = null;
+            if (!string.IsNullOrWhiteSpace(primerNombre) || !string.IsNullOrWhiteSpace(primerApellido))
+            {
+                nombreCompletoFilter = $"{primerNombre?.Trim()} {primerApellido?.Trim()}".Trim();
+            }
+            
+            // 2. Lógica para FILTRO DE PUESTO (temporalmente se ignora el ID, ya que el SP espera el NOMBRE)
+            // Se envía DBNull.Value para evitar errores.
+            object puestoFilterValue = DBNull.Value; 
+
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SP_SelectAllEmpleado", con)
+            // ¡ATENCIÓN!: Usando el nombre SP_SelectAllDeLosEmpleado
+            using var cmd = new SqlCommand("SP_SelectAllDeLosEmpleado", con) 
             {
                 CommandType = CommandType.StoredProcedure
             };
 
+            // *** ENVÍO EXACTO DE 7 PARÁMETROS ***
+            // Paginación (2)
             cmd.Parameters.AddWithValue("@PageIndex", pagina);
             cmd.Parameters.AddWithValue("@PageSize", pageSize);
             
-            cmd.Parameters.AddWithValue("@IdEmpleadoFilter", (object?)idEmpleado ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@PrimerNombreFilter", string.IsNullOrWhiteSpace(primerNombre) ? (object)DBNull.Value : primerNombre);
-            cmd.Parameters.AddWithValue("@PrimerApellidoFilter", string.IsNullOrWhiteSpace(primerApellido) ? (object)DBNull.Value : primerApellido);
+            // Filtros de Fecha (2) - Enviados como NULL si no se usan
+            cmd.Parameters.AddWithValue("@FechaAltaFilter", DBNull.Value);
+            cmd.Parameters.AddWithValue("@FechaBajaFilter", DBNull.Value);
             cmd.Parameters.AddWithValue("@IdPuestoFilter", (object?)idPuesto ?? DBNull.Value);
+            
+            // Filtros de Contenido (3)
+            cmd.Parameters.AddWithValue("@NombreEmpleadoFilter", string.IsNullOrEmpty(nombreCompletoFilter) ? (object)DBNull.Value : nombreCompletoFilter); 
+            cmd.Parameters.AddWithValue("@PuestoFilter", puestoFilterValue); 
+            cmd.Parameters.AddWithValue("@IdEmpleadoFilter", (object?)idEmpleado ?? DBNull.Value); 
 
             await con.OpenAsync();
 
@@ -64,6 +85,7 @@ namespace ArsanWebApp.Services
             {
                 while (await reader.ReadAsync())
                     items.Add(MapEmpleado(reader));
+                
                 if (await reader.NextResultAsync())
                 {
                     if (await reader.ReadAsync())
@@ -74,7 +96,10 @@ namespace ArsanWebApp.Services
             }
             return (items, total);
         }
-        public Empleado? BuscarPorId(int idEmpleado)
+
+        // --- Operaciones CRUD convertidas a Asíncronas ---
+
+        public async Task<Empleado?> BuscarPorIdAsync(int idEmpleado)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("SP_BuscarEmpleadoPorId", con)
@@ -83,16 +108,16 @@ namespace ArsanWebApp.Services
             };
             cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
 
-            con.Open();
-            using var dr = cmd.ExecuteReader();
-            if (dr.Read()) 
+            await con.OpenAsync(); // Asíncrono
+            using var dr = await cmd.ExecuteReaderAsync(); // Asíncrono
+            if (await dr.ReadAsync()) // Asíncrono
             {
                 return MapEmpleado(dr); 
             }
             return null;
         }
 
-        public void Insertar(Empleado empleado)
+        public async Task InsertarAsync(Empleado empleado)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("SP_InsertarEmpleado", con)
@@ -106,32 +131,37 @@ namespace ArsanWebApp.Services
             cmd.Parameters.AddWithValue("@IdPersona", empleado.IdPersona);
             cmd.Parameters.AddWithValue("@IdPuestoEmpleado", empleado.IdPuestoEmpleado);
 
-            con.Open();
-            cmd.ExecuteNonQuery();
+            await con.OpenAsync(); // Asíncrono
+            await cmd.ExecuteNonQueryAsync(); // Asíncrono
         }
-        public void Actualizar(Empleado empleado)
+        
+        public async Task ActualizarAsync(Empleado empleado)
         {
             using var con = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SP_ActualizarEmpleados", con)
+            using var cmd = new SqlCommand("SP_ActualizarLosEmpleados", con)
             {
                 CommandType = CommandType.StoredProcedure
             };
             
             cmd.Parameters.AddWithValue("@IdEmpleado", empleado.IdEmpleado);
             cmd.Parameters.AddWithValue("@FechaAlta", empleado.FechaAlta.HasValue 
-                                   ? empleado.FechaAlta.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
+                                         ? empleado.FechaAlta.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@FechaBaja", empleado.FechaBaja.HasValue 
-                                   ? empleado.FechaBaja.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
+                                         ? empleado.FechaBaja.Value.ToDateTime(TimeOnly.MinValue) : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Estado", string.IsNullOrWhiteSpace(empleado.Estado) 
-                                   ? (object)DBNull.Value : empleado.Estado);
+                                         ? (object)DBNull.Value : empleado.Estado);
             cmd.Parameters.AddWithValue("@IdPersona", empleado.IdPersona); 
-            cmd.Parameters.AddWithValue("@IdPuestoEmpleado", empleado.IdPuestoEmpleado != 0 
-                                   ? empleado.IdPuestoEmpleado : (object)DBNull.Value);
+            // EmpleadoService.cs - Dentro de ActualizarAsync (SIN CAMBIOS RESPECTO AL ÚLTIMO CÓDIGO)
 
-            con.Open();
-            cmd.ExecuteNonQuery();
+cmd.Parameters.AddWithValue("@IdPuestoEmpleado", empleado.IdPuestoEmpleado != 0 
+                                     ? empleado.IdPuestoEmpleado 
+                                     : (object)DBNull.Value); // Envía NULL solo si es 0.
+
+            await con.OpenAsync(); // Asíncrono
+            await cmd.ExecuteNonQueryAsync(); // Asíncrono
         }
-        public void Eliminar(int idEmpleado)
+        
+        public async Task EliminarAsync(int idEmpleado)
         {
             using var con = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand("SP_EliminarEmpleado", con)
@@ -140,8 +170,8 @@ namespace ArsanWebApp.Services
             };
             cmd.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
 
-            con.Open();
-            cmd.ExecuteNonQuery();
+            await con.OpenAsync(); // Asíncrono
+            await cmd.ExecuteNonQueryAsync(); // Asíncrono
         }
 
     }

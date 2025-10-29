@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE SP_SelectAllAsignacionTurno
+CREATE OR ALTER PROCEDURE SP_SelectAllAsignacionDeTurno
     @PageIndex INT = 1,
     @PageSize INT = 10,
     @IdEmpleado INT = NULL,

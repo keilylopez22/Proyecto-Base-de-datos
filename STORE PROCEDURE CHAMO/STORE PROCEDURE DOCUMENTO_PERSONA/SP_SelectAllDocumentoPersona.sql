@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE SP_SelectAllDocumentoPersona
+CREATE OR ALTER PROCEDURE SP_SelectAllDocumentosPersona
     @Offset INT,
     @Limit INT,
     @NumeroDocumento INT = NULL,

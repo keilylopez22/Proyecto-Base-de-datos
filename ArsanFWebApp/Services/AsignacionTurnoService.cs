@@ -40,7 +40,7 @@ namespace ArsanWebApp.Services
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            using var cmd = new SqlCommand("SP_SelectAllAsignacionTurno", conn);
+            using var cmd = new SqlCommand("SP_SelectAllAsignacionDeTurno", conn);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@PageIndex", pagina);

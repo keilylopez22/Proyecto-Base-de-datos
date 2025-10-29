@@ -21,7 +21,7 @@ namespace ArsanWebApp.Services
             int totalCount = 0;
 
             using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("SP_SelectAllDocumentoPersona", conn) 
+            using var cmd = new SqlCommand("SP_SelectAllDocumentosPersona", conn) 
             {
                 CommandType = CommandType.StoredProcedure
             };
