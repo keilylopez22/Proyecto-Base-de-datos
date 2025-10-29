@@ -37,10 +37,27 @@ public class PropietarioController : Controller
         
     }
 
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create(int? idPersona)
     {
-        ViewBag.Personas = await _personaService.ObtenerTodasAsync();
-        return View();
+        if (idPersona == null)
+        {
+            TempData["Error"] = "No se especificó una persona para asignar como propietario.";
+            return RedirectToAction("Index", "Persona");
+        }
+        var persona = await _personaService.BuscarPorIdAsync(idPersona.Value);
+        if (persona == null)
+        {
+            TempData["Error"] = "La persona especificada no existe.";
+            return RedirectToAction("Index", "Persona");
+        }
+        string nombreCompleto = $"{persona.PrimerNombre} {persona.SegundoNombre} {persona.PrimerApellido} {persona.SegundoApellido}".Replace("  ", " ").Trim();
+        var modeloPropietario = new Propietario
+        {
+            IdPersona = idPersona.Value,
+            NombreCompleto = nombreCompleto,
+            Estado = "Activo"
+        };
+        return View(modeloPropietario);
     }
 
    
