@@ -1889,16 +1889,16 @@ GO
 -- Actualizar empleados 
 CREATE OR ALTER PROCEDURE SP_ActualizarEmpleados
 @IdEmpleado INT,
-@FechaAlta DATE,
-@FechaBaja DATE,
-@Estado varchar(10),
+@FechaAlta DATE = NULL,
+@FechaBaja DATE = NULL,
+@Estado varchar(10) = NULL,
 @IdPersona INT,
-@IdPuestoEmpleado INT
+@IdPuestoEmpleado INT = NULL
 AS 
 BEGIN
 
 SET NOCOUNT ON
-BEGIN TRY
+
 IF NOT EXISTS(SELECT 1 FROM Empleado WHERE IdEmpleado = @IdEmpleado)
 BEGIN
 RAISERROR('Este empleado no existe',16,1)
@@ -1906,17 +1906,62 @@ RETURN
 END
 
 UPDATE Empleado
-SET FechaAlta = @FechaAlta,
-FechaBaja = @FechaBaja,
-Estado = @Estado,
-IdPersona = @IdPersona,
+SET FechaAlta = Isnull(@FechaAlta,FechaAlta),
+FechaBaja = Isnull(@FechaBaja,FechaBaja),
+Estado = Isnull(@Estado,Estado),
 IdPuestoEmpleado = @IdPuestoEmpleado
 WHERE IdEmpleado = @IdEmpleado
-END TRY
-BEGIN CATCH
-RAISERROR('Error al intentar actulizar al empleado dado por que no existe',16,1)
-END CATCH
 END
+
+GO
+
+-- SP de paginado de Empleados
+
+GO
+
+CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
+    @PageIndex INT = 1,
+    @PageSize INT = 10,
+    @IdEmpleadoFilter INT = NULL,
+    @PrimerNombreFilter VARCHAR(50) = NULL,
+    @PrimerApellidoFilter VARCHAR(50) = NULL,
+    @IdPuestoFilter INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
+
+    SELECT 
+        E.IdEmpleado,
+        (P.PrimerNombre + ' ' + P.PrimerApellido) AS NombreCompleto,
+        E.Estado,
+        E.FechaAlta,
+        E.FechaBaja,
+        P.IdPersona,
+        E.IdPuestoEmpleado
+    FROM Empleado AS E
+    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
+    INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
+    WHERE (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter)
+        AND (@PrimerNombreFilter IS NULL OR P.PrimerNombre LIKE @PrimerNombreFilter + '%')
+        AND (@PrimerApellidoFilter IS NULL OR P.PrimerApellido LIKE @PrimerApellidoFilter + '%')
+        AND (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter)
+    ORDER BY E.IdEmpleado
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+ 
+    SELECT COUNT(*) AS TotalCount
+    FROM Empleado AS E
+    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
+    INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
+    WHERE
+        (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter)
+        AND (@PrimerNombreFilter IS NULL OR P.PrimerNombre LIKE @PrimerNombreFilter + '%')
+        AND (@PrimerApellidoFilter IS NULL OR P.PrimerApellido LIKE @PrimerApellidoFilter + '%')
+        AND (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter)
+END;
 
 GO
 
@@ -4160,6 +4205,40 @@ BEGIN
 
     INSERT INTO DocumentoPersona (NumeroDocumento, IdTipoDocumento, IdPersona, Observaciones)
     VALUES (@NumeroDocumento, @IdTipoDocumento, @IdPersona, @Observaciones);
+END
+
+GO
+
+-- SP de paginado
+
+GO
+
+CREATE OR ALTER PROCEDURE SP_SelectAllDocumentoPersona
+    @Offset INT,
+    @Limit INT,
+    @NumeroDocumento INT = NULL,
+    @IdTipoDocumento INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT 
+        dp.NumeroDocumento, 
+        dp.IdTipoDocumento, 
+        dp.IdPersona, 
+        dp.Observaciones,
+        td.Nombre AS TipoDocumentoNombre,
+        CONCAT(p.PrimerNombre, ' ', p.PrimerApellido) AS NombrePersona
+FROM DocumentoPersona dp
+INNER JOIN TipoDocumento td ON dp.IdTipoDocumento = td.IdTipoDocumento
+INNER JOIN Persona p ON dp.IdPersona = p.IdPersona
+WHERE (@NumeroDocumento IS NULL OR dp.NumeroDocumento = @NumeroDocumento) AND (@IdTipoDocumento IS NULL OR dp.IdTipoDocumento = @IdTipoDocumento)
+ORDER BY dp.IdPersona, dp.IdTipoDocumento
+OFFSET 
+@Offset ROWS 
+FETCH NEXT @Limit ROWS ONLY;
+
+SELECT COUNT(*) AS TotalCount FROM DocumentoPersona dp
+WHERE (@NumeroDocumento IS NULL OR dp.NumeroDocumento = @NumeroDocumento) AND (@IdTipoDocumento IS NULL OR dp.IdTipoDocumento = @IdTipoDocumento);
 END
 
 GO
