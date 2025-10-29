@@ -115,8 +115,6 @@ BEGIN
         AND (@ClusterFilter IS NULL OR C.Descripcion LIKE '%' + @ClusterFilter + '%')
 
 END;
-
-EXEC  SP_SelectAllClusters
 GO
 
 -- BUSCAR POR ID (PK)
@@ -371,7 +369,6 @@ BEGIN
         OR PR.PrimerApellido LIKE '%' + @NombreFilter + '%');
 
 END;
-EXEC SP_SelectAllPropietarios
 GO
 
 -- BUSCAR POR ID (PK)
@@ -593,10 +590,6 @@ BEGIN
         
 
 END;
-EXEC SP_SelectAllViviendas
-@PageSize =1000,
-@PageIndex =1
-SELECT * FROM Vivienda
 GO
 
 -- BUSCAR POR CLAVE COMPUESTA (PK)
@@ -746,8 +739,6 @@ BEGIN
      
     
 END;
-EXEC SP_SelectAllResidentes
-
 
 GO
 
@@ -1510,7 +1501,7 @@ END
 
 GO
 
-CREATE OR ALTER PROCEDURE SP_SelectAllAsignacionTurno
+CREATE OR ALTER PROCEDURE SP_SelectAllAsignacionDeTurno
     @PageIndex INT = 1,
     @PageSize INT = 10,
     @IdEmpleado INT = NULL,
@@ -1561,7 +1552,6 @@ BEGIN
     INNER JOIN Persona AS P ON PG.IdPersona= P.IdPersona
 END;
 GO
-exec SP_SelectAllPersonasNoGratas
 
 -- ActrulaizarPersonaNoGrata
 GO
@@ -1836,21 +1826,24 @@ GO
 -- 16. TABLA: Empleado
 
 
-CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
+CREATE OR ALTER PROCEDURE SP_SelectAllDeLosEmpleado
 @PageIndex INT = 1,
 @PageSize INT = 10,
 @FechaAltaFilter DATE = NULL,
 @FechaBajaFilter DATE = NULL,
 @NombreEmpleadoFilter VARCHAR(50) = NULL,
-@PuestoFilter VARCHAR(50) = NULL
+@PuestoFilter VARCHAR(50) = NULL,
+@IdEmpleadoFilter INT = NULL,
+@IdPuestoFilter INT = NULL
 AS
 BEGIN
     DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
-    SELECT e.IdEmpleado, p.PrimerNombre + ' ' + p.PrimerApellido AS NombreCompleto , PE.Nombre, PE.Descripcion, E.FechaAlta, E.FechaBaja
+    SELECT e.IdEmpleado, p.PrimerNombre + ' ' + p.PrimerApellido AS NombreCompleto , PE.Nombre, PE.Descripcion, E.FechaAlta, E.FechaBaja,E.IdPersona,PE.IdPuestoEmpleado, E.Estado
     FROM Persona AS p
     INNER JOIN Empleado e ON p.IdPersona = e.IdPersona
     INNER JOIN PuestoEmpleado AS PE ON e.IdPuestoEmpleado = PE.IdPuestoEmpleado
-    WHERE
+    WHERE (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter) AND 
+	(@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter) AND
     (@FechaAltaFilter IS NULL OR
     E.FechaAlta = @FechaAltaFilter)AND
     (@FechaBajaFilter IS NULL OR
@@ -1867,7 +1860,7 @@ BEGIN
     FROM Persona AS p
     INNER JOIN Empleado e ON p.IdPersona = e.IdPersona
     INNER JOIN PuestoEmpleado AS PE ON e.IdPuestoEmpleado = PE.IdPuestoEmpleado
-    WHERE
+    WHERE (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter) AND
     (@FechaAltaFilter IS NULL OR
     E.FechaAlta = @FechaAltaFilter)AND
     (@FechaBajaFilter IS NULL OR
@@ -1878,7 +1871,6 @@ BEGIN
      PE.Nombre LIKE '%' + @PuestoFilter + '%')
 
 END;  
-EXEC SP_SelectAllEmpleado
 GO
 -- Buscar empleado por nombre 
 CREATE OR ALTER PROCEDURE SP_BuscarEmpleadoPorNombre
@@ -1905,7 +1897,7 @@ END
 GO
 
 -- Actualizar empleados 
-CREATE OR ALTER PROCEDURE SP_ActualizarEmpleados
+CREATE OR ALTER PROCEDURE SP_ActualizarLosEmpleados
 @IdEmpleado INT,
 @FechaAlta DATE = NULL,
 @FechaBaja DATE = NULL,
@@ -1927,59 +1919,11 @@ UPDATE Empleado
 SET FechaAlta = Isnull(@FechaAlta,FechaAlta),
 FechaBaja = Isnull(@FechaBaja,FechaBaja),
 Estado = Isnull(@Estado,Estado),
-IdPuestoEmpleado = @IdPuestoEmpleado
+IdPuestoEmpleado = Isnull(@IdPuestoEmpleado, IdPuestoEmpleado)
 WHERE IdEmpleado = @IdEmpleado
 END
 
 GO
-
--- SP de paginado de Empleados
-
-GO
-
-CREATE OR ALTER PROCEDURE SP_SelectAllEmpleado
-    @PageIndex INT = 1,
-    @PageSize INT = 10,
-    @IdEmpleadoFilter INT = NULL,
-    @PrimerNombreFilter VARCHAR(50) = NULL,
-    @PrimerApellidoFilter VARCHAR(50) = NULL,
-    @IdPuestoFilter INT = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
-
-    SELECT 
-        E.IdEmpleado,
-        (P.PrimerNombre + ' ' + P.PrimerApellido) AS NombreCompleto,
-        E.Estado,
-        E.FechaAlta,
-        E.FechaBaja,
-        P.IdPersona,
-        E.IdPuestoEmpleado
-    FROM Empleado AS E
-    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
-    INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
-    WHERE (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter)
-        AND (@PrimerNombreFilter IS NULL OR P.PrimerNombre LIKE @PrimerNombreFilter + '%')
-        AND (@PrimerApellidoFilter IS NULL OR P.PrimerApellido LIKE @PrimerApellidoFilter + '%')
-        AND (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter)
-    ORDER BY E.IdEmpleado
-    OFFSET @Offset ROWS
-    FETCH NEXT @PageSize ROWS ONLY;
-
- 
-    SELECT COUNT(*) AS TotalCount
-    FROM Empleado AS E
-    INNER JOIN Persona AS P ON E.IdPersona = P.IdPersona
-    INNER JOIN PuestoEmpleado AS PE ON E.IdPuestoEmpleado = PE.IdPuestoEmpleado
-    WHERE
-        (@IdEmpleadoFilter IS NULL OR E.IdEmpleado = @IdEmpleadoFilter)
-        AND (@PrimerNombreFilter IS NULL OR P.PrimerNombre LIKE @PrimerNombreFilter + '%')
-        AND (@PrimerApellidoFilter IS NULL OR P.PrimerApellido LIKE @PrimerApellidoFilter + '%')
-        AND (@IdPuestoFilter IS NULL OR E.IdPuestoEmpleado = @IdPuestoFilter)
-END;
 
 GO
 
@@ -2092,15 +2036,6 @@ BEGIN
             OR P.PrimerApellido LIKE '%' + @NombreFilter + '%')
         AND (@PuestoFilter IS NULL OR PE.Nombre LIKE '%' + @PuestoFilter + '%');
 END;
-
-
-EXEC SP_SelectAllEmpleado 
-    @PageIndex = 1,
-    @PageSize = 10,
-    @NombreFilter = 'Cristian',
-    @PuestoFilter = 'Guardia';
-
-	SELECT * FROM Empleado WHERE IdEmpleado = 1;
 GO
 
 -- 17. TABLA: Garita
@@ -2150,7 +2085,6 @@ BEGIN
 END;
 
 GO
-exec SP_ConsultarTodasGarita
 go
 -- Eliminar una garita 
 CREATE OR ALTER PROCEDURE SP_EliminarGarita
@@ -2462,9 +2396,6 @@ BEGIN
             (@TipoAccesoFilter = 'Empleado' AND ra.IdVehiculo IS NULL AND ra.IdVisitante IS NULL AND ra.IdResidente IS NULL)
         );
 END;
-
-Exec SP_SelectAllRegistroAcceso
-
 Go
 
 --Actualizar registro acceso
@@ -3613,7 +3544,7 @@ BEGIN
 
 END;
 GO
-exec SP_SelectAllMultaVivienda
+
 go 
 --busca multa de vivienda por numero de vivienda y cluster 
 CREATE OR ALTER PROCEDURE SP_BuscarMVPorViviendaCluster
@@ -3942,7 +3873,6 @@ BEGIN
         AND (@IdMultaViviendaFilter IS NULL OR dr.IdMultaVivienda = @IdMultaViviendaFilter)
 END;
 GO
-exec SP_SelectAllDetalleRecibo
 
 go
 --busca detalle recibo por Multa
@@ -4184,8 +4114,6 @@ INNER JOIN Persona p ON dp.IdPersona = p.IdPersona
 WHERE dp.IdTipoDocumento = @IdTipoDocumento
 END
 
-EXEC SP_BuscarDocumentoPorTipo
-@IdTipoDocumento = 1
 
 GO
 CREATE OR ALTER PROCEDURE SP_EliminarDocumentoPersona
@@ -4251,7 +4179,7 @@ GO
 
 GO
 
-CREATE OR ALTER PROCEDURE SP_SelectAllDocumentoPersona
+CREATE OR ALTER PROCEDURE SP_SelectAllDocumentosPersona
     @Offset INT,
     @Limit INT,
     @NumeroDocumento INT = NULL,
