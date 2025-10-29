@@ -47,6 +47,7 @@ namespace ArsanWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Pago pago)
         {
+            Console.WriteLine("monto:"+ pago.MontoTotal);
             if (pago.Detalles == null || !pago.Detalles.Any())
             {
                 ModelState.AddModelError("", "Debe agregar al menos un detalle de pago.");
@@ -54,14 +55,14 @@ namespace ArsanWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                // 1. Guardar el pago principal (sin MontoTotal, ya que se calcula de los detalles)
-                var idPago = _pagoService.CrearPago(pago); // Tu SP debe devolver IdPago
+                
+                var idPago = _pagoService.CrearPago(pago); 
 
-                // 2. Guardar cada detalle con el IdPago asignado
+                
                 foreach (var detalle in pago.Detalles)
                 {
                     detalle.IdPago = idPago;
-                    await _detallePagoService.InsertarAsync(detalle); // Debes crear este servicio y SP
+                    await _detallePagoService.InsertarAsync(detalle); 
                 }
 
                 return RedirectToAction(nameof(Index));
