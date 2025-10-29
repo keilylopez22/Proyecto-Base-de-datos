@@ -127,9 +127,20 @@ public class PropietarioService
         return result != null;
     }
 
- 
+
     public async Task<List<Persona>> ObtenerPersonasAsync()
     {
         return await _personaService.ObtenerTodasAsync();
+    }
+    public async Task<bool> ExistePropietarioPorPersonaId(int idPersona)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        using var cmd = new SqlCommand("SP_ExistePropietarioPorPersonaId", conn);
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@IdPersona", idPersona);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result) > 0;
     }
 }
