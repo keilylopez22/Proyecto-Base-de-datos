@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using ArsanWebApp.Models;
+using Microsoft.AspNetCore.Mvc.Rendering; 
 
 namespace ArsanWebApp.Services;
 
@@ -13,54 +14,64 @@ public class RegistroAccesosService
             ?? throw new InvalidOperationException("Cadena de conexión no encontrada.");
     }
 
-    // LISTAR TODOS
-    public async Task<List<RegistroAccesos>> ObtenerTodosAsync()
+    // LISTAR TODOS CON PAGINACIÓN
+    public async Task<(List<RegistroAcceso> registros, int totalCount)> ObtenerTodosPaginadoAsync(
+        int pagina = 1, 
+        int tamanoPagina = 10, 
+        DateTime? fechaIngresoDesde = null, 
+        DateTime? fechaIngresoHasta = null,
+        int? idGaritaFilter = null,
+        int? idEmpleadoFilter = null,
+        string? tipoAccesoFilter = null)
     {
-        var lista = new List<RegistroAccesos>();
+        var lista = new List<RegistroAcceso>();
+        int totalCount = 0;
+
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand(@"
-            SELECT ra.*, v.Placa, vis.NombreCompleto as Visitante, 
-                   p.PrimerNombre + ' ' + p.PrimerApellido as Residente,
-                   g.IdGarita, c.Descripcion as Cluster,
-                   emp.PrimerNombre + ' ' + emp.PrimerApellido as Empleado
-            FROM RegistroAccesos ra
-            LEFT JOIN Vehiculo v ON ra.IdVehiculo = v.IdVehiculo
-            LEFT JOIN Visitante vis ON ra.IdVisitante = vis.IdVisitante
-            LEFT JOIN Residente r ON ra.IdResidente = r.IdResidente
-            LEFT JOIN Persona p ON r.IdPersona = p.IdPersona
-            LEFT JOIN Garita g ON ra.IdGarita = g.IdGarita
-            LEFT JOIN Cluster c ON g.IdCluster = c.IdCluster
-            LEFT JOIN Empleado e ON ra.IdEmpleado = e.IdEmpleado
-            LEFT JOIN Persona emp ON e.IdPersona = emp.IdPersona
-            ORDER BY ra.FechaIngreso DESC", conn);
+        
+        using var cmd = new SqlCommand("SP_SelectAllRegistroAcceso", conn);
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageIndex", pagina);
+        cmd.Parameters.AddWithValue("@PageSize", tamanoPagina);
+        cmd.Parameters.AddWithValue("@FechaIngresoDesde", fechaIngresoDesde ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@FechaIngresoHasta", fechaIngresoHasta ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@IdGaritaFilter", idGaritaFilter ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@IdEmpleadoFilter", idEmpleadoFilter ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@TipoAccesoFilter", tipoAccesoFilter ?? (object)DBNull.Value);
 
         using var reader = await cmd.ExecuteReaderAsync();
+        
         while (await reader.ReadAsync())
         {
-            lista.Add(new RegistroAccesos
+            lista.Add(new RegistroAcceso
             {
                 IdAcceso = Convert.ToInt32(reader["IdAcceso"]),
-                FechaIngreso = Convert.ToDateTime(reader["FechaIngreso"]),
-                FechaSalida = reader["FechaSalida"] as DateTime?,
-                IdVehiculo = reader["IdVehiculo"] as int?,
+                FechaIngreso = reader["FechaIngreso"] != DBNull.Value ? Convert.ToDateTime(reader["FechaIngreso"]) : null,
+                FechaSalida = reader["FechaSalida"] != DBNull.Value ? Convert.ToDateTime(reader["FechaSalida"]) : null,
+                Observaciones = reader["Observaciones"] as string ?? string.Empty,
+                IdVehiculo = reader["IdVehiculo"] != DBNull.Value ? Convert.ToInt32(reader["IdVehiculo"]) : null,
                 IdGarita = Convert.ToInt32(reader["IdGarita"]),
-                IdVisitante = reader["IdVisitante"] as int?,
-                IdResidente = reader["IdResidente"] as int?,
+                IdVisitante = reader["IdVisitante"] != DBNull.Value ? Convert.ToInt32(reader["IdVisitante"]) : null,
+                IdResidente = reader["IdResidente"] != DBNull.Value ? Convert.ToInt32(reader["IdResidente"]) : null,
                 IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
-                Placa = reader["Placa"] as string,
-                Visitante = reader["Visitante"] as string,
-                Residente = reader["Residente"] as string,
-                Garita = $"Garita {reader["IdGarita"]}",
-                Cluster = reader["Cluster"] as string,
-                Empleado = reader["Empleado"] as string
+                IdClusterGarita = Convert.ToInt32(reader["IdClusterGarita"]),
+                ClusterGarita = reader["ClusterGarita"] as string ?? string.Empty,
+                TipoAcceso = reader["TipoAcceso"] as string ?? string.Empty,
+                DescripcionAcceso = reader["DescripcionAcceso"] as string ?? string.Empty
             });
         }
-        return lista;
+
+        if (await reader.NextResultAsync() && await reader.ReadAsync())
+        {
+            totalCount = Convert.ToInt32(reader["TotalCount"]);
+        }
+
+        return (lista, totalCount);
     }
 
     // BUSCAR POR ID
-    public async Task<RegistroAccesos?> BuscarPorIdAsync(int id)
+    public async Task<RegistroAcceso?> BuscarPorIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -71,254 +82,175 @@ public class RegistroAccesosService
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return new RegistroAccesos
+            return new RegistroAcceso
             {
                 IdAcceso = Convert.ToInt32(reader["IdAcceso"]),
-                FechaIngreso = Convert.ToDateTime(reader["FechaIngreso"]),
-                FechaSalida = reader["FechaSalida"] as DateTime?,
-                IdVehiculo = reader["IdVehiculo"] as int?,
+                FechaIngreso = reader["FechaIngreso"] != DBNull.Value ? Convert.ToDateTime(reader["FechaIngreso"]) : null,
+                FechaSalida = reader["FechaSalida"] != DBNull.Value ? Convert.ToDateTime(reader["FechaSalida"]) : null,
+                Observaciones = reader["Observaciones"] as string ?? string.Empty,
+                IdVehiculo = reader["IdVehiculo"] != DBNull.Value ? Convert.ToInt32(reader["IdVehiculo"]) : null,
                 IdGarita = Convert.ToInt32(reader["IdGarita"]),
-                IdVisitante = reader["IdVisitante"] as int?,
-                IdResidente = reader["IdResidente"] as int?,
+                IdVisitante = reader["IdVisitante"] != DBNull.Value ? Convert.ToInt32(reader["IdVisitante"]) : null,
+                IdResidente = reader["IdResidente"] != DBNull.Value ? Convert.ToInt32(reader["IdResidente"]) : null,
                 IdEmpleado = Convert.ToInt32(reader["IdEmpleado"])
             };
         }
         return null;
     }
 
-    // BUSCAR POR VEHÍCULO
-    public async Task<List<RegistroAccesos>> BuscarPorVehiculoAsync(int idVehiculo)
-    {
-        var lista = new List<RegistroAccesos>();
-        using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-        using var cmd = new SqlCommand("SP_ConsultarPorVehiculoRegistroAccesos", conn);
-        cmd.CommandType = System.Data.CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@IdVehiculo", idVehiculo);
-
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            lista.Add(new RegistroAccesos
-            {
-                IdAcceso = Convert.ToInt32(reader["IdAcceso"]),
-                FechaIngreso = Convert.ToDateTime(reader["FechaIngreso"]),
-                FechaSalida = reader["FechaSalida"] as DateTime?,
-                IdVehiculo = reader["IdVehiculo"] as int?,
-                IdGarita = Convert.ToInt32(reader["IdGarita"]),
-                IdVisitante = reader["IdVisitante"] as int?,
-                IdResidente = reader["IdResidente"] as int?,
-                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"])
-            });
-        }
-        return lista;
-    }
-
-    // BUSCAR POR FECHA DE INGRESO
-    public async Task<List<RegistroAccesos>> BuscarPorFechaIngresoAsync(DateTime fecha)
-    {
-        var lista = new List<RegistroAccesos>();
-        using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-        using var cmd = new SqlCommand("SP_ConsultarPorFechaIngresoRegistroAccesos", conn);
-        cmd.CommandType = System.Data.CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@Fecha", fecha.Date);
-
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            lista.Add(new RegistroAccesos
-            {
-                IdAcceso = Convert.ToInt32(reader["IdAcceso"]),
-                FechaIngreso = Convert.ToDateTime(reader["FechaIngreso"]),
-                FechaSalida = reader["FechaSalida"] as DateTime?,
-                IdVehiculo = reader["IdVehiculo"] as int?,
-                IdGarita = Convert.ToInt32(reader["IdGarita"]),
-                IdVisitante = reader["IdVisitante"] as int?,
-                IdResidente = reader["IdResidente"] as int?,
-                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"])
-            });
-        }
-        return lista;
-    }
-
     // OBTENER DATOS PARA DROPDOWNS
-    public async Task<List<Vehiculo>> ObtenerVehiculosAsync()
-    {
-        var lista = new List<Vehiculo>();
-        using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-        using var cmd = new SqlCommand("SELECT IdVehiculo, Placa FROM Vehiculo", conn);
+// OBTENER DATOS PARA DROPDOWNS
+public async Task<List<GaritaDropdown>> ObtenerGaritasAsync()
+{
+    var lista = new List<GaritaDropdown>();
+    using var conn = new SqlConnection(_connectionString);
+    await conn.OpenAsync();
 
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
+    using var cmd = new SqlCommand(@"
+        SELECT g.IdGarita, c.Descripcion as ClusterDescripcion
+        FROM Garita g
+        INNER JOIN Cluster c ON g.IdCluster = c.IdCluster
+    ", conn);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
+    {
+        lista.Add(new GaritaDropdown
         {
-            lista.Add(new Vehiculo
-            {
-                IdVehiculo = Convert.ToInt32(reader["IdVehiculo"]),
-                Placa = reader["Placa"] as string ?? string.Empty
-            });
-        }
-        return lista;
+            IdGarita = Convert.ToInt32(reader["IdGarita"]),
+            Descripcion = reader["ClusterDescripcion"] as string ?? string.Empty
+        });
     }
+    return lista;
+}
 
-    public async Task<List<Visitante>> ObtenerVisitantesAsync()
+    public async Task<List<EmpleadoDropdown>> ObtenerEmpleadosAsync()
     {
-        var lista = new List<Visitante>();
+        var lista = new List<EmpleadoDropdown>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SELECT IdVisitante, NombreCompleto FROM Visitante", conn);
+
+        using var cmd = new SqlCommand(@"
+        SELECT e.IdEmpleado, p.PrimerNombre + ' ' + p.PrimerApellido as NombreCompleto
+        FROM Empleado e
+        INNER JOIN Persona p ON e.IdPersona = p.IdPersona
+        WHERE e.Estado = 'ACTIVO'
+    ", conn);
 
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            lista.Add(new Visitante
+            lista.Add(new EmpleadoDropdown
             {
-                IdVisitante = Convert.ToInt32(reader["IdVisitante"]),
+                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
                 NombreCompleto = reader["NombreCompleto"] as string ?? string.Empty
             });
         }
         return lista;
     }
 
-    public async Task<List<Residente>> ObtenerResidentesAsync()
+    public async Task<List<SelectListItem>> ObtenerVehiculosAsync()
     {
-        var lista = new List<Residente>();
+        var lista = new List<SelectListItem>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+
         using var cmd = new SqlCommand(@"
-            SELECT r.IdResidente, p.PrimerNombre + ' ' + p.PrimerApellido as NombreCompleto
-            FROM Residente r
-            INNER JOIN Persona p ON r.IdPersona = p.IdPersona", conn);
+        SELECT IdVehiculo, Placa 
+        FROM Vehiculo 
+        ORDER BY Placa
+    ", conn);
 
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            lista.Add(new Residente
+            lista.Add(new SelectListItem
             {
-                IdResidente = Convert.ToInt32(reader["IdResidente"]),
+                Value = reader["IdVehiculo"].ToString(),
+                Text = reader["Placa"] as string ?? string.Empty
             });
         }
         return lista;
     }
 
-    public async Task<List<Garita>> ObtenerGaritasAsync()
+    public async Task<List<SelectListItem>> ObtenerVisitantesAsync()
     {
-        var lista = new List<Garita>();
+        var lista = new List<SelectListItem>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        using var cmd = new SqlCommand("SELECT IdGarita, IdCluster FROM Garita", conn);
+
+        using var cmd = new SqlCommand(@"
+        SELECT IdVisitante, NombreCompleto 
+        FROM Visitante 
+        ORDER BY NombreCompleto
+    ", conn);
 
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            lista.Add(new Garita
+            lista.Add(new SelectListItem
             {
-                IdGarita = Convert.ToInt32(reader["IdGarita"]),
-                IdCluster = Convert.ToInt32(reader["IdCluster"])
+                Value = reader["IdVisitante"].ToString(),
+                Text = reader["NombreCompleto"] as string ?? string.Empty
             });
         }
         return lista;
     }
 
-    public async Task<List<Empleado>> ObtenerEmpleadosAsync()
+    public async Task<List<SelectListItem>> ObtenerResidentesAsync()
     {
-        var lista = new List<Empleado>();
+        var lista = new List<SelectListItem>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+
         using var cmd = new SqlCommand(@"
-            SELECT e.IdEmpleado, p.PrimerNombre + ' ' + p.PrimerApellido as NombreCompleto
-            FROM Empleado e
-            INNER JOIN Persona p ON e.IdPersona = p.IdPersona", conn);
+        SELECT r.IdResidente, p.PrimerNombre + ' ' + p.PrimerApellido as NombreCompleto
+        FROM Residente r
+        INNER JOIN Persona p ON r.IdPersona = p.IdPersona
+        ORDER BY NombreCompleto
+    ", conn);
 
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            lista.Add(new Empleado
+            lista.Add(new SelectListItem
             {
-                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
-                // Necesitarías agregar una propiedad NombreCompleto al modelo Empleado
+                Value = reader["IdResidente"].ToString(),
+                Text = reader["NombreCompleto"] as string ?? string.Empty
             });
         }
         return lista;
     }
 
-    // INSERTAR CON VALIDACIÓN DE PERSONA NO GRATA
-    // ...existing code...
-public async Task<(bool exito, string mensaje, int? id)> InsertarAsync(RegistroAccesos r)
-{
-    try
+    // INSERTAR
+    public async Task<(bool exito, string mensaje, int? id)> InsertarAsync(RegistroAcceso registro)
     {
-        using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-
-        var dbName = (await new SqlCommand("SELECT DB_NAME()", conn).ExecuteScalarAsync())?.ToString() ?? "(unknown)";
-        var serverName = (await new SqlCommand("SELECT @@SERVERNAME", conn).ExecuteScalarAsync())?.ToString() ?? "(unknown)";
-
-        using (var chk = new SqlCommand("SELECT COUNT(1) FROM Garita WHERE IdGarita = @IdGarita", conn))
+        try
         {
-            chk.Parameters.AddWithValue("@IdGarita", r.IdGarita);
-            if (Convert.ToInt32(await chk.ExecuteScalarAsync()) == 0)
-                return (false, $"Garita {r.IdGarita} no existe en {dbName}@{serverName}.", null);
-        }
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new SqlCommand("SP_InsertarRegistroAccesos", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@FechaIngreso", registro.FechaIngreso ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@FechaSalida", registro.FechaSalida ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdVehiculo", registro.IdVehiculo ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdGarita", registro.IdGarita);
+            cmd.Parameters.AddWithValue("@IdVisitante", registro.IdVisitante ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdResidente", registro.IdResidente ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@IdEmpleado", registro.IdEmpleado);
 
-        if (r.IdVehiculo.HasValue)
+            var result = await cmd.ExecuteScalarAsync();
+            var nuevoId = result != null ? Convert.ToInt32(result) : (int?)null;
+            return (true, "Registro de acceso creado exitosamente.", nuevoId);
+        }
+        catch (SqlException ex)
         {
-            using var chkV = new SqlCommand("SELECT COUNT(1) FROM Vehiculo WHERE IdVehiculo = @IdVehiculo", conn);
-            chkV.Parameters.AddWithValue("@IdVehiculo", r.IdVehiculo.Value);
-            if (Convert.ToInt32(await chkV.ExecuteScalarAsync()) == 0)
-                return (false, $"Vehículo {r.IdVehiculo} no existe en {dbName}@{serverName}.", null);
+            return (false, $"Error: {ex.Message}", null);
         }
-
-        if (r.IdVisitante.HasValue)
-        {
-            using var chkVis = new SqlCommand("SELECT COUNT(1) FROM Visitante WHERE IdVisitante = @IdVisitante", conn);
-            chkVis.Parameters.AddWithValue("@IdVisitante", r.IdVisitante.Value);
-            if (Convert.ToInt32(await chkVis.ExecuteScalarAsync()) == 0)
-                return (false, $"Visitante {r.IdVisitante} no existe en {dbName}@{serverName}.", null);
-        }
-
-        if (r.IdResidente.HasValue)
-        {
-            using var chkRes = new SqlCommand("SELECT COUNT(1) FROM Residente WHERE IdResidente = @IdResidente", conn);
-            chkRes.Parameters.AddWithValue("@IdResidente", r.IdResidente.Value);
-            if (Convert.ToInt32(await chkRes.ExecuteScalarAsync()) == 0)
-                return (false, $"Residente {r.IdResidente} no existe en {dbName}@{serverName}.", null);
-        }
-
-        if (r.IdEmpleado > 0)
-        {
-            using var chkEmp = new SqlCommand("SELECT COUNT(1) FROM Empleado WHERE IdEmpleado = @IdEmpleado", conn);
-            chkEmp.Parameters.AddWithValue("@IdEmpleado", r.IdEmpleado);
-            if (Convert.ToInt32(await chkEmp.ExecuteScalarAsync()) == 0)
-                return (false, $"Empleado {r.IdEmpleado} no existe en {dbName}@{serverName}.", null);
-        }
-
-        // Insert
-        using var cmd = new SqlCommand(@"
-            INSERT INTO RegistroAccesos (FechaIngreso, FechaSalida, IdVehiculo, IdGarita, IdVisitante, IdResidente, IdEmpleado)
-            OUTPUT INSERTED.IdAcceso
-            VALUES (@FechaIngreso, @FechaSalida, @IdVehiculo, @IdGarita, @IdVisitante, @IdResidente, @IdEmpleado)
-        ", conn);
-        cmd.Parameters.AddWithValue("@FechaIngreso", r.FechaIngreso);
-        cmd.Parameters.AddWithValue("@FechaSalida", (object?)r.FechaSalida ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@IdVehiculo", (object?)r.IdVehiculo ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@IdGarita", r.IdGarita);
-        cmd.Parameters.AddWithValue("@IdVisitante", (object?)r.IdVisitante ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@IdResidente", (object?)r.IdResidente ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@IdEmpleado", r.IdEmpleado);
-
-        var newId = await cmd.ExecuteScalarAsync();
-        return (true, "Registro creado.", newId != null ? Convert.ToInt32(newId) : null);
     }
-    catch (SqlException ex)
-    {
-        return (false, $"SQL Error: {ex.Message}", null);
-    }
-}
 
     // ACTUALIZAR
-    public async Task<(bool exito, string mensaje)> ActualizarAsync(RegistroAccesos registro)
+    public async Task<(bool exito, string mensaje)> ActualizarAsync(RegistroAcceso registro)
     {
         try
         {
@@ -326,9 +258,8 @@ public async Task<(bool exito, string mensaje, int? id)> InsertarAsync(RegistroA
             await conn.OpenAsync();
             using var cmd = new SqlCommand("SP_ActualizarRegistroAccesos", conn);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
-            
             cmd.Parameters.AddWithValue("@IdRegistroAcceso", registro.IdAcceso);
-            cmd.Parameters.AddWithValue("@FechaIngreso", registro.FechaIngreso);
+            cmd.Parameters.AddWithValue("@FechaIngreso", registro.FechaIngreso ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@FechaSalida", registro.FechaSalida ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@IdVehiculo", registro.IdVehiculo ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@IdGarita", registro.IdGarita);
@@ -356,19 +287,32 @@ public async Task<(bool exito, string mensaje, int? id)> InsertarAsync(RegistroA
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@IdRegistroAcceso", id);
 
-            var result = await cmd.ExecuteScalarAsync();
-            var returnValue = Convert.ToInt32(result);
-
-            return returnValue switch
-            {
-                1 => (true, "Registro de acceso eliminado correctamente."),
-                0 => (false, "No se encontró el registro."),
-                _ => (false, "Error desconocido.")
-            };
+            var rowsAffected = await cmd.ExecuteNonQueryAsync();
+            return (rowsAffected > 0, rowsAffected > 0 ? "Registro eliminado." : "Registro no encontrado.");
         }
         catch (SqlException ex)
         {
             return (false, $"Error: {ex.Message}");
         }
     }
+}
+
+// Modelos auxiliares para dropdowns
+public class GaritaDropdown
+{
+    public int IdGarita { get; set; }
+    public string? Descripcion { get; set; }
+}
+
+public class EmpleadoDropdown
+{
+    public int IdEmpleado { get; set; }
+    public string? NombreCompleto { get; set; }
+}
+
+public class VehiculoDropdown
+{
+    public int IdVehiculo { get; set; }
+    public string? Placa { get; set; }
+    public string? DescripcionCompleta { get; set; }
 }
