@@ -1,4 +1,4 @@
-@model ArsanWebApp.Models.RegistroAccesos
+@model ArsanWebApp.Models.RegistroAcceso
 
 <h2>Detalles del Registro de Acceso</h2>
 
@@ -21,23 +21,32 @@
         }
     </dd>
 
+    <dt class="col-sm-3">Tipo de Acceso:</dt>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.TipoAcceso) ? "N/A" : Model.TipoAcceso)</dd>
+
+    <dt class="col-sm-3">Descripción:</dt>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.DescripcionAcceso) ? "N/A" : Model.DescripcionAcceso)</dd>
+
     <dt class="col-sm-3">Vehículo:</dt>
-    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Placa) ? "N/A" : Model.Placa)</dd>
+    <dd class="col-sm-9">@(Model.IdVehiculo.HasValue ? $"ID: {Model.IdVehiculo}" : "N/A")</dd>
 
     <dt class="col-sm-3">Visitante:</dt>
-    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Visitante) ? "N/A" : Model.Visitante)</dd>
+    <dd class="col-sm-9">@(Model.IdVisitante.HasValue ? $"ID: {Model.IdVisitante}" : "N/A")</dd>
 
     <dt class="col-sm-3">Residente:</dt>
-    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Residente) ? "N/A" : Model.Residente)</dd>
+    <dd class="col-sm-9">@(Model.IdResidente.HasValue ? $"ID: {Model.IdResidente}" : "N/A")</dd>
 
     <dt class="col-sm-3">Garita:</dt>
-    <dd class="col-sm-9">@Model.Garita</dd>
+    <dd class="col-sm-9">@Model.IdGarita</dd>
 
     <dt class="col-sm-3">Cluster:</dt>
-    <dd class="col-sm-9">@Model.Cluster</dd>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.ClusterGarita) ? "N/A" : Model.ClusterGarita)</dd>
 
     <dt class="col-sm-3">Empleado:</dt>
-    <dd class="col-sm-9">@Model.Empleado</dd>
+    <dd class="col-sm-9">@Model.IdEmpleado</dd>
+
+    <dt class="col-sm-3">Observaciones:</dt>
+    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Observaciones) ? "Sin observaciones" : Model.Observaciones)</dd>
 </dl>
 
 <div class="mt-3">

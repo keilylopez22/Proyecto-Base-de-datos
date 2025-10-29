@@ -1,4 +1,12 @@
-@model ArsanWebApp.Models.RegistroAccesos
+@model ArsanWebApp.Models.RegistroAcceso
+
+<div style="display: none;">
+    <p>ViewBag.Vehiculos: @(ViewBag.Vehiculos == null ? "NULL" : "TIENE DATOS")</p>
+    <p>ViewBag.Garitas: @(ViewBag.Garitas == null ? "NULL" : "TIENE DATOS")</p>
+    <p>ViewBag.Empleados: @(ViewBag.Empleados == null ? "NULL" : "TIENE DATOS")</p>
+</div>
+
+<h2>Editar Registro de Acceso</h2>
 
 <h2>Registrar Nuevo Acceso</h2>
 

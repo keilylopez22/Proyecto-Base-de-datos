@@ -1,22 +1,45 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ArsanWebApp.Models;
 using ArsanWebApp.Services;
+using Microsoft.Extensions.Logging;
 
 namespace ArsanWebApp.Controllers;
 
 public class RegistroAccesosController : Controller
 {
     private readonly RegistroAccesosService _service;
+    private readonly ILogger<RegistroAccesosController> _logger;
 
-    public RegistroAccesosController(RegistroAccesosService service)
+    public RegistroAccesosController(RegistroAccesosService service, ILogger<RegistroAccesosController> logger)
     {
         _service = service;
+        _logger = logger;
     }
 
-    // GET: Listar todos
-    public async Task<IActionResult> Index()
+    // GET: Listar todos con paginación
+    public async Task<IActionResult> Index(int pagina = 1, int tamanoPagina = 10,
+        DateTime? fechaIngresoDesde = null, DateTime? fechaIngresoHasta = null,
+        int? idGaritaFilter = null, int? idEmpleadoFilter = null,
+        string? tipoAccesoFilter = null)
     {
-        var registros = await _service.ObtenerTodosAsync();
+        var (registros, totalCount) = await _service.ObtenerTodosPaginadoAsync(
+            pagina, tamanoPagina, fechaIngresoDesde, fechaIngresoHasta,
+            idGaritaFilter, idEmpleadoFilter, tipoAccesoFilter);
+
+        var totalPaginas = (int)Math.Ceiling(totalCount / (double)tamanoPagina);
+
+        ViewBag.PaginaActual = pagina;
+        ViewBag.TamanoPagina = tamanoPagina;
+        ViewBag.TotalRegistros = totalCount;
+        ViewBag.TotalPaginas = totalPaginas;
+        ViewBag.FechaIngresoDesde = fechaIngresoDesde;
+        ViewBag.FechaIngresoHasta = fechaIngresoHasta;
+        ViewBag.IdGaritaFilter = idGaritaFilter;
+        ViewBag.IdEmpleadoFilter = idEmpleadoFilter;
+        ViewBag.TipoAccesoFilter = tipoAccesoFilter;
+
+        await CargarFiltrosAsync();
         return View(registros);
     }
 
@@ -24,25 +47,14 @@ public class RegistroAccesosController : Controller
     public async Task<IActionResult> Create()
     {
         await CargarDropdownsAsync();
-        // Establecer fecha y hora actual por defecto
-        var modelo = new RegistroAccesos 
-        { 
-            FechaIngreso = DateTime.Now
-        };
-        return View(modelo);
+        return View();
     }
 
     // POST: Crear nuevo
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(RegistroAccesos registro)
+    public async Task<IActionResult> Create(RegistroAcceso registro)
     {
-        // Validación adicional: al menos uno debe estar presente
-        if (registro.IdVehiculo == null && registro.IdVisitante == null && registro.IdResidente == null)
-        {
-            ModelState.AddModelError("", "Debe especificar al menos un Vehículo, Visitante o Residente.");
-        }
-
         if (ModelState.IsValid)
         {
             var (exito, mensaje, id) = await _service.InsertarAsync(registro);
@@ -62,7 +74,7 @@ public class RegistroAccesosController : Controller
     {
         var registro = await _service.BuscarPorIdAsync(id);
         if (registro == null) return NotFound();
-        
+
         await CargarDropdownsAsync();
         return View(registro);
     }
@@ -70,15 +82,9 @@ public class RegistroAccesosController : Controller
     // POST: Editar
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, RegistroAccesos registro)
+    public async Task<IActionResult> Edit(int id, RegistroAcceso registro)
     {
         if (id != registro.IdAcceso) return BadRequest();
-        
-        // Validación adicional
-        if (registro.IdVehiculo == null && registro.IdVisitante == null && registro.IdResidente == null)
-        {
-            ModelState.AddModelError("", "Debe especificar al menos un Vehículo, Visitante o Residente.");
-        }
 
         if (ModelState.IsValid)
         {
@@ -104,26 +110,6 @@ public class RegistroAccesosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Buscar por vehículo
-    public async Task<IActionResult> SearchByVehicle(int idVehiculo)
-    {
-        var registros = await _service.BuscarPorVehiculoAsync(idVehiculo);
-        ViewBag.SearchType = "Vehículo";
-        return View("Index", registros);
-    }
-
-    // GET: Buscar por fecha
-    public async Task<IActionResult> SearchByDate(DateTime fecha)
-    {
-        if (fecha == DateTime.MinValue)
-            fecha = DateTime.Today;
-
-        var registros = await _service.BuscarPorFechaIngresoAsync(fecha);
-        ViewBag.SearchType = $"Fecha: {fecha:dd/MM/yyyy}";
-        ViewBag.SearchDate = fecha;
-        return View("Index", registros);
-    }
-
     // GET: Detalles
     public async Task<IActionResult> Details(int id)
     {
@@ -132,13 +118,54 @@ public class RegistroAccesosController : Controller
         return View(registro);
     }
 
-    // Método privado para cargar dropdowns
+    // Métodos privados
+    private async Task CargarFiltrosAsync()
+    {
+        try
+        {
+            var garitas = await _service.ObtenerGaritasAsync();
+            var empleados = await _service.ObtenerEmpleadosAsync();
+
+            ViewBag.Garitas = new SelectList(garitas, "IdGarita", "Descripcion");
+            ViewBag.Empleados = new SelectList(empleados, "IdEmpleado", "NombreCompleto");
+
+            var tiposAcceso = new List<SelectListItem>
+            {
+                new() { Value = "Vehiculo", Text = "Vehículo" },
+                new() { Value = "Visitante", Text = "Visitante" },
+                new() { Value = "Residente", Text = "Residente" },
+                new() { Value = "Empleado", Text = "Empleado" }
+            };
+            ViewBag.TiposAcceso = new SelectList(tiposAcceso, "Value", "Text");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al cargar filtros");
+            ViewBag.Garitas = new SelectList(new List<SelectListItem>());
+            ViewBag.Empleados = new SelectList(new List<SelectListItem>());
+            ViewBag.TiposAcceso = new SelectList(new List<SelectListItem>());
+        }
+    }
+
     private async Task CargarDropdownsAsync()
     {
-        ViewBag.Vehiculos = await _service.ObtenerVehiculosAsync();
-        ViewBag.Visitantes = await _service.ObtenerVisitantesAsync();
-        ViewBag.Residentes = await _service.ObtenerResidentesAsync();
-        ViewBag.Garitas = await _service.ObtenerGaritasAsync();
-        ViewBag.Empleados = await _service.ObtenerEmpleadosAsync();
+        try
+        {
+            ViewBag.Garitas = new SelectList(await _service.ObtenerGaritasAsync(), "IdGarita", "Descripcion");
+            ViewBag.Empleados = new SelectList(await _service.ObtenerEmpleadosAsync(), "IdEmpleado", "NombreCompleto");
+            ViewBag.Vehiculos = new SelectList(await _service.ObtenerVehiculosAsync(), "Value", "Text");
+            ViewBag.Visitantes = new SelectList(await _service.ObtenerVisitantesAsync(), "Value", "Text");
+            ViewBag.Residentes = new SelectList(await _service.ObtenerResidentesAsync(), "Value", "Text");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al cargar dropdowns");
+            // Inicializar como listas vacías
+            ViewBag.Garitas = new SelectList(new List<SelectListItem>());
+            ViewBag.Empleados = new SelectList(new List<SelectListItem>());
+            ViewBag.Vehiculos = new SelectList(new List<SelectListItem>());
+            ViewBag.Visitantes = new SelectList(new List<SelectListItem>());
+            ViewBag.Residentes = new SelectList(new List<SelectListItem>());
+        }
     }
 }

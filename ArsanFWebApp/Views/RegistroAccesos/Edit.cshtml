@@ -1,4 +1,4 @@
-@model ArsanWebApp.Models.RegistroAccesos
+@model ArsanWebApp.Models.RegistroAcceso
 
 <h2>Editar Registro de Acceso</h2>
 
@@ -25,12 +25,15 @@
     <div class="row">
         <div class="col-md-4">
             <div class="form-group">
-                <label asp-for="IdVehiculo">Vehículo (Opcional)</label>
+                <label asp-for="IdVehiculo" class="control-label">Vehículo</label>
                 <select asp-for="IdVehiculo" class="form-control">
-                    <option value="">-- Seleccione un vehículo --</option>
-                    @foreach (var vehiculo in ViewBag.Vehiculos)
+                    <option value="">Seleccionar Vehículo</option>
+                    @if (ViewBag.Vehiculos != null)
                     {
-                        <option value="@vehiculo.IdVehiculo">@vehiculo.Placa</option>
+                        @foreach (var vehiculo in ViewBag.Vehiculos)
+                        {
+                            <option value="@vehiculo.Value">@vehiculo.Text</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="IdVehiculo" class="text-danger"></span>
@@ -38,12 +41,15 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label asp-for="IdVisitante">Visitante (Opcional)</label>
+                <label asp-for="IdVisitante" class="control-label">Visitante</label>
                 <select asp-for="IdVisitante" class="form-control">
-                    <option value="">-- Seleccione un visitante --</option>
-                    @foreach (var visitante in ViewBag.Visitantes)
+                    <option value="">Seleccionar Visitante</option>
+                    @if (ViewBag.Visitantes != null)
                     {
-                        <option value="@visitante.IdVisitante">@visitante.NombreCompleto</option>
+                        @foreach (var visitante in ViewBag.Visitantes)
+                        {
+                            <option value="@visitante.Value">@visitante.Text</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="IdVisitante" class="text-danger"></span>
@@ -51,12 +57,15 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label asp-for="IdResidente">Residente (Opcional)</label>
+                <label asp-for="IdResidente" class="control-label">Residente</label>
                 <select asp-for="IdResidente" class="form-control">
-                    <option value="">-- Seleccione un residente --</option>
-                    @foreach (var residente in ViewBag.Residentes)
+                    <option value="">Seleccionar Residente</option>
+                    @if (ViewBag.Residentes != null)
                     {
-                        <option value="@residente.IdResidente">Residente @residente.IdResidente</option>
+                        @foreach (var residente in ViewBag.Residentes)
+                        {
+                            <option value="@residente.Value">@residente.Text</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="IdResidente" class="text-danger"></span>
@@ -67,12 +76,15 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                <label asp-for="IdGarita">Garita</label>
-                <select asp-for="IdGarita" class="form-control" required>
-                    <option value="">-- Seleccione una garita --</option>
-                    @foreach (var garita in ViewBag.Garitas)
+                <label asp-for="IdGarita" class="control-label">Garita</label>
+                <select asp-for="IdGarita" class="form-control">
+                    <option value="">Seleccionar Garita</option>
+                    @if (ViewBag.Garitas != null)
                     {
-                        <option value="@garita.IdGarita">Garita @garita.IdGarita (Cluster @garita.IdCluster)</option>
+                        @foreach (var garita in ViewBag.Garitas)
+                        {
+                            <option value="@garita.Value">@garita.Text</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="IdGarita" class="text-danger"></span>
@@ -80,12 +92,15 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label asp-for="IdEmpleado">Empleado</label>
-                <select asp-for="IdEmpleado" class="form-control" required>
-                    <option value="">-- Seleccione un empleado --</option>
-                    @foreach (var empleado in ViewBag.Empleados)
+                <label asp-for="IdEmpleado" class="control-label">Empleado</label>
+                <select asp-for="IdEmpleado" class="form-control">
+                    <option value="">Seleccionar Empleado</option>
+                    @if (ViewBag.Empleados != null)
                     {
-                        <option value="@empleado.IdEmpleado">Empleado @empleado.IdEmpleado</option>
+                        @foreach (var empleado in ViewBag.Empleados)
+                        {
+                            <option value="@empleado.Value">@empleado.Text</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="IdEmpleado" class="text-danger"></span>
@@ -97,6 +112,12 @@
         <strong>Nota:</strong> Debe especificar al menos un Vehículo, Visitante o Residente.
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

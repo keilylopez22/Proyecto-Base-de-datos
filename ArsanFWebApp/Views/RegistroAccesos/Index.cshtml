@@ -1,22 +1,55 @@
-@model List<ArsanWebApp.Models.RegistroAccesos>
+@model List<ArsanWebApp.Models.RegistroAcceso>
 
 <h2>Registros de Acceso</h2>
 
-<!-- Barra de búsqueda -->
-<div class="card mb-3">
-    <div class="card-body">
-        <h5 class="card-title">Búsqueda</h5>
-        <form asp-action="SearchByDate" method="get" class="row">
-            <div class="col-md-6">
-                <label for="fecha" class="form-label">Buscar por fecha:</label>
-                <div class="input-group">
-                    <input type="date" name="fecha" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")">
-                    <button type="submit" class="btn btn-outline-primary">Buscar</button>
-                </div>
-            </div>
-        </form>
+<!-- Formulario de filtros integrados -->
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-2">
+        <input type="date" class="form-control" name="fechaIngresoDesde" 
+               value="@ViewBag.FechaIngresoDesde?.ToString("yyyy-MM-dd")" placeholder="Desde">
     </div>
-</div>
+    <div class="col-md-2">
+        <input type="date" class="form-control" name="fechaIngresoHasta" 
+               value="@ViewBag.FechaIngresoHasta?.ToString("yyyy-MM-dd")" placeholder="Hasta">
+    </div>
+    <div class="col-md-2">
+        <select class="form-control" name="idGaritaFilter">
+            <option value="">Todas las garitas</option>
+            @foreach (var item in ViewBag.Garitas)
+            {
+                <option value="@item.Value" selected="@(ViewBag.IdGaritaFilter?.ToString() == item.Value)">
+                    @item.Text
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-control" name="idEmpleadoFilter">
+            <option value="">Todos los empleados</option>
+            @foreach (var item in ViewBag.Empleados)
+            {
+                <option value="@item.Value" selected="@(ViewBag.IdEmpleadoFilter?.ToString() == item.Value)">
+                    @item.Text
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-control" name="tipoAccesoFilter">
+            <option value="">Todos los tipos</option>
+            @foreach (var item in ViewBag.TiposAcceso)
+            {
+                <option value="@item.Value" selected="@(ViewBag.TipoAccesoFilter?.ToString() == item.Value)">
+                    @item.Text
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Limpiar</a>
+    </div>
+</form>
 
 <p><a asp-action="Create" class="btn btn-primary">Registrar Nuevo Acceso</a></p>
 
@@ -29,14 +62,6 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-@if (ViewBag.SearchType != null)
-{
-    <div class="alert alert-info">
-        <strong>Búsqueda:</strong> @ViewBag.SearchType
-        <a asp-action="Index" class="btn btn-sm btn-outline-secondary float-end">Ver todos</a>
-    </div>
-}
-
 @if (Model.Any())
 {
     <table class="table table-striped">
@@ -45,12 +70,10 @@
                 <th>ID</th>
                 <th>Fecha Ingreso</th>
                 <th>Fecha Salida</th>
-                <th>Vehículo</th>
-                <th>Visitante</th>
-                <th>Residente</th>
+                <th>Tipo Acceso</th>
+                <th>Descripción</th>
                 <th>Garita</th>
                 <th>Cluster</th>
-                <th>Empleado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -59,14 +82,12 @@
             {
                 <tr>
                     <td>@registro.IdAcceso</td>
-                    <td>@(registro.FechaIngreso.HasValue ? registro.FechaIngreso.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</td>
-                    <td>@(registro.FechaSalida.HasValue ? registro.FechaSalida.Value.ToString("dd/MM/yyyy HH:mm") : "En curso")</td>
-                    <td>@(registro.Placa ?? "N/A")</td>
-                    <td>@(registro.Visitante ?? "N/A")</td>
-                    <td>@(registro.Residente ?? "N/A")</td>
-                    <td>@registro.Garita</td>
-                    <td>@registro.Cluster</td>
-                    <td>@registro.Empleado</td>
+                    <td>@registro.FechaIngreso?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@registro.FechaSalida?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@registro.TipoAcceso</td>
+                    <td>@registro.DescripcionAcceso</td>
+                    <td>@registro.ClusterGarita</td>
+                    <td>@registro.IdClusterGarita</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@registro.IdAcceso" class="btn btn-sm btn-info">Ver</a>
                         <a asp-action="Edit" asp-route-id="@registro.IdAcceso" class="btn btn-sm btn-warning">Editar</a>
@@ -83,13 +104,68 @@
 else
 {
     <div class="alert alert-warning">
-        @if (ViewBag.SearchType != null)
-        {
-            <p>No se encontraron registros para la búsqueda actual.</p>
-        }
-        else
-        {
-            <p>No hay registros de acceso.</p>
-        }
+        <p>No hay registros de acceso.</p>
     </div>
 }
+
+@* Paginación *@
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+                <a class="page-link" 
+                   href="@Url.Action("Index", new { 
+                       pagina = ViewBag.PaginaActual - 1, 
+                       tamanoPagina = ViewBag.TamanoPagina,
+                       fechaIngresoDesde = ViewBag.FechaIngresoDesde,
+                       fechaIngresoHasta = ViewBag.FechaIngresoHasta,
+                       idGaritaFilter = ViewBag.IdGaritaFilter,
+                       idEmpleadoFilter = ViewBag.IdEmpleadoFilter,
+                       tipoAccesoFilter = ViewBag.TipoAccesoFilter
+                   })">
+                    Anterior
+                </a>
+            </li>
+
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link" 
+                       href="@Url.Action("Index", new { 
+                           pagina = i, 
+                           tamanoPagina = ViewBag.TamanoPagina,
+                           fechaIngresoDesde = ViewBag.FechaIngresoDesde,
+                           fechaIngresoHasta = ViewBag.FechaIngresoHasta,
+                           idGaritaFilter = ViewBag.IdGaritaFilter,
+                           idEmpleadoFilter = ViewBag.IdEmpleadoFilter,
+                           tipoAccesoFilter = ViewBag.TipoAccesoFilter
+                       })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas ? "disabled" : "")">
+                <a class="page-link" 
+                   href="@Url.Action("Index", new { 
+                       pagina = ViewBag.PaginaActual + 1, 
+                       tamanoPagina = ViewBag.TamanoPagina,
+                       fechaIngresoDesde = ViewBag.FechaIngresoDesde,
+                       fechaIngresoHasta = ViewBag.FechaIngresoHasta,
+                       idGaritaFilter = ViewBag.IdGaritaFilter,
+                       idEmpleadoFilter = ViewBag.IdEmpleadoFilter,
+                       tipoAccesoFilter = ViewBag.TipoAccesoFilter
+                   })">
+                    Siguiente
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<div class="text-muted">
+    Mostrando @((ViewBag.PaginaActual - 1) * ViewBag.TamanoPagina + 1) 
+    a @Math.Min(ViewBag.PaginaActual * ViewBag.TamanoPagina, ViewBag.TotalRegistros) 
+    de @ViewBag.TotalRegistros registros
+</div>
