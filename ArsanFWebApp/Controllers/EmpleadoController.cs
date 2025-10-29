@@ -13,7 +13,7 @@ namespace ArsanWebApp.Controllers
             _service = service;
         }
 
-        // Index con paginación y filtros
+        // Index con paginación y filtros (Ya estaba asíncrono)
         public async Task<IActionResult> Index(int? idEmpleado = null, string primerNombre = "", string primerApellido = "", int? idPuesto = null, int pagina = 1)
         {
             const int pageSize = 10;
@@ -30,45 +30,52 @@ namespace ArsanWebApp.Controllers
             return View(empleados);
         }
 
-        // Crear
+        // Crear (GET)
         public IActionResult Crear() => View();
 
         [HttpPost]
-        public IActionResult Crear(Empleado empleado)
+        public async Task<IActionResult> Crear(Empleado empleado) // Usando async
         {
             if (!ModelState.IsValid) return View(empleado);
-            _service.Insertar(empleado);
+            
+            await _service.InsertarAsync(empleado); // Llamando al método asíncrono
+            
             return RedirectToAction(nameof(Index));
         }
 
-        // Editar
-        public IActionResult Editar(int id)
+        // Editar (GET)
+        public async Task<IActionResult> Editar(int id) // Usando async
         {
-            var empleado = _service.BuscarPorId(id);
+            var empleado = await _service.BuscarPorIdAsync(id); // Llamando al método asíncrono
+            
             if (empleado == null) return NotFound();
             return View(empleado);
         }
 
         [HttpPost]
-        public IActionResult Editar(Empleado empleado)
+        public async Task<IActionResult> Editar(Empleado empleado) // Usando async
         {
             if (!ModelState.IsValid) return View(empleado);
-            _service.Actualizar(empleado);
+            
+            await _service.ActualizarAsync(empleado); // Llamando al método asíncrono
+            
             return RedirectToAction(nameof(Index));
         }
 
-        // Eliminar
-        public IActionResult Eliminar(int id)
+        // Eliminar (GET)
+        public async Task<IActionResult> Eliminar(int id) // Usando async
         {
-            var empleado = _service.BuscarPorId(id);
+            var empleado = await _service.BuscarPorIdAsync(id); // Llamando al método asíncrono
+            
             if (empleado == null) return NotFound();
             return View(empleado);
         }
 
         [HttpPost, ActionName("Eliminar")]
-        public IActionResult ConfirmarEliminar(int id)
+        public async Task<IActionResult> ConfirmarEliminar(int id) // Usando async
         {
-            _service.Eliminar(id);
+            await _service.EliminarAsync(id); // Llamando al método asíncrono
+            
             return RedirectToAction(nameof(Index));
         }
     }

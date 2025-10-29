@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE SP_ActualizarEmpleados
+CREATE OR ALTER PROCEDURE SP_ActualizarLosEmpleados
 @IdEmpleado INT,
 @FechaAlta DATE = NULL,
 @FechaBaja DATE = NULL,
