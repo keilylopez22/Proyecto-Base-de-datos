@@ -60,7 +60,9 @@ public class PersonaService
                 PrimerApellido = reader["PrimerApellido"] as string ?? string.Empty,
                 SegundoApellido = reader["SegundoApellido"] as string,
                 Telefono = reader["Telefono"] as string,
-                Genero = reader["Genero"] as char?
+                Genero = reader["Genero"] as char?,
+                IdPropietario = reader["IdPropietario"] as int?
+
             });
         }
 

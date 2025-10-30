@@ -13,4 +13,5 @@ public class Persona
 
     public DateOnly? FechaNacimiento { get; set; }
     public string EstadoCivil { get; set; } = string.Empty; 
+    public int? IdPropietario { get; set; }
 }
