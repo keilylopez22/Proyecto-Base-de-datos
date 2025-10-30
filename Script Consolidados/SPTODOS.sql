@@ -3014,13 +3014,10 @@ GO
 Create  OR ALTER Procedure SP_InsertarPago 
 @FechaPago date,
 @MontoTotal decimal
-
-
-
 As
 Begin 
-	Insert Into Pago (FechaPago , MontoTotal  )
-	Values (@FechaPago, @MontoTotal )
+	Insert Into Pago (FechaPago , MontoTotal, MontoLiquidado, Saldo )
+	Values (@FechaPago, @MontoTotal, 0, @MontoTotal )
 	SELECT SCOPE_IDENTITY() AS IdPago;
 End;
 GO
@@ -3034,7 +3031,7 @@ BEGIN
 
     DECLARE @offset INT = (@PageIndex -1) * @pageSize;
     SELECT 
-		p.IdPago, p.FechaPago,p.MontoTotal
+		p.IdPago, p.FechaPago,p.MontoTotal, p.MontoLiquidado, p.Saldo
     FROM Pago AS p
     WHERE
         (@FechaPagoFilter IS NULL OR cast( p.FechaPago as date) = @FechaPagoFilter )
@@ -3052,6 +3049,7 @@ BEGIN
 		
 
 END;
+EXEC SP_SelectAllPago
 GO
 --actualizar pagos  
 CREATE OR ALTER PROCEDURE SP_ActualizarPagos
@@ -3108,7 +3106,7 @@ Create OR Alter Procedure SP_BuscarPagoPorID
 AS
 
 Begin 
-	Select IdPago, FechaPago, MontoTotal
+	Select IdPago, FechaPago, MontoTotal, MontoLiquidado, Saldo
 	from Pago
 	Where  IdPago = @IdPago 
 
@@ -3131,7 +3129,8 @@ BEGIN
 		RETURN ;
 	END 
     BEGIN
-
+        DELETE FROM DetallePago
+        WHERE IdPago = @IdPago;
         DELETE FROM Pago
         WHERE IdPago = @IdPago;
 
@@ -4299,19 +4298,41 @@ BEGIN
         END
 END
 GO
+CREATE OR ALTER PROCEDURE SP_EstadoDeCuenta
+@AnioFilter INT = NULL,
+@NumeroVivienda INT = NULL,
+@ClusterFilter int = NULL,
+@MesFilter VARCHAR(15) = NULL
+AS
+BEGIN
+	SELECT csv.idCobroServicio, DATENAME(MONTH, csv.FechaCobro) AS MesCobro , YEAR( csv.FechaCobro) AS Año, csv.Monto, COALESCE(csv.MontoAplicado, 0) AS MontoPagado, csv.EstadoPago, csv.IdServicio, csv.NumeroVivienda, csv.IdCluster,
+			s.Nombre
+	FROM CobroServicioVivienda AS csv
+		INNER JOIN Servicio  AS s ON csv.IdServicio = s.IdServicio
+		WHERE 
+		(@AnioFilter IS NULL OR
+		YEAR( csv.FechaCobro) =  @AnioFilter )
+		AND(@NumeroVivienda IS NULL OR
+		 csv.NumeroVivienda = @NumeroVivienda)
+		AND(@ClusterFilter  IS NULL OR
+		 csv.IdCluster =  @ClusterFilter)
+		AND(@MesFilter IS NULL OR 
+		 DATENAME(MONTH, csv.FechaCobro) = @MesFilter)
+		--where NumeroVivienda = 1 and IdCluster= 1
 
-
--- para ver el estado de cuenta 
-
---CREATE PROCEDURE SP_EstadoDeCuenta 
-	--@NumeroVivienda INT,
-	--@Cluster INT 
---AS
---BEGIN
-    --SET NOCOUNT ON;
-	--Select csv.idCobroServicio, csv.FechaCobro, csv.Monto, csv.MontoAplicado, csv.EstadoPago, csv.IdServicio, csv.NumeroVivienda, csv.IdCluster,
-		--	s.Nombre
-	--FROM CobroServicioVivienda AS csv
-    
---END;   
+	SELECT YEAR( csv.FechaCobro) AS Anio, SUM(csv.Monto) AS TotalCobrado,
+		 SUM(COALESCE(csv.MontoAplicado, 0)) AS TotalPagado
+	FROM CobroServicioVivienda AS csv
+		--where NumeroVivienda = 1 and IdCluster= 1
+		WHERE 
+		(@AnioFilter IS NULL OR
+		YEAR( csv.FechaCobro) =  @AnioFilter )
+		AND(@NumeroVivienda IS NULL OR
+		 csv.NumeroVivienda = @NumeroVivienda)
+		AND(@ClusterFilter  IS NULL OR
+		 csv.IdCluster =  @ClusterFilter)
+		AND(@MesFilter IS NULL OR 
+		 DATENAME(MONTH, csv.FechaCobro) = @MesFilter)
+		GROUP BY NumeroVivienda , IdCluster, YEAR( csv.FechaCobro)
+END;
 --GO
