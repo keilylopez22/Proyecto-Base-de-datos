@@ -168,6 +168,23 @@ GO
 
 -- 3. TABLA: Persona
 
+CREATE OR ALTER PROCEDURE SP_ExistePropietarioPorPersonaId
+    @IdPersona INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (SELECT 1 FROM Propietario WHERE IdPersona = @IdPersona)
+    BEGIN
+        SELECT 1;
+    END
+    ELSE
+    BEGIN
+        SELECT 0;
+    END
+END;
+GO
+
+go
 -- INSERTAR
 CREATE OR ALTER PROCEDURE SP_InsertarPersona
 @Cui VARCHAR(30) ,
@@ -200,9 +217,10 @@ BEGIN
     DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
 
     SELECT 
-        IdPersona, Cui, PrimerNombre, SegundoNombre, 
-        PrimerApellido, SegundoApellido, Telefono, Genero,FechaNacimiento, EstadoCivil
-    FROM Persona
+       P.IdPersona, Cui, PrimerNombre, SegundoNombre, 
+        PrimerApellido, SegundoApellido, Telefono, Genero,FechaNacimiento, EstadoCivil, PR.IdPropietario
+    FROM Persona P
+    LEFT JOIN Propietario AS PR ON P.IdPersona = PR.IdPersona
     WHERE 
         (@CuiFilter IS NULL OR Cui LIKE '%' + @CuiFilter + '%')
         AND (@NombreFilter IS NULL OR 
@@ -4007,9 +4025,10 @@ BEGIN
     DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
 
     SELECT 
-        IdPersona, Cui, PrimerNombre, SegundoNombre, 
-        PrimerApellido, SegundoApellido, Telefono, Genero
-    FROM Persona
+        P.IdPersona, Cui, PrimerNombre, SegundoNombre, 
+        PrimerApellido, SegundoApellido, Telefono, Genero, COALESCE(PR.IdPropietario, 0)
+    FROM Persona AS P
+    LEFT JOIN Propietario AS PR ON P.IdPersona = PR.IdPersona
     WHERE 
         (@CuiFilter IS NULL OR Cui LIKE '%' + @CuiFilter + '%')
         AND (@NombreFilter IS NULL OR 
