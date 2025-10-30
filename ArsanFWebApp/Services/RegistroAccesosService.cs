@@ -22,7 +22,9 @@ public class RegistroAccesosService
         DateTime? fechaIngresoHasta = null,
         int? idGaritaFilter = null,
         int? idEmpleadoFilter = null,
-        string? tipoAccesoFilter = null)
+        string? tipoAccesoFilter = null
+        , int? ViviendaDestino = null
+        )
     {
         var lista = new List<RegistroAcceso>();
         int totalCount = 0;
@@ -39,6 +41,8 @@ public class RegistroAccesosService
         cmd.Parameters.AddWithValue("@IdGaritaFilter", idGaritaFilter ?? (object)DBNull.Value);
         cmd.Parameters.AddWithValue("@IdEmpleadoFilter", idEmpleadoFilter ?? (object)DBNull.Value);
         cmd.Parameters.AddWithValue("@TipoAccesoFilter", tipoAccesoFilter ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@ViviendaDestino", ViviendaDestino ?? (object)DBNull.Value);
+        
 
         using var reader = await cmd.ExecuteReaderAsync();
         
@@ -58,9 +62,11 @@ public class RegistroAccesosService
                 IdClusterGarita = Convert.ToInt32(reader["IdClusterGarita"]),
                 ClusterGarita = reader["ClusterGarita"] as string ?? string.Empty,
                 TipoAcceso = reader["TipoAcceso"] as string ?? string.Empty,
-                DescripcionAcceso = reader["DescripcionAcceso"] as string ?? string.Empty
+                DescripcionAcceso = reader["DescripcionAcceso"] as string ?? string.Empty,
+                ViviendaDestino = reader["ViviendaDestino"] != DBNull.Value ? Convert.ToInt32(reader["ViviendaDestino"]) : null,
+
             });
-        }
+        } 
 
         if (await reader.NextResultAsync() && await reader.ReadAsync())
         {
@@ -238,6 +244,7 @@ public async Task<List<GaritaDropdown>> ObtenerGaritasAsync()
             cmd.Parameters.AddWithValue("@IdVisitante", registro.IdVisitante ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@IdResidente", registro.IdResidente ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@IdEmpleado", registro.IdEmpleado);
+            cmd.Parameters.AddWithValue("@ViviendaDestino", registro.ViviendaDestino ?? (object)DBNull.Value);
 
             var result = await cmd.ExecuteScalarAsync();
             var nuevoId = result != null ? Convert.ToInt32(result) : (int?)null;
@@ -266,6 +273,7 @@ public async Task<List<GaritaDropdown>> ObtenerGaritasAsync()
             cmd.Parameters.AddWithValue("@IdVisitante", registro.IdVisitante ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@IdResidente", registro.IdResidente ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@IdEmpleado", registro.IdEmpleado);
+            cmd.Parameters.AddWithValue("@ViviendaDestino", registro.ViviendaDestino ?? (object)DBNull.Value);
 
             var rowsAffected = await cmd.ExecuteNonQueryAsync();
             return (rowsAffected > 0, rowsAffected > 0 ? "Registro actualizado." : "Registro no encontrado.");

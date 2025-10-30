@@ -11,6 +11,8 @@ public class RegistroAcceso
     public int? IdVisitante { get; set; }
     public int? IdResidente { get; set; }
     public int IdEmpleado { get; set; }
+
+    public int? ViviendaDestino { get; set; }
     
     public string? TipoAcceso { get; set; }
     public string? DescripcionAcceso { get; set; }

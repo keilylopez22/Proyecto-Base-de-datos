@@ -8,20 +8,27 @@
 
 <form asp-action="Create" method="post">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group mb-3">
                 <label asp-for="FechaIngreso" class="form-label">Fecha y Hora de Ingreso</label>
                 <input asp-for="FechaIngreso" class="form-control" type="datetime-local" />
                 <span asp-validation-for="FechaIngreso" class="text-danger"></span>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group mb-3">
                 <label asp-for="FechaSalida" class="form-label">Fecha y Hora de Salida (Opcional)</label>
                 <input asp-for="FechaSalida" class="form-control" type="datetime-local" />
                 <span asp-validation-for="FechaSalida" class="text-danger"></span>
             </div>
         </div>
+        <div class="col-md-4">
+        <div class="form-group mb-3">
+                <label asp-for="ViviendaDestino" class="form-label">Vivienda Destino</label>
+                <input asp-for="ViviendaDestino" class="form-control" type="number" />
+                <span asp-validation-for="ViviendaDestino" class="text-danger"></span>
+            </div>
+        </div>    
     </div>
 
     <div class="row">
@@ -61,7 +68,7 @@
 
     <div class="row">
         <!-- Garita -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group mb-3">
                 <label asp-for="IdGarita" class="form-label">Garita</label>
                 <select asp-for="IdGarita" asp-items="ViewBag.Garitas" class="form-control" required>
@@ -72,7 +79,7 @@
         </div>
 
         <!-- Empleado -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group mb-3">
                 <label asp-for="IdEmpleado" class="form-label">Empleado</label>
                 <select asp-for="IdEmpleado" asp-items="ViewBag.Empleados" class="form-control" required>
