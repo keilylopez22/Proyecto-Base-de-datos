@@ -3946,7 +3946,7 @@ BEGIN
 
     SELECT 
         P.IdPersona, Cui, PrimerNombre, SegundoNombre, 
-        PrimerApellido, SegundoApellido, Telefono, Genero, COALESCE(PR.IdPropietario, 0)
+        PrimerApellido, SegundoApellido, Telefono, Genero, COALESCE(PR.IdPropietario, 0) AS IdPropietario
     FROM Persona AS P
     LEFT JOIN Propietario AS PR ON P.IdPersona = PR.IdPersona
     WHERE 
