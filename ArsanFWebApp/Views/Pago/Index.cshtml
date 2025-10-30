@@ -50,6 +50,9 @@
             <th>Id</th>
             <th>Fecha</th>
             <th>Monto</th>
+            <th>Monto Liquidado</th>
+            <th>Saldo</th>
+
             <!--<th>Tipo de Pago</th>
             <th>Referencia</th>-->
             <th>Acciones</th>
@@ -64,6 +67,8 @@
                     <td>@item.IdPago</td>
                     <td>@item.FechaPago?.ToString("yyyy-MM-dd")</td>
                     <td>@item.MontoTotal?.ToString("N2")</td>
+                    <td>@item.MontoLiquidado?.ToString("N2")</td>
+                    <td>@item.Saldo?.ToString("N2")</td>
 
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.IdPago" class="btn btn-primary btn-sm">Editar</a>

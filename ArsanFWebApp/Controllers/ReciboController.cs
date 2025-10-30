@@ -10,18 +10,27 @@ namespace ArsanWebApp.Controllers
         private readonly ReciboService _reciboService;
         private readonly DetalleReciboService _detalleService;
         private readonly ClusterService _clusterService;
+        private readonly PagoService _pagoService;
 
-        public ReciboController(ReciboService reciboService, DetalleReciboService detalleService, ClusterService clusterService)
+        public ReciboController(ReciboService reciboService, DetalleReciboService detalleService, ClusterService clusterService, PagoService pagoService)
         {
             _reciboService = reciboService;
             _detalleService = detalleService;
             _clusterService = clusterService;
+            _pagoService = pagoService;
         }
 
         public async Task<IActionResult> Index(int PageIndex = 1, int PageSize = 10, DateTime? FechaEmisionFilter = null, int? IdPagoFilter = null,
             int? NumeroViviendaFilter = null, int? ClusterFilter = null)
         {
+            decimal? saldoPago = null;
+            if (IdPagoFilter.HasValue)
+            {
+                var pago = await _pagoService.BuscarPorIdAsync(IdPagoFilter.Value);
+                saldoPago = pago?.Saldo;
+            }
 
+            Console.WriteLine("SaldoPago en Index: " + saldoPago);
             var (lista, TotalCount) = await _reciboService.ObtenerTodos(
                 PageIndex,
                 PageSize,
@@ -37,6 +46,7 @@ namespace ArsanWebApp.Controllers
             ViewBag.ClusterFilter = ClusterFilter;
             ViewBag.PageIndex = PageIndex;
             ViewBag.PageSize = PageSize;
+            ViewBag.SaldoPago = saldoPago; 
 
             return View(paginatedList);
         }

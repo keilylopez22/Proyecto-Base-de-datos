@@ -33,10 +33,11 @@ namespace ArsanWebApp.Services
 
                 cmd.Parameters.AddWithValue("@PageIndex", pageIndex);
                 cmd.Parameters.AddWithValue("@PageSize", pageSize);
-                cmd.Parameters.AddWithValue("@FechaCobroFilter", string.IsNullOrEmpty(fechaFilter) ? (object)DBNull.Value : DateTime.Parse(fechaFilter));
+                cmd.Parameters.AddWithValue("@FechaCobroDesdeFilter", string.IsNullOrEmpty(fechaFilter) ? (object)DBNull.Value : DateTime.Parse(fechaFilter));
                 cmd.Parameters.AddWithValue("@ServicioFilter", string.IsNullOrEmpty(servicioFilter) ? (object)DBNull.Value : servicioFilter);
                 cmd.Parameters.AddWithValue("@NumeroViviendaFilter", numeroViviendaFilter ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@ClusterFilter", clusterFilter ?? (object)DBNull.Value);
+
 
                 await conn.OpenAsync();
                 using var reader = await cmd.ExecuteReaderAsync();

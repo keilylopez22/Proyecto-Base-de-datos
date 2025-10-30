@@ -50,7 +50,7 @@
     </div>
 </form>
 <div class="mb-3 text-end">
-    @if (!string.IsNullOrEmpty(ViewBag.IdPagoFilter?.ToString()) && ViewBag.IdPagoFilter > 0)
+    @if (ViewBag.IdPagoFilter != null && ViewBag.SaldoPago != null && ViewBag.SaldoPago > 0)
     {
         <a asp-action="Create" 
            asp-route-idPago="@ViewBag.IdPagoFilter" 
@@ -58,10 +58,16 @@
             Nuevo Recibo
         </a>
     }
+    else if (ViewBag.IdPagoFilter != null)
+    {
+        <button class="btn btn-secondary" disabled>
+            Nuevo Recibo (saldo insuficiente)
+        </button>
+    }
     else
     {
         <button class="btn btn-secondary" disabled>
-            Nuevo Recibo (requiere seleccionar un Pago)
+            Nuevo Recibo (requiere seleccionar un Pago con saldo)
         </button>
     }
 </div>
@@ -74,7 +80,7 @@
             <th>Pago</th>
             <th>N° Vivienda</th>
             <th>Cluster</th>
-            <th>Propietario</th>
+            <th>Residente</th>
             <th>Monto Total</th>
             <th>Acciones</th>
         </tr>

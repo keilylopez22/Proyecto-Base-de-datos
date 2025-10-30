@@ -6,7 +6,8 @@ public class Pago
     public int IdPago { get; set; }
     public DateOnly? FechaPago { get; set; }
     public decimal? MontoTotal { get; set; }
-
+    public decimal? MontoLiquidado { get; set; }
+    public decimal? Saldo { get; set; }
     // Nueva propiedad: lista de detalles
     public List<DetallePago> Detalles { get; set; } = new();
 }

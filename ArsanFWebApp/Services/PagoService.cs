@@ -40,6 +40,8 @@ namespace ArsanWebApp.Services
                             IdPago = Convert.ToInt32(reader["IdPago"]),
                             FechaPago = reader["FechaPago"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaPago"])) : null,
                             MontoTotal = reader["MontoTotal"] != DBNull.Value ? Convert.ToDecimal(reader["MontoTotal"]) : (decimal?)null,
+                            MontoLiquidado = reader["MontoLiquidado"] != DBNull.Value ? Convert.ToDecimal(reader["MontoLiquidado"]) : (decimal?)null,
+                            Saldo = reader["Saldo"] != DBNull.Value ? Convert.ToDecimal(reader["Saldo"]) : (decimal?)null,
                             //IdTipoPago = Convert.ToInt32(reader["idTipoPago"]),
                             //Referencia = reader["Referencia"]?.ToString(),
                             //NombreTipoPago = reader["NombreTipoPago"]?.ToString()
@@ -70,6 +72,36 @@ namespace ArsanWebApp.Services
                 con.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }
+        }
+
+        public async Task<Pago> BuscarPorIdAsync(int id)
+        {
+            Pago pago = null;
+            using (var con = new SqlConnection(_connectionString))
+            using (var cmd = new SqlCommand("SP_BuscarPagoPorID", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@IdPago", id);
+                con.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        pago = new Pago
+                        {
+                            IdPago = Convert.ToInt32(reader["IdPago"]),
+                            FechaPago = reader["FechaPago"] != DBNull.Value ? DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaPago"])) : null,
+                            MontoTotal = reader["MontoTotal"] != DBNull.Value ? Convert.ToDecimal(reader["MontoTotal"]) : (decimal?)null,
+                            MontoLiquidado = reader["MontoLiquidado"] != DBNull.Value ? Convert.ToDecimal(reader["MontoLiquidado"]) : (decimal?)null,
+                            Saldo = reader["Saldo"] != DBNull.Value ? Convert.ToDecimal(reader["Saldo"])    : (decimal?)null,
+                            //IdTipoPago = Convert.ToInt32(reader["idTipoPago"]),
+                            //Referencia = reader["Referencia"]?.ToString()
+                        };
+                    }
+                }
+            }
+            return pago;
         }
 
         public Pago GetPagoById(int id)
