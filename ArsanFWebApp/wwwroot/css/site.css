@@ -53,3 +53,207 @@ body {
     color: white;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
+/* ================================================= */
+/* CONFIGURACIÓN BASE DEL SIDEBAR (Oculto por defecto) */
+/* ================================================= */
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px; 
+    overflow-y: auto; 
+    z-index: 1050; 
+    padding: 1rem; 
+    
+    /* ESTILO: Fondo Semitransparente (85% Opacidad) */
+    background-color: rgba(33, 37, 41, 0.85) !important; 
+    border-right: 1px solid rgba(255, 255, 255, 0.1); 
+    
+    /* Transición para el efecto de deslizado */
+    transition: transform 0.3s ease; /* Usamos transform para mejor rendimiento */
+    transform: translateX(-100%); /* Oculto por defecto fuera de la pantalla */
+}
+
+/* ESTADO ACTIVO: Clase agregada por JS para mostrar el menú */
+#sidebar.active-sidebar {
+    transform: translateX(0); /* Muestra el menú en su posición original */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra para resaltar */
+}
+
+#sidebar .sidebar-header .navbar-brand {
+    font-size: 1.5rem;
+}
+
+#sidebar .nav-item {
+    margin-bottom: 0.5rem; 
+}
+
+#sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+}
+
+#sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); 
+    color: #fff !important;
+}
+
+/* Ocultar el botón de cierre del sidebar en desktop */
+#sidebarClose {
+    display: none; 
+}
+
+
+/* ================================================= */
+/* CORRECCIÓN DE SUBMENÚS (DROPDOWNS) */
+/* ================================================= */
+
+.position-static .dropdown-menu {
+    position: absolute !important;
+    z-index: 1060; 
+    left: 100%; 
+    min-width: 200px; 
+    margin-top: -38px; 
+    background-color: rgba(33, 37, 41, 0.95); /* Fondo oscuro para los submenús */
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+}
+/* Asegurarse que los items del dropdown tengan color blanco */
+.position-static .dropdown-menu .dropdown-item {
+    color: #f8f9fa; /* Blanco para el texto */
+}
+.position-static .dropdown-menu .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.15); /* Efecto hover */
+    color: #fff;
+}
+
+
+/* ================================================= */
+/* ENVOLTORIO PRINCIPAL Y CONTENIDO (Main Content Wrapper) */
+/* ================================================= */
+
+#main-wrapper {
+    transition: margin-left 0.3s ease;
+    margin-left: 0; /* Por defecto ocupa todo el ancho */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Empuja el contenido principal cuando el sidebar está abierto */
+#main-wrapper.active-main-wrapper {
+    margin-left: 250px; 
+}
+
+/* Estilos para el header fijo en la parte superior del main-wrapper */
+#main-header {
+    width: 100%;
+    position: sticky; /* O fixed si quieres que siempre esté visible al hacer scroll */
+    top: 0;
+    z-index: 1040;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#content {
+    flex-grow: 1; /* Permite que ocupe el espacio restante */
+    padding-top: 0 !important; /* El padding ya está en el header */
+}
+
+/* ================================================= */
+/* FONDO SEMI-TRANSPARENTE OSCURO PARA EL CONTENIDO */
+/* ================================================= */
+
+.content-wrapper {
+    /* Fondo oscuro con 85% de opacidad, igual que el sidebar */
+    background-color: rgba(33, 37, 41, 0.60); 
+    color: #e9ecef; /* Color de texto claro para que se lea sobre el fondo oscuro */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    padding: 1.5rem;
+    margin: auto; 
+}
+
+/* Asegurar que el texto de las tablas se vea bien */
+.content-wrapper .table {
+    color: #e9ecef; /* Color de texto de la tabla */
+}
+.content-wrapper .table th {
+    color: #adb5bd; /* Color de los encabezados de tabla */
+}
+
+/* Estilos para los filtros y botones dentro del content-wrapper si son de Bootstrap */
+/*.content-wrapper .form-control,
+.content-wrapper .btn {
+    /* Ajustes para que se vean bien sobre fondo oscuro 
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+.content-wrapper .form-control::placeholder {
+    color: #ced4da;
+}*/
+.content-wrapper .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+.content-wrapper .btn-primary:hover {
+    background-color: #0a58ca;
+    border-color: #0a58ca;
+}
+.content-wrapper .btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+.content-wrapper .btn-success:hover {
+    background-color: #157347;
+    border-color: #157347;
+}
+
+/* ================================================= */
+/* FOOTER AJUSTADO */
+/* ================================================= */
+
+#footer-ajustado {
+    width: 100%; /* Por defecto ocupa todo el ancho */
+    transition: margin-left 0.3s ease;
+    background-color: rgba(33, 37, 41, 0.85) !important; /* También con fondo oscuro */
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+#footer-ajustado.active-main-wrapper {
+    margin-left: 250px; /* Empuja el footer cuando el sidebar está abierto */
+}
+
+
+/* ================================================= */
+/* RESPONSIVIDAD (Móviles y Tablets) */
+/* ================================================= */
+
+@media (max-width: 768px) {
+    /* En móviles, el sidebar se superpone */
+    #sidebar {
+        transform: translateX(-100%); /* Oculto */
+        box-shadow: none; /* Sin sombra por defecto */
+    }
+    #sidebar.active-sidebar {
+        transform: translateX(0); /* Visible */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Sombra al abrir */
+    }
+
+    /* El main-wrapper y el footer no se mueven en móviles (overlay del menú) */
+    #main-wrapper.active-main-wrapper {
+        margin-left: 0; 
+    }
+    #footer-ajustado.active-main-wrapper {
+        margin-left: 0; 
+    }
+    
+    /* Mostrar el botón de cierre dentro del sidebar en móviles */
+    #sidebarClose {
+        display: block !important;
+    }
+}

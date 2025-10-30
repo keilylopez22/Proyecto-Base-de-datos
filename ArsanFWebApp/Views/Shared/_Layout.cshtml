@@ -8,151 +8,145 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ArsanFWebApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ArsanFWebApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+    
+    <nav id="sidebar" class="bg-dark navbar-dark border-end">
+        <div class="sidebar-header d-flex justify-content-between align-items-center p-3">
+            <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">ArsanFWebApp</a>
+            <button class="btn btn-close btn-close-white d-block d-md-none" id="sidebarClose"></button> </div>
+        
+        <div class="navbar-collapse collapse show">
+            <ul class="navbar-nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                </li>
 
-                        <!-- Home -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
-                        </li>
-
-                        <!-- Gestión de Personas -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="personasDropdown" role="button" data-bs-toggle="dropdown">
-                                Personas
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="personasDropdown">
-                                <li><a class="dropdown-item" asp-controller="Persona" asp-action="Index">Personas</a></li>
-                                <li><a class="dropdown-item" asp-controller="Propietario" asp-action="Index">Propietarios</a></li>
-                                <li><a class="dropdown-item" asp-controller="Residente" asp-action="Index">Residentes</a></li>
-                                <li><a class="dropdown-item" asp-controller="Empleado" asp-action="Index">Empleados</a></li>
-                                <li><a class="dropdown-item" asp-controller="Visitante" asp-action="Index">Visitantes</a></li>
-                                <li><a class="dropdown-item" asp-controller="PersonaNoGrata" asp-action="Index">Personas No Gratas</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Vivienda y Residencial -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="viviendaDropdown" role="button" data-bs-toggle="dropdown">
-                                Vivienda y Residencial
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="viviendaDropdown">
-                                <li><a class="dropdown-item" asp-controller="Residencial" asp-action="Index">Residenciales</a></li>
-                                <li><a class="dropdown-item" asp-controller="Cluster" asp-action="Index">Clusters</a></li>
-                                <li><a class="dropdown-item" asp-controller="Vivienda" asp-action="Index">Viviendas</a></li>
-                                <li><a class="dropdown-item" asp-controller="TipoVivienda" asp-action="Index">Tipos de Vivienda</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Junta Directiva -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="juntaDropdown" role="button" data-bs-toggle="dropdown">
-                                Junta Directiva
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="juntaDropdown">
-                                <li><a class="dropdown-item" asp-controller="JuntaDirectiva" asp-action="Index">Juntas Directivas</a></li>
-                                <li><a class="dropdown-item" asp-controller="PuestoJuntaDirectiva" asp-action="Index">Puestos JD</a></li>
-                                <li><a class="dropdown-item" asp-controller="MiembroJuntaDirectiva" asp-action="Index">Miembros JD</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Empleados y Turnos -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="empleadosDropdown" role="button" data-bs-toggle="dropdown">
-                                Empleados y Turnos
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="empleadosDropdown">
-                                <li><a class="dropdown-item" asp-controller="PuestoEmpleado" asp-action="Index">Puestos Empleado</a></li>
-                                <li><a class="dropdown-item" asp-controller="Turno" asp-action="Index">Turnos</a></li>
-                                <li><a class="dropdown-item" asp-controller="AsignacionTurno" asp-action="Index">Asignación de Turnos</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Accesos y Seguridad -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="accesosDropdown" role="button" data-bs-toggle="dropdown">
-                                Accesos y Seguridad
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="accesosDropdown">
-                                <li><a class="dropdown-item" asp-controller="Garita" asp-action="Index">Garitas</a></li>
-                                <li><a class="dropdown-item" asp-controller="RegistroAccesos" asp-action="Index">Registros de Acceso</a></li>
-                                <li><a class="dropdown-item" asp-controller="VehiculoProhibido" asp-action="Index">Vehículos Prohibidos</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Vehículos -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="vehiculosDropdown" role="button" data-bs-toggle="dropdown">
-                                Vehículos
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="vehiculosDropdown">
-                                <li><a class="dropdown-item" asp-controller="Marca" asp-action="Index">Marcas</a></li>
-                                <li><a class="dropdown-item" asp-controller="Linea" asp-action="Index">Líneas</a></li>
-                                <li><a class="dropdown-item" asp-controller="Vehiculo" asp-action="Index">Vehículos</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Multas y Servicios -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="multasDropdown" role="button" data-bs-toggle="dropdown">
-                                Multas y Servicios
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="multasDropdown">
-                                <li><a class="dropdown-item" asp-controller="TipoMulta" asp-action="Index">Tipos de Multa</a></li>
-                                <li><a class="dropdown-item" asp-controller="MultaVivienda" asp-action="Index">Multas Vivienda</a></li>
-                                <li><a class="dropdown-item" asp-controller="Servicio" asp-action="Index">Servicios</a></li>
-                                <li><a class="dropdown-item" asp-controller="CobroServicioVivienda" asp-action="Index">Cobros de Servicio</a></li>
-                            </ul>
-                        </li>
-
-                        <!-- Pagos y Recibos -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="pagosDropdown" role="button" data-bs-toggle="dropdown">
-                                Pagos y Recibos
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="pagosDropdown">
-                                <li><a class="dropdown-item" asp-controller="TipoPago" asp-action="Index">Tipos de Pago</a></li>
-                                <li><a class="dropdown-item" asp-controller="Pago" asp-action="Index">Pagos</a></li>
-                                <li><a class="dropdown-item" asp-controller="Recibo" asp-action="Index">Recibos</a></li>
-                                
-                            </ul>
-                        </li>
-
-                        <!-- Documentos -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="documentosDropdown" role="button" data-bs-toggle="dropdown">
-                                Documentos
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="documentosDropdown">
-                                <li><a class="dropdown-item" asp-controller="TipoDocumento" asp-action="Index">Tipos de Documento</a></li>
-                                <li><a class="dropdown-item" asp-controller="DocumentoPersona" asp-action="Index">Documentos de Persona</a></li>
-                            </ul>
-                        </li>
-
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="personasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Personas
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="personasDropdown">
+                        <li><a class="dropdown-item" asp-controller="Persona" asp-action="Index">Personas</a></li>
+                        <li><a class="dropdown-item" asp-controller="Propietario" asp-action="Index">Propietarios</a></li>
+                        <li><a class="dropdown-item" asp-controller="Residente" asp-action="Index">Residentes</a></li>
+                        <li><a class="dropdown-item" asp-controller="Empleado" asp-action="Index">Empleados</a></li>
+                        <li><a class="dropdown-item" asp-controller="Visitante" asp-action="Index">Visitantes</a></li>
+                        <li><a class="dropdown-item" asp-controller="PersonaNoGrata" asp-action="Index">Personas No Gratas</a></li>
                     </ul>
-                </div>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="viviendaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Vivienda y Residencial
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="viviendaDropdown">
+                        <li><a class="dropdown-item" asp-controller="Residencial" asp-action="Index">Residenciales</a></li>
+                        <li><a class="dropdown-item" asp-controller="Cluster" asp-action="Index">Clusters</a></li>
+                        <li><a class="dropdown-item" asp-controller="Vivienda" asp-action="Index">Viviendas</a></li>
+                        <li><a class="dropdown-item" asp-controller="TipoVivienda" asp-action="Index">Tipos de Vivienda</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="juntaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Junta Directiva
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="juntaDropdown">
+                        <li><a class="dropdown-item" asp-controller="JuntaDirectiva" asp-action="Index">Juntas Directivas</a></li>
+                        <li><a class="dropdown-item" asp-controller="PuestoJuntaDirectiva" asp-action="Index">Puestos JD</a></li>
+                        <li><a class="dropdown-item" asp-controller="MiembroJuntaDirectiva" asp-action="Index">Miembros JD</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="empleadosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Empleados y Turnos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="empleadosDropdown">
+                        <li><a class="dropdown-item" asp-controller="PuestoEmpleado" asp-action="Index">Puestos Empleado</a></li>
+                        <li><a class="dropdown-item" asp-controller="Turno" asp-action="Index">Turnos</a></li>
+                        <li><a class="dropdown-item" asp-controller="AsignacionTurno" asp-action="Index">Asignación de Turnos</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="accesosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Accesos y Seguridad
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="accesosDropdown">
+                        <li><a class="dropdown-item" asp-controller="Garita" asp-action="Index">Garitas</a></li>
+                        <li><a class="dropdown-item" asp-controller="RegistroAccesos" asp-action="Index">Registros de Acceso</a></li>
+                        <li><a class="dropdown-item" asp-controller="VehiculoProhibido" asp-action="Index">Vehículos Prohibidos</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="vehiculosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Vehículos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="vehiculosDropdown">
+                        <li><a class="dropdown-item" asp-controller="Marca" asp-action="Index">Marcas</a></li>
+                        <li><a class="dropdown-item" asp-controller="Linea" asp-action="Index">Líneas</a></li>
+                        <li><a class="dropdown-item" asp-controller="Vehiculo" asp-action="Index">Vehículos</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="multasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Multas y Servicios
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="multasDropdown">
+                        <li><a class="dropdown-item" asp-controller="TipoMulta" asp-action="Index">Tipos de Multa</a></li>
+                        <li><a class="dropdown-item" asp-controller="MultaVivienda" asp-action="Index">Multas Vivienda</a></li>
+                        <li><a class="dropdown-item" asp-controller="Servicio" asp-action="Index">Servicios</a></li>
+                        <li><a class="dropdown-item" asp-controller="CobroServicioVivienda" asp-action="Index">Cobros de Servicio</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="pagosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Pagos y Recibos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="pagosDropdown">
+                        <li><a class="dropdown-item" asp-controller="TipoPago" asp-action="Index">Tipos de Pago</a></li>
+                        <li><a class="dropdown-item" asp-controller="Pago" asp-action="Index">Pagos</a></li>
+                        <li><a class="dropdown-item" asp-controller="Recibo" asp-action="Index">Recibos</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown position-static">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="documentosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Documentos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="documentosDropdown">
+                        <li><a class="dropdown-item" asp-controller="TipoDocumento" asp-action="Index">Tipos de Documento</a></li>
+                        <li><a class="dropdown-item" asp-controller="DocumentoPersona" asp-action="Index">Documentos de Persona</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <div id="main-wrapper"> 
+        <header id="main-header" class="bg-dark text-white p-3 d-flex justify-content-start align-items-center">
+            <button class="btn btn-dark me-3" id="sidebarToggle">
+                <i class="fas fa-bars fa-lg"></i> 
+            </button>
+            <h5 class="mb-0">@ViewData["Title"]</h5> </header>
+
+        <div id="content" class="p-4"> 
+            <div class="container-fluid mt-4 mb-5 content-wrapper" style="overflow-y:auto;">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
             </div>
-        </nav>
-    </header>
+        </div>
+    </div>
 
-    <div class="container mt-4 mb-5" style="overflow-y:auto;">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
-
-
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted fixed-bottom" id="footer-ajustado">
         <div class="container">
             &copy; 2025 - ArsanFWebApp
         </div>
@@ -161,6 +155,34 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Función principal: Alternar el menú (ABRIR y CERRAR)
+            $('#sidebarToggle').on('click', function() {
+                $('#sidebar').toggleClass('active-sidebar');
+                $('#main-wrapper').toggleClass('active-main-wrapper'); // Mueve el wrapper principal
+                $('#footer-ajustado').toggleClass('active-main-wrapper'); // Mueve el footer también
+            });
+
+            // Botón de cierre dentro del sidebar (para cerrar desde el menú en móviles)
+            $('#sidebarClose').on('click', function() {
+                $('#sidebar').removeClass('active-sidebar');
+                $('#main-wrapper').removeClass('active-main-wrapper');
+                $('#footer-ajustado').removeClass('active-main-wrapper');
+            });
+
+            // Ocultar el menú al hacer clic en cualquier enlace en modo móvil
+            $('#sidebar a').on('click', function() {
+                if ($(window).width() < 768 && $('#sidebar').hasClass('active-sidebar')) {
+                    $('#sidebar').removeClass('active-sidebar');
+                    $('#main-wrapper').removeClass('active-main-wrapper');
+                    $('#footer-ajustado').removeClass('active-main-wrapper');
+                }
+            });
+        });
+    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
