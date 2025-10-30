@@ -4,13 +4,13 @@
   "settings": {
     "width": 3000,
     "height": 3000,
-    "scrollTop": -1540,
-    "scrollLeft": -252,
-    "zoomLevel": 1,
+    "scrollTop": -1229.5324,
+    "scrollLeft": -234.6138,
+    "zoomLevel": 0.79,
     "show": 501,
     "database": 2,
     "databaseName": "ARSAN-F",
-    "canvasType": "ERD",
+    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
     "language": 4,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -474,7 +474,9 @@
         "columnIds": [
           "Dzs8oxk7aOb6CPBXvd_4r",
           "8SKfOlFRkxhKXIjXFvJNt",
-          "BkKd6gwT9tjvqR_k0Ka4a"
+          "BkKd6gwT9tjvqR_k0Ka4a",
+          "SHIhfileGi-wblYf20CGo",
+          "8hvEU7kXH04Vi3lHt6hXk"
         ],
         "seqColumnIds": [
           "Dzs8oxk7aOb6CPBXvd_4r",
@@ -483,7 +485,9 @@
           "WToXSszpREWzXImUMXYYo",
           "cRoNiMSyGqSgRYiWoYnil",
           "5zY_GsG0MSBcFquAX0Xcr",
-          "-ef6_gSaxt2PlQ2nTtZ0Y"
+          "-ef6_gSaxt2PlQ2nTtZ0Y",
+          "SHIhfileGi-wblYf20CGo",
+          "8hvEU7kXH04Vi3lHt6hXk"
         ],
         "ui": {
           "x": 73.8247,
@@ -494,7 +498,7 @@
           "color": "#FFEB3B"
         },
         "meta": {
-          "updateAt": 1761536855269,
+          "updateAt": 1761795801123,
           "createAt": 1760035618087
         }
       },
@@ -4694,6 +4698,46 @@
           "updateAt": 1761536883388,
           "createAt": 1761536859016
         }
+      },
+      "SHIhfileGi-wblYf20CGo": {
+        "id": "SHIhfileGi-wblYf20CGo",
+        "tableId": "mv2G0_pbLlF2Z_qMFhtGr",
+        "name": "MontoLiquidado",
+        "comment": "",
+        "dataType": "decimal",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 90,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1761795798467,
+          "createAt": 1761795740277
+        }
+      },
+      "8hvEU7kXH04Vi3lHt6hXk": {
+        "id": "8hvEU7kXH04Vi3lHt6hXk",
+        "tableId": "mv2G0_pbLlF2Z_qMFhtGr",
+        "name": "Saldo",
+        "comment": "",
+        "dataType": "decimal",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1761795811961,
+          "createAt": 1761795801122
+        }
       }
     },
     "relationshipEntities": {
@@ -5755,8 +5799,8 @@
           "columnIds": [
             "Dzs8oxk7aOb6CPBXvd_4r"
           ],
-          "x": 358.8247,
-          "y": 1399.6701,
+          "x": 385.8247,
+          "y": 1423.6701,
           "direction": 2
         },
         "end": {
@@ -5811,8 +5855,8 @@
           "columnIds": [
             "Dzs8oxk7aOb6CPBXvd_4r"
           ],
-          "x": 216.3247,
-          "y": 1463.6701,
+          "x": 229.8247,
+          "y": 1511.6701,
           "direction": 8
         },
         "end": {
