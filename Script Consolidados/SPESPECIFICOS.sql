@@ -6,10 +6,12 @@ CREATE OR ALTER PROCEDURE SP1_VehiculosPorVivienda
 @NumeroVivienda INT 
 AS
 BEGIN
-	SELECT COUNT(*) AS CantidadVehiculo, v.IdCluster, v.NumeroVivienda 
+	SELECT COUNT(*) OVER (PARTITION BY v.IdCluster, v.NumeroVivienda) AS CantidadVehiculosTotal, v.IdCluster, v.NumeroVivienda, l.Descripcion AS Linea, m.Descripcion AS Marca 
 	FROM Vehiculo AS v
+	INNER JOIN Linea l ON v.IdLinea = l.IdLinea
+	INNER JOIN Marca m ON l.IdMarca = m.IdMarca
 	WHERE v.IdCluster = @IdCluster AND v.NumeroVivienda = @NumeroVivienda
-	GROUP BY v.NumeroVivienda, v.IdCluster
+	--GROUP BY v.NumeroVivienda, v.IdCluster, l.Descripcion, m.Descripcion
 END;
 
 GO
@@ -229,19 +231,19 @@ BEGIN
 	RAISERROR('Mes Invalido', 16,1)
 	RETURN 0;
 	END;
-	SELECT TOP(1)SUM(MontoTotal),FechaPago
+	SELECT TOP(1)SUM(MontoTotal) AS MontoTotalMes,DAY(FechaPago) AS Dia, MONTH(FechaPago) AS Mes
 	FROM Pago
 	WHERE DATEPART(MONTH, FechaPago)= @Mes
 	GROUP BY FechaPago
 	ORDER BY SUM(MontoTotal) DESC
 END;
 
-GO
+GO 
 --Determine cual es la residencia que mas recibos ha recibido.
 CREATE OR ALTER PROCEDURE SP14_ResidenciaConMasRecibos
 AS
 BEGIN
-	SELECT TOP(1)COUNT(*), R.NumeroVivienda, R.IdCluster
+	SELECT TOP(1)COUNT(*) AS CantidadRecibos, R.NumeroVivienda, R.IdCluster
 	FROM Recibo AS R
 	GROUP BY R.NumeroVivienda, R.IdCluster
 	ORDER BY COUNT(*) DESC
