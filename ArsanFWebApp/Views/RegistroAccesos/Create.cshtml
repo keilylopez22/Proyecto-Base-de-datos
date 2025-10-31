@@ -1,69 +1,65 @@
 @model ArsanWebApp.Models.RegistroAcceso
 
-<div style="display: none;">
-    <p>ViewBag.Vehiculos: @(ViewBag.Vehiculos == null ? "NULL" : "TIENE DATOS")</p>
-    <p>ViewBag.Garitas: @(ViewBag.Garitas == null ? "NULL" : "TIENE DATOS")</p>
-    <p>ViewBag.Empleados: @(ViewBag.Empleados == null ? "NULL" : "TIENE DATOS")</p>
-</div>
+@{
+    ViewData["Title"] = "Registrar Nuevo Acceso";
+}
 
-<h2>Editar Registro de Acceso</h2>
+<h2 class="mb-4">Registrar Nuevo Acceso</h2>
 
-<h2>Registrar Nuevo Acceso</h2>
-
-<form asp-action="Create">
+<form asp-action="Create" method="post">
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="FechaIngreso">Fecha y Hora de Ingreso</label>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label asp-for="FechaIngreso" class="form-label">Fecha y Hora de Ingreso</label>
                 <input asp-for="FechaIngreso" class="form-control" type="datetime-local" />
                 <span asp-validation-for="FechaIngreso" class="text-danger"></span>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="FechaSalida">Fecha y Hora de Salida (Opcional)</label>
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label asp-for="FechaSalida" class="form-label">Fecha y Hora de Salida (Opcional)</label>
                 <input asp-for="FechaSalida" class="form-control" type="datetime-local" />
                 <span asp-validation-for="FechaSalida" class="text-danger"></span>
             </div>
         </div>
+        <div class="col-md-4">
+        <div class="form-group mb-3">
+                <label asp-for="ViviendaDestino" class="form-label">Vivienda Destino</label>
+                <input asp-for="ViviendaDestino" class="form-control" type="number" />
+                <span asp-validation-for="ViviendaDestino" class="text-danger"></span>
+            </div>
+        </div>    
     </div>
 
     <div class="row">
+        <!-- Vehículo -->
         <div class="col-md-4">
-            <div class="form-group">
-                <label asp-for="IdVehiculo">Vehículo (Opcional)</label>
-                <select asp-for="IdVehiculo" class="form-control">
+            <div class="form-group mb-3">
+                <label asp-for="IdVehiculo" class="form-label">Vehículo (Opcional)</label>
+                <select asp-for="IdVehiculo" asp-items="ViewBag.Vehiculos" class="form-control">
                     <option value="">-- Seleccione un vehículo --</option>
-                    @foreach (var vehiculo in ViewBag.Vehiculos)
-                    {
-                        <option value="@vehiculo.IdVehiculo">@vehiculo.Placa</option>
-                    }
                 </select>
                 <span asp-validation-for="IdVehiculo" class="text-danger"></span>
             </div>
         </div>
+
+        <!-- Visitante -->
         <div class="col-md-4">
-            <div class="form-group">
-                <label asp-for="IdVisitante">Visitante (Opcional)</label>
-                <select asp-for="IdVisitante" class="form-control">
+            <div class="form-group mb-3">
+                <label asp-for="IdVisitante" class="form-label">Visitante (Opcional)</label>
+                <select asp-for="IdVisitante" asp-items="ViewBag.Visitantes" class="form-control">
                     <option value="">-- Seleccione un visitante --</option>
-                    @foreach (var visitante in ViewBag.Visitantes)
-                    {
-                        <option value="@visitante.IdVisitante">@visitante.NombreCompleto</option>
-                    }
                 </select>
                 <span asp-validation-for="IdVisitante" class="text-danger"></span>
             </div>
         </div>
+
+        <!-- Residente -->
         <div class="col-md-4">
-            <div class="form-group">
-                <label asp-for="IdResidente">Residente (Opcional)</label>
-                <select asp-for="IdResidente" class="form-control">
+            <div class="form-group mb-3">
+                <label asp-for="IdResidente" class="form-label">Residente (Opcional)</label>
+                <select asp-for="IdResidente" asp-items="ViewBag.Residentes" class="form-control">
                     <option value="">-- Seleccione un residente --</option>
-                    @foreach (var residente in ViewBag.Residentes)
-                    {
-                        <option value="@residente.IdResidente">Residente @residente.IdResidente</option>
-                    }
                 </select>
                 <span asp-validation-for="IdResidente" class="text-danger"></span>
             </div>
@@ -71,38 +67,39 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="IdGarita">Garita</label>
-                <select asp-for="IdGarita" class="form-control" required>
+        <!-- Garita -->
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label asp-for="IdGarita" class="form-label">Garita</label>
+                <select asp-for="IdGarita" asp-items="ViewBag.Garitas" class="form-control" required>
                     <option value="">-- Seleccione una garita --</option>
-                    @foreach (var garita in ViewBag.Garitas)
-                    {
-                        <option value="@garita.IdGarita">Garita @garita.IdGarita (Cluster @garita.IdCluster)</option>
-                    }
                 </select>
                 <span asp-validation-for="IdGarita" class="text-danger"></span>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="IdEmpleado">Empleado</label>
-                <select asp-for="IdEmpleado" class="form-control" required>
+
+        <!-- Empleado -->
+        <div class="col-md-4">
+            <div class="form-group mb-3">
+                <label asp-for="IdEmpleado" class="form-label">Empleado</label>
+                <select asp-for="IdEmpleado" asp-items="ViewBag.Empleados" class="form-control" required>
                     <option value="">-- Seleccione un empleado --</option>
-                    @foreach (var empleado in ViewBag.Empleados)
-                    {
-                        <option value="@empleado.IdEmpleado">Empleado @empleado.IdEmpleado</option>
-                    }
                 </select>
                 <span asp-validation-for="IdEmpleado" class="text-danger"></span>
             </div>
         </div>
     </div>
 
-    <div class="alert alert-info">
+    <div class="alert alert-info mt-3">
         <strong>Nota:</strong> Debe especificar al menos un Vehículo, Visitante o Residente.
     </div>
 
-    <button type="submit" class="btn btn-primary">Registrar Acceso</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Registrar Acceso</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -2275,7 +2275,8 @@ CREATE OR ALTER PROCEDURE SP_SelectAllRegistroAcceso
     @FechaIngresoHasta DATETIME = NULL,
     @IdGaritaFilter INT = NULL,
     @IdEmpleadoFilter INT = NULL,
-    @TipoAccesoFilter VARCHAR(10) = NULL 
+    @TipoAccesoFilter VARCHAR(10) = NULL,
+    @ViviendaDestino INT = NULL
 AS
 BEGIN
 
@@ -2294,6 +2295,7 @@ BEGIN
         ra.IdEmpleado,
         g.IdCluster AS IdClusterGarita,
         c.Descripcion AS ClusterGarita,
+        ra.ViviendaDestino,
        
         CASE 
             WHEN ra.IdVehiculo IS NOT NULL THEN 'Vehículo'
@@ -2324,6 +2326,7 @@ BEGIN
         AND (@FechaIngresoHasta IS NULL OR ra.FechaIngreso <= @FechaIngresoHasta)
         AND (@IdGaritaFilter IS NULL OR ra.IdGarita = @IdGaritaFilter)
         AND (@IdEmpleadoFilter IS NULL OR ra.IdEmpleado = @IdEmpleadoFilter)
+        AND(@ViviendaDestino IS NULL OR ra.ViviendaDestino = @ViviendaDestino)
         AND (
             @TipoAccesoFilter IS NULL OR
             (@TipoAccesoFilter = 'Vehiculo' AND ra.IdVehiculo IS NOT NULL) OR
@@ -2343,6 +2346,7 @@ BEGIN
         AND (@FechaIngresoHasta IS NULL OR ra.FechaIngreso <= @FechaIngresoHasta)
         AND (@IdGaritaFilter IS NULL OR ra.IdGarita = @IdGaritaFilter)
         AND (@IdEmpleadoFilter IS NULL OR ra.IdEmpleado = @IdEmpleadoFilter)
+        AND(@ViviendaDestino IS NULL OR ra.ViviendaDestino = @ViviendaDestino)
         AND (
             @TipoAccesoFilter IS NULL OR
             (@TipoAccesoFilter = 'Vehiculo' AND ra.IdVehiculo IS NOT NULL) OR
@@ -2351,6 +2355,7 @@ BEGIN
             (@TipoAccesoFilter = 'Empleado' AND ra.IdVehiculo IS NULL AND ra.IdVisitante IS NULL AND ra.IdResidente IS NULL)
         );
 END;
+
 Go
 
 --Actualizar registro acceso
@@ -2362,7 +2367,8 @@ CREATE OR ALTER PROCEDURE SP_ActualizarRegistroAccesos
     @IdGarita INT,
     @IdVisitante INT = NULL,
     @IdResidente INT = NULL,
-    @IdEmpleado INT
+    @IdEmpleado INT,
+    @ViviendaDestino INT = NULL
 AS
 BEGIN
     UPDATE RegistroAccesos 
@@ -2372,7 +2378,8 @@ BEGIN
         IdGarita = @IdGarita,
         IdVisitante = @IdVisitante,
         IdResidente = @IdResidente,
-        IdEmpleado = @IdEmpleado
+        IdEmpleado = @IdEmpleado,
+        ViviendaDestino = @ViviendaDestino
     WHERE IdAcceso = @IdRegistroAcceso
     
     RETURN @@ROWCOUNT
@@ -2430,11 +2437,12 @@ CREATE OR ALTER PROCEDURE SP_InsertarRegistroAccesos
     @IdGarita INT,
     @IdVisitante INT = NULL,
     @IdResidente INT = NULL,
-    @IdEmpleado INT
+    @IdEmpleado INT,
+    @ViviendaDestino INT
 AS
 BEGIN
-    INSERT INTO RegistroAccesos (FechaIngreso, FechaSalida, IdVehiculo, IdGarita, IdVisitante, IdResidente, IdEmpleado)
-    VALUES (@FechaIngreso, @FechaSalida, @IdVehiculo, @IdGarita, @IdVisitante, @IdResidente, @IdEmpleado)
+    INSERT INTO RegistroAccesos (FechaIngreso, FechaSalida, IdVehiculo, IdGarita, IdVisitante, IdResidente, IdEmpleado,ViviendaDestino )
+    VALUES (@FechaIngreso, @FechaSalida, @IdVehiculo, @IdGarita, @IdVisitante, @IdResidente, @IdEmpleado,  @ViviendaDestino)
     
     RETURN SCOPE_IDENTITY()
 END;

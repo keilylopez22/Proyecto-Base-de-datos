@@ -38,6 +38,7 @@ public class RegistroAccesosController : Controller
         ViewBag.IdGaritaFilter = idGaritaFilter;
         ViewBag.IdEmpleadoFilter = idEmpleadoFilter;
         ViewBag.TipoAccesoFilter = tipoAccesoFilter;
+        
 
         await CargarFiltrosAsync();
         return View(registros);

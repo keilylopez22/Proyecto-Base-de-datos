@@ -12,6 +12,10 @@
         <input type="date" class="form-control" name="fechaIngresoHasta" 
                value="@ViewBag.FechaIngresoHasta?.ToString("yyyy-MM-dd")" placeholder="Hasta">
     </div>
+     <div class="col-md-2">
+        <input type="text" class="form-control" name="ViviendaDestino" 
+               value="@ViewBag.ViviendaDestino" placeholder="Vivienda Destino">
+    </div>
     <div class="col-md-2">
         <select class="form-control" name="idGaritaFilter">
             <option value="">Todas las garitas</option>
@@ -74,6 +78,7 @@
                 <th>Descripción</th>
                 <th>Garita</th>
                 <th>Cluster</th>
+                <th>Vivienda Destino</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -88,13 +93,11 @@
                     <td>@registro.DescripcionAcceso</td>
                     <td>@registro.ClusterGarita</td>
                     <td>@registro.IdClusterGarita</td>
+                    <td>@registro.ViviendaDestino</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@registro.IdAcceso" class="btn btn-sm btn-info">Ver</a>
                         <a asp-action="Edit" asp-route-id="@registro.IdAcceso" class="btn btn-sm btn-warning">Editar</a>
-                        <form asp-action="Delete" asp-route-id="@registro.IdAcceso" method="post" style="display:inline;" 
-                              onsubmit="return confirm('¿Eliminar este registro?');">
-                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                        </form>
+                        
                     </td>
                 </tr>
             }
@@ -122,7 +125,8 @@ else
                        fechaIngresoHasta = ViewBag.FechaIngresoHasta,
                        idGaritaFilter = ViewBag.IdGaritaFilter,
                        idEmpleadoFilter = ViewBag.IdEmpleadoFilter,
-                       tipoAccesoFilter = ViewBag.TipoAccesoFilter
+                       tipoAccesoFilter = ViewBag.TipoAccesoFilter,
+                       ViviendaDestino = ViewBag.ViviendaDestino
                    })">
                     Anterior
                 </a>
@@ -139,7 +143,8 @@ else
                            fechaIngresoHasta = ViewBag.FechaIngresoHasta,
                            idGaritaFilter = ViewBag.IdGaritaFilter,
                            idEmpleadoFilter = ViewBag.IdEmpleadoFilter,
-                           tipoAccesoFilter = ViewBag.TipoAccesoFilter
+                           tipoAccesoFilter = ViewBag.TipoAccesoFilter,
+                            ViviendaDestino = ViewBag.ViviendaDestino
                        })">
                         @i
                     </a>
@@ -155,7 +160,8 @@ else
                        fechaIngresoHasta = ViewBag.FechaIngresoHasta,
                        idGaritaFilter = ViewBag.IdGaritaFilter,
                        idEmpleadoFilter = ViewBag.IdEmpleadoFilter,
-                       tipoAccesoFilter = ViewBag.TipoAccesoFilter
+                       tipoAccesoFilter = ViewBag.TipoAccesoFilter,
+                        ViviendaDestino = ViewBag.ViviendaDestino
                    })">
                     Siguiente
                 </a>
